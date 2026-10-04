@@ -1,0 +1,166 @@
+
+	(*
+		shader definition structure: used for initializing the shader
+	*)
+
+struct ShaderDef{
+	Bool normalsFlag,
+	String? uSampler,
+	String? uPers,
+	Int instSize,
+	1d[ShaderAttrDef] instAttrList
+}
+
+	(*
+		general shader data structure
+		* prog - gl id of shader program
+	*)
+
+struct Shader{
+	U32 prog,
+	U32 vao,
+	U32 vertexVBO,
+	U32 instVBO,
+	Int instSize,
+	Int uSampler,	-- may be -1
+	Int uPers 		-- may be -1
+}
+
+	(*
+		shader initialization
+	*)
+
+fn makeShaderSrc(CPtr[U8] src, U32 sType) U32
+	var s = glCreateShader(sType)
+	glShaderSource(s, 1, cBox(src), null)
+	glCompileShader(s)
+
+	var status = cBox(0)
+	glGetShaderiv(s, _GL_COMPILE_STATUS, status)
+	if cRead(status) = 0 then
+		var errLen = cBox(0)
+		glGetShaderiv(s, _GL_INFO_LOG_LENGTH, errLen)
+		var errBuf = cAlloc(~U8, cRead(errLen))
+		glGetShaderInfoLog(s, cRead(errLen), errLen, errBuf)
+		panic("Shader.sm - Could not compile shaders.\n" + toString(errBuf))
+	end
+
+	return s
+end
+
+fn initShader(CPtr[U8] vs, CPtr[U8] fs, ShaderDef sDef) Shader
+	-- compile GLSL shader files
+	var frag = makeShaderSrc(fs, _GL_FRAGMENT_SHADER)
+	var vert = makeShaderSrc(vs, _GL_VERTEX_SHADER)
+
+	-- build shader program
+	var prog = glCreateProgram()
+	if prog = _0 then panic("Shader.sm - Could not create shader program.") end
+	glAttachShader(prog, vert)
+	glAttachShader(prog, frag)
+	glLinkProgram(prog)
+
+	-- check validity
+	var status = cBox(0)
+	glGetProgramiv(prog, _GL_LINK_STATUS, status)
+	if cRead(status) = 0 then
+		var errLen = cBox(0)
+		glGetProgramiv(prog, _GL_INFO_LOG_LENGTH, errLen)
+		var errBuf = cAlloc(~U8, cRead(errLen))
+		glGetProgramInfoLog(prog, cRead(errLen), errLen, errBuf)
+		panic("Shader.sm - Could not link shaders.\n" + toString(errBuf))
+	end
+	glUseProgram(prog)
+	glDeleteShader(vert)
+	glDeleteShader(frag)
+
+	-- create VAO + VBO
+	var vao = cBox(_0)
+	var vertexVBO = cBox(_0)
+	var instVBO = cBox(_0)
+	glGenVertexArrays(1, vao)
+	glGenVertexArrays(1, vertexVBO)
+	glGenVertexArrays(1, instVBO)
+
+	glBindVertexArray(cRead(vao))
+
+	-- initialize vertex attributes
+	var aTotal = _2
+	glBindBuffer(_GL_ARRAY_BUFFER, cRead(vertexVBO))
+	glEnableVertexAttribArray(_0)
+	glVertexAttribPointer(_0, 3, _GL_FLOAT, _GL_FALSE, _VERTEX_SIZET, toRawOffset(0))
+	glEnableVertexAttribArray(_1)
+	glVertexAttribPointer(_1, 2, _GL_FLOAT, _GL_FALSE, _VERTEX_SIZET, toRawOffset(12))
+	if sDef.normalsFlag then
+		aTotal = _3
+		glEnableVertexAttribArray(_2)
+		glVertexAttribPointer(_2, 3, _GL_FLOAT, _GL_FALSE, _VERTEX_SIZET, toRawOffset(20))
+	end
+
+	-- initialize remainder of VAO based on shader definition
+	glBindBuffer(_GL_ARRAY_BUFFER, cRead(instVBO))
+	for i < |sDef.instAttrList| do
+		var attr = sDef.instAttrList[i]
+		var ix = aTotal + toU32(i)
+		glEnableVertexAttribArray(ix)
+		if attr.glType.isIntType() then
+			glVertexAttribIPointer(ix, attr.arity, attr.glType, sDef.instSize, attr.offset)
+		else
+			glVertexAttribPointer(ix, attr.arity, attr.glType, _GL_FALSE, sDef.instSize, attr.offset)
+		end
+		glVertexAttribDivisor(ix, _1)
+	end
+
+	-- initialize texture sampler
+	var _usName = sDef.uSampler
+	var uSampler = -1
+	if _usName isnt null then
+		uSampler = glGetUniformLocation(prog, cString(_usName))
+		if uSampler < 0 then
+			panic("Shader.sm - Could not load shader uniform " + _usName)
+		end
+	end
+	
+	-- initialize perspective matrix
+	var _upName = sDef.uPers
+	var uPers = -1
+	if _upName isnt null then
+		uPers = glGetUniformLocation(prog, cString(_upName))
+		if uPers < 0 then
+			panic("Shader.sm - Could not load shader uniform " + _upName)
+		end
+	end
+
+	return new Shader{
+		prog = prog,
+		vao = cRead(vao),
+		vertexVBO = cRead(vertexVBO),
+		instVBO = cRead(instVBO),
+		instSize = 0,
+		uSampler = uSampler,
+		uPers = uPers
+	}
+end
+
+	(*
+		shader rendering
+	*)
+
+fn drawData(Shader shader, Mesh mesh, TexArray texArr, 1d[U8] data, Int total)
+	glBindVertexArray(shader.vao)
+
+	--print("mesh: " + toString(|mesh.rawData|) + ", data: " + toString(|data|) + ", data total: " + toString(total))
+
+	glBindBuffer(_GL_ARRAY_BUFFER, shader.vertexVBO)
+	glBufferData(_GL_ARRAY_BUFFER, toI64(mesh.total * _VERTEX_SIZET), toRawPtr(mesh.rawData), _GL_DYNAMIC_DRAW)
+
+	glBindBuffer(_GL_ARRAY_BUFFER, shader.instVBO)
+	glBufferData(_GL_ARRAY_BUFFER, toI64(|data|), toRawPtr(data), _GL_DYNAMIC_DRAW)
+
+	if shader.uSampler != -1 then
+		glActiveTexture(_GL_TEXTURE0)
+		glBindTexture(_GL_TEXTURE_2D_ARRAY, texArr.id)
+	end
+
+	glDrawArraysInstanced(_GL_TRIANGLES, 0, mesh.total, total)
+end

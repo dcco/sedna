@@ -1,0 +1,49 @@
+
+	(* mesh data *)
+
+struct Mesh{
+	Int total,
+	1d[Vertex] vertList,
+	1d[Float] rawData
+}
+
+fn newMesh(1d[Float] vs, 1d[Float] uv) Mesh
+	var vertList = new 1d[~Vertex]
+	-- (per vertex) initialize vertex + UV data
+	for i < |vs| / 3 do
+		var ix = i * 3
+		var iy = i * 2
+		var v = new Vertex{
+			pos = (vs[ix], vs[ix + 1], vs[ix + 2]),
+			uv = (uv[iy], uv[iy + 1]),
+			norm = (0.0, 0.0, 0.0)
+		}
+		vertList += v
+	end
+	-- (per triangle) initialize norm data
+	for i < |vertList| / 3 do
+		var ix = i * 3
+		var norm = triNorm(vertList[ix], vertList[ix + 1], vertList[ix + 2])
+		vertList[ix].norm = norm
+		vertList[ix + 1].norm = norm
+		vertList[ix + 2].norm = norm
+	end
+	-- initialize raw data
+	var rawData = new 1d(|vertList| * 8)[.. 0.0]
+	for i < |vertList| do
+		var ix = i * 8
+		rawData[ix] = vertList[i].pos.1
+		rawData[ix + 1] = vertList[i].pos.2
+		rawData[ix + 2] = vertList[i].pos.3
+		rawData[ix + 3] = vertList[i].uv.1
+		rawData[ix + 4] = vertList[i].uv.2
+		rawData[ix + 5] = vertList[i].norm.1
+		rawData[ix + 6] = vertList[i].norm.2
+		rawData[ix + 7] = vertList[i].norm.3
+	end
+	return new Mesh{
+		total = |vertList|,
+		vertList = vertList,
+		rawData = rawData
+	}
+end

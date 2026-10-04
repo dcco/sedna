@@ -1,0 +1,7 @@
+
+struct ImageMap{
+	1d[String?] kList,
+	1d[TexImage?] vList
+}
+
+

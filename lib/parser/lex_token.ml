@@ -1,39 +1,63 @@
 
-type raw_token = INT of int | FLOAT of float | TRUE | FALSE | NULL
-	| STRLIT of string | KLIT of string | U8 of int | LONG of Int64.t
-	| ID of string | TID of string | CID of string | DIM of int | T_FN 
-	| REFERENCES | MODULE | MODULES | CHAPTER | END
-	| STRUCT | ENUM | EXTENDS | ATTRS | UNION | CONST | GLOBALS
-	| FN | LIN | VAR | NEW | BY | IF | THEN | ELSIF | ELSE | IS | ISNT
+open Dusk_type
+
+	(* int bool is TRUE when UNSIGNED *)
+type raw_token = INT of Int64.t * bool * bit_width | FLOAT of float | TRUE | FALSE | NULL
+	| STRLIT of string | KLIT of string | T_INT of bool * bit_width
+	| ID of string | TID of string | VID of string | CID of string | DIM of int | T_FN | T_OUT
+	| REFERENCES | MODULE | MODULES | AS | IFACE | FTOR | REQUIRES | IMPL | IMPLEMENTS | WITH | END
+	| L_LINKER
+	| TYPE | STRUCT | ENUM | EXTENDS | ATTRS | UNION | CONST | GLOBALS
+	| FN | FNPTR | LIN | VAR | NEW | BY | IF | THEN | ELSIF | ELSE | IS | ISNT
 	| LOOP | WHILE | DO | FOR | IN | RETURN
 	| GC_COLLECT | UNDERSCORE
 	| EQ | DOT | ELLIP | LPAREN | RPAREN | COMMA | TILDE | QMARK | AT
 	| LBRACE | RBRACE | BAR | LBRACK | RBRACK
 	| NEQ | LANGLE | RANGLE | LEQ | GEQ | AND | OR | EXCLAM
 	| PLUS | DASH | STAR | SLASH | FLDIV | PERC | EXPO
+	| AMPERSAND | CARET | LSHIFT | RSHIFT 
 	| PLUS_EQ | SLASH_EQ | EOF
 
+let u64_to_string (i: Int64.t): string =
+	Unsigned.UInt64.to_string (Unsigned.UInt64.of_int64 i)
+
+let string_of_xint (i: Int64.t) (u: bool) (bw: bit_width): string =
+	let s = if u then u64_to_string i else Int64.to_string i in match bw with
+	S32 -> s
+	| S8 -> s ^ "b"
+	| S16 -> s ^ "s"
+	| S64 -> s ^ "l"
+
 let string_of_raw_token tk = match tk with
-	INT i -> string_of_int i
+	INT(i, u, bw) -> string_of_xint i u bw
 	| FLOAT f -> string_of_float f
 	| STRLIT s -> "\"" ^ (String.escaped s) ^ "\""
 	| KLIT s -> "^" ^ s
-	| U8 b -> (string_of_int b) ^ "b"
-	| LONG l -> (Int64.to_string l) ^ "l"
 	| DIM i -> (string_of_int i) ^ "d"
 	(*| VDIM -> "1v"*)
+	| T_INT(u, s) -> string_of_iType u s
 	| T_FN -> "Fn"
+	| T_OUT -> "Out"
+	| L_LINKER -> "_linker"
 	| TRUE -> "true"
 	| FALSE -> "false"
 	| NULL -> "null"
 	| ID x -> "id:" ^ x
 	| TID x -> "tid:" ^ x
+	| VID x -> "vid:" ^ x
 	| CID x -> "cid:" ^ x
 	| REFERENCES -> "references"
 	| MODULE -> "module"
 	| MODULES -> "modules"
-	| CHAPTER -> "chapter"
+	| AS -> "as"
+	| IFACE -> "iface"
+	| FTOR -> "ftor"
+	| REQUIRES -> "requires"
+	| IMPL -> "impl"
+	| IMPLEMENTS -> "implements"
+	| WITH -> "with"
 	| END -> "end"
+	| TYPE -> "type"
 	| STRUCT -> "struct"
 	| ENUM -> "enum"
 	| EXTENDS -> "extends"
@@ -42,6 +66,7 @@ let string_of_raw_token tk = match tk with
 	| CONST -> "const"
 	| GLOBALS -> "globals"
 	| FN -> "fn"
+	| FNPTR -> "fnPtr"
 	| LIN -> "lin"
 	| VAR -> "var"
 	| NEW -> "new"
@@ -89,6 +114,10 @@ let string_of_raw_token tk = match tk with
 	| FLDIV -> "/."
 	| PERC -> "%"
 	| EXPO -> "**"
+	| AMPERSAND -> "&"
+	| CARET -> "^"
+	| LSHIFT -> "<<"
+	| RSHIFT -> ">>"
 	| PLUS_EQ -> "+="
 	| SLASH_EQ -> "/="
 	| EOF -> "EOF"

@@ -1,14 +1,4 @@
 
-module Core
-	references Sys.Os
-	chapter Range
-	chapter Rect
-	chapter Clock
-end
-
-module Noise
-	references Sys modules Os
-	chapter DataLayer
-	chapter PermTable
-	chapter Simplex
+module Data
+	type HashMap
 end

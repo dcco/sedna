@@ -1,0 +1,12 @@
+
+struct ShaderAttrDef{
+	Int arity,
+	U32 glType,
+	VPtr offset
+}
+
+fn isIntType(U32 glType) Bool
+	if glType = _GL_FLOAT || glType = _GL_DOUBLE
+		|| glType = _GL_HALF_FLOAT || glType = _GL_FIXED then return false end
+	return true
+end

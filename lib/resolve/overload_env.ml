@@ -97,3 +97,9 @@ let add_oenv (env: overload_env) (cf: canon_fun) (ox: import_origin) (QN(_, x): 
 			let x' = cf ox x in
 			(Hashtbl.replace env x ((ox, x') :: ol); Some x')
 
+let add_oenv_direct (env: overload_env) (x: string) (cn: canon_name): unit option = match Hashtbl.find_opt env x with
+	None -> Hashtbl.add env x [(LocalOr, cn)]; Some ()
+	| Some ol ->
+		let rl = List.filter (match_handle (origin_handle LocalOr)) ol in
+		if List.length rl > 0 then None
+		else (Hashtbl.replace env x ((LocalOr, cn) :: ol); Some ())

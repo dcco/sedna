@@ -58,4 +58,15 @@ extern void* _Float_builtin_toString(float f) {
 	return (void*) s;
 }
 
+extern char* _String_builtin_cString(void* s) {
+	return &((dusk_string_t*) s)->start;
+}
+
+extern void* _ptr_builtin_toString(uint8_t* src) {
+	int32_t length = strlen(src);
+	dusk_string_t* dst = _newString(length);
+	memcpy(&dst->start, src, length + 1);
+	return (void*) dst;
+}
+
 #endif

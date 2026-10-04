@@ -9,6 +9,7 @@ open Res_type
 
 let rec resolve_exp (env: res_env) (e: m_exp): r_exp rs_res = match e with
 	ConstExp(c, p) -> Valid (ConstExp(c, p))
+	| TConstExp(t, p) -> let* t' = resolve_type env p t in Valid (TConstExp(t', p))
 	| OpExp(xop, p) -> Valid (OpExp(xop, p))
 	| VarExp(x, p) -> let* x' = resolve_name env p x in Valid (VarExp(x', p))
 	| AtCtorExp(ctor, p) ->
@@ -162,8 +163,11 @@ let rec resolve_dec_list (env: res_env) (dl: m_dec list): (r_dec list) rs_res = 
 	(* requirement resolution *)
 
 let resolve_req (env: res_env) (r: m_req): unit rs_res = match r with
-	ShortRefReq(path, p) ->
-		let handle = List.nth path ((List.length path) - 1) in
+	ShortRefReq(path, xOpt, p) ->
+		let handle = (match xOpt with
+			Some x -> x
+			| None -> List.nth path ((List.length path) - 1)
+		) in
 		if not (valid_import_path_renv env path) then Error (BadReq_Err(path, p))
 		else let* _ = add_import_renv env p path handle in Valid ()
 	| LongRefReq(path, ml, p) ->
@@ -200,7 +204,7 @@ let pre_check_req_list (env: res_env) (rl: m_req list): string list =
 		if has_branch_tree !(env.globalModules) p then []
 		else (env.globalModules := stub_tree !(env.globalModules) [p]; [p])
 	in List.concat (List.map (fun r -> match r with
-		ShortRefReq(path, _) -> ackMissingLib (List.hd path)
+		ShortRefReq(path, _, _) -> ackMissingLib (List.hd path)
 		| LongRefReq(path, _, _) -> ackMissingLib (List.hd path)
 	) rl)
 

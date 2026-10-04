@@ -1,0 +1,22 @@
+
+struct HashMap[K, V]{
+	1t[(K, V)] data
+}
+
+fn newHashMap(TYPE K, TYPE V, Int total) HashMap
+	var size = ceil(toFloat(total) /. 0.7)
+	var data = new 1t(size)
+	return new HashMap{
+		data = data
+	}
+end
+
+(*)
+ctor HashMap(Int total)
+	var size = ceil(toFloat(total) /. 0.7)
+	var data = new 1d(size)[.. (null, null)]
+	return new HashMap{
+		data = data
+	}
+end*)
+

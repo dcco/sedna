@@ -5,6 +5,7 @@
 		basic functions
 	*/
 
+
 extern float _Float_builtin_expo(float f, float z) {
 	return powf(f, z);
 }
@@ -62,6 +63,15 @@ extern void array_grow(gc_array_t* arr) {
 	}
 }
 
+extern void array_grow_n(gc_array_t* arr, int32_t n) {
+	arr->size = arr->size + n;
+	if (arr->size >= arr->capacity) {
+		int32_t newCap = arr->capacity * 3 / 2;
+		arr->capacity = newCap;
+		arr->data = realloc(arr->data, arr->elemSize * newCap);
+	}
+}
+
 extern void _a1_builtin_remove(gc_array_t* arr, int32_t i) {
 	if (i < 0 || i >= arr->size) exit_log("Out of bounds exception on array removal.", "");
 	if (i != arr->size - 1) {
@@ -77,8 +87,49 @@ extern void _a1_builtin_remove(gc_array_t* arr, int32_t i) {
 	}
 }
 
-extern void _a1_builtin_clear(gc_array_t* arr, int32_t i) {
+extern void _a1_builtin_flush(gc_array_t* arr) {
 	arr->size = 0;
+}
+
+extern void _a1_builtin_clear(gc_array_t* arr) {
+	int32_t arrCap = 16;
+	arr->capacity = arrCap;
+	free(arr->data);
+	arr->data = malloc(arr->elemSize * arrCap);
+	arr->size = 0;
+}
+
+extern void* _a1_builtin_toCPtr(gc_array_t* arr) {
+	return arr->data;
+}
+
+extern void* _a1_builtin_toRawPtr(gc_array_t* arr) {
+	return arr->data;
+}
+
+extern void _a1_builtin_addFloat(gc_array_t* arr, float f) {
+	int32_t i = arr->size;
+	array_grow_n(arr, 4);
+	float* fPtr = (float*) (((int8_t*) arr->data) + i);
+	*fPtr = f;
+}
+
+extern void _a1_builtin_addU32(gc_array_t* arr, uint32_t n) {
+	int32_t i = arr->size;
+	array_grow_n(arr, 4);
+	uint32_t* nPtr = (uint32_t*) (((int8_t*) arr->data) + i);
+	*nPtr = n;
+}
+
+extern void _a1_builtin_addI32(gc_array_t* arr, int32_t n) {
+	int32_t i = arr->size;
+	array_grow_n(arr, 4);
+	int32_t* nPtr = (int32_t*) (((int8_t*) arr->data) + i);
+	*nPtr = n;
+}
+
+extern void* _type_builtin_cAlloc(int64_t size, int32_t i) {
+	return malloc(size * i);
 }
 
 	/*
@@ -88,6 +139,15 @@ extern void _a1_builtin_clear(gc_array_t* arr, int32_t i) {
 extern void _String_Sys_Os_print(void* _s) {
 	dusk_string_t* s = (dusk_string_t*) _s;
 	printf("%s\n", &s->start);
+}
+
+extern void _ptr_Sys_Os_print(uint8_t* s) {
+	printf("%s\n", s);
+}
+
+extern void _String_builtin_panic(void* _s) {
+	dusk_string_t* s = (dusk_string_t*) _s;
+	exit_log(&s->start, "");
 }
 
 	/*

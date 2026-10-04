@@ -1,0 +1,50 @@
+
+struct TexArray{
+	U32 id,
+	Int width,
+	Int height
+}
+
+fn resizeTexArray(TexArray arr, Int total, Int w, Int h)
+	-- initialize texture array
+	glBindTexture(_GL_TEXTURE_2D_ARRAY, arr.id)
+	glTexImage3D(
+		_GL_TEXTURE_2D_ARRAY, 0, toInt(_GL_RGBA),
+		w, h, total + 1, 0,
+		_GL_RGBA, _GL_UNSIGNED_BYTE, toRawOffset(0)
+	)
+
+	-- other texture parameters
+	glTexParameteri(_GL_TEXTURE_2D_ARRAY, _GL_TEXTURE_WRAP_S, toInt(_GL_REPEAT))
+	glTexParameteri(_GL_TEXTURE_2D_ARRAY, _GL_TEXTURE_WRAP_T, toInt(_GL_REPEAT))
+	glTexParameteri(_GL_TEXTURE_2D_ARRAY, _GL_TEXTURE_MAG_FILTER, toInt(_GL_NEAREST))
+	glTexParameteri(_GL_TEXTURE_2D_ARRAY, _GL_TEXTURE_MIN_FILTER, toInt(_GL_NEAREST))
+
+	-- fill layer 0 with an all-white image
+	var defData = new 1d(w * h * 4)[.. _255b]
+	glTexSubImage3D(
+		_GL_TEXTURE_2D_ARRAY, 0,
+		0, 0, 0,
+		w, h, 1,
+		_GL_RGBA, _GL_UNSIGNED_BYTE, toRawPtr(defData)
+	)
+
+	arr.width = w
+	arr.height = h
+end
+
+fn newTexArray(Int total, Int w, Int h) TexArray
+	var arrayId = cBox(_0)
+	glGenTextures(1, arrayId)
+	if cRead(arrayId) = _0 then
+		panic("TexArray.sm - Could not generate texture array.")
+	end
+
+	var array = new TexArray{
+		id = cRead(arrayId),
+		width = w,
+		height = h
+	}
+	resizeTexArray(array, total, w, h)
+	return array
+end

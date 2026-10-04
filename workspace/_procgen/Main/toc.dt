@@ -1,8 +1,0 @@
-
-module World
-	references Sys modules Os, Sulfur, Rom
-	references ProcGen modules Layer, Noise
-	chapter GameTile
-	chapter GameRoom
-	chapter Generate
-end

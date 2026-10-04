@@ -1,0 +1,5 @@
+
+struct TexImage{
+	Int layer,
+	2d[U32] data
+}

@@ -24,23 +24,27 @@ let genStrLit (cont: llvm_cont) (env: dusk_env) (s: string): dusk_val =
 	(* expression generation *)
 
 let genConst (cont: llvm_cont) (env: dusk_env) (c: const): dusk_val = match c with
-	IConst i -> (const_int iType i, PrimDT iType)
+	IConst(i, u, s) ->
+		let t = match s with
+			S8 -> i8Type
+			| S16 -> i16Type
+			| S32 -> iType
+			| S64 -> i64Type
+		in (const_of_int64 t i (not u), PrimDT t)
 	| FConst f -> (const_float fType f, PrimDT fType)
 	| BConst b -> (const_int bType (if b then 1 else 0), PrimDT bType)
 	| SConst s -> (match Hashtbl.find_opt env (DStrLit s) with
 		Some (DVal(v, LitVT)) -> (v, HeapPtrDT dummyInnerType)
 		| _ -> genStrLit cont env s
 	)
-	| U8Const i -> (const_int i8Type i, PrimDT i8Type)
-	| LConst l -> (const_of_int64 i64Type l true, PrimDT i64Type)
 	| NullConst -> (const_null _ptrType, PrimDT _ptrType)
-	| KConst k -> (match Hashtbl.find_opt env (DKeyLit k) with
+	(*| KConst k -> (match Hashtbl.find_opt env (DKeyLit k) with
 		Some (DVal (v, _)) -> (build_load kType v "_kT" cont.builder, PrimDT kType)
 		| _ ->
 			let v = declare_global kType ("K_" ^ k) cont.llmod in
 			Hashtbl.add env (DKeyLit k) (DVal(v, VarVT (PrimDT kType)));
 			(build_load kType v "_kT" cont.builder, PrimDT kType)
-	)
+	)*)
 
 	(*
 		### VARIABLE GENERATION ###
@@ -50,7 +54,10 @@ let genLoadVar (cont: llvm_cont) (env: dusk_env) (k: dusk_key) (debugName: strin
 	(*Some (DFunVal (v, t)) -> (v, t)
 	| *)
 	Some (DVal (v, FunVT(t, tr))) -> (v, FunDT(t, tr))
+	| Some (DVal (v, FunPtrVT(t, tr))) ->
+		(build_load _ptrType v debugName cont.builder, FunDT(t, tr))
 	| Some (DVal (v, VarVT t)) ->
+		(*print_endline ((string_of_llvalue v) ^ " :: " ^ (string_of_dtype t));*)
 		(build_load (genType t) v debugName cont.builder, t)
 	| Some _ -> failwith ("BUG: gen_exp.ml - Variable \"" ^ debugName ^ "\" resolved to non-value in generation phase.")
 	| None -> failwith ("BUG: gen_exp.ml - Unexpected variable \"" ^ debugName ^ "\" encountered in generation phase.")
@@ -243,61 +250,91 @@ let genNewArray (cont: llvm_cont) (env: dusk_env) (vSize: llvalue) (dim: int) (t
 
 let voidVal: dusk_val = (const_int iType 0, PrimDT voidType)
 
+let _revType (t: dusk_type): lltype = match t with
+	PrimDT t -> t
+	| _ -> iType
+
 let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx = cont.builder in match e with
 	ConstExpC c -> genConst cont env c
 	| VarExpC x -> genLoadVar cont env (DVar x) x 
 	| UnaryExpC(xOp, e) ->
-		let (v, _) = genExp cont env e in
+		let (v, _tv) = genExp cont env e in
+		let tv = _revType _tv in
 		let (vf, t) = (match xOp with
-			"ineg" -> (build_neg v "_negT" bx, iType)
-			| "fneg" -> (build_fneg v "_negT" bx, fType)
+			"nop" -> (v, tv)
+			| "xneg" -> (build_neg v "_negT" bx, tv)
+			| "fneg" -> (build_fneg v "_negT" bx, tv)
 			| "bnot" -> (build_not v "_notT" bx, bType)
+				(* integer downcasts *)
+			| "xtox8_d" -> (build_trunc v i8Type "_castT" bx, i8Type)
+			| "xtox16_d" -> (build_trunc v i8Type "_castT" bx, i16Type)
+			| "xtox32_d" -> (build_trunc v i8Type "_castT" bx, iType)
+				(* integer upcasts *)
+			| "utox16_u" -> (build_zext v i16Type "_castT" bx, i16Type)
+			| "utox32_u" -> (build_zext v iType "_castT" bx, iType)
+			| "utox64_u" -> (build_zext v i64Type "_castT" bx, i64Type)
+			| "itoi16_u" -> (build_sext v i16Type "_castT" bx, i16Type)
+			| "itoi32_u" -> (build_sext v iType "_castT" bx, iType)
+			| "itoi64_u" -> (build_sext v i64Type "_castT" bx, i64Type)
+				(* float casts *)
 			| "ftoi" -> (build_fptosi v iType "_castT" bx, iType)
-			| "ui64toi" -> (build_trunc v iType "_castT" bx, iType)
 			| "itof" -> (build_sitofp v fType "_castT" bx, fType)
-			| "itoui64" -> (build_zext v i64Type "_castT" bx, i64Type)
-			| "ui64tof" -> (build_uitofp v fType "_castT" bx, i64Type)
+			| "utof" -> (build_uitofp v fType "_castT" bx, fType)
+				(* misc casts *)
+			| "xtoPtr" -> (build_inttoptr v _ptrType "_castT" bx, _ptrType)
 			| _ -> failwith ("BUG: gen_exp.ml - Unexpected operator \"" ^ xOp ^ "\" encountered in generation phase.")
 		) in (vf, PrimDT t)
 	| BinExpC(xOp, e1, e2) ->
-		let (v1, _) = genExp cont env e1 in
+		let (v1, _tv) = genExp cont env e1 in
+		let tv = _revType _tv in
 		let (v2, _) = genExp cont env e2 in
 		let (vf, t) = (match xOp with
-			"iadd" -> (build_add v1 v2 "_addT" bx, iType)
-			| "isub" -> (build_sub v1 v2 "_subT" bx, iType)
-			| "imul" -> (build_mul v1 v2 "_mulT" bx, iType)
-			| "idiv" -> (build_sdiv v1 v2 "_divT" bx, iType)
-			| "imod" -> (build_srem v1 v2 "_modT" bx, iType)
-			| "fadd" -> (build_fadd v1 v2 "_addT" bx, fType)
-			| "fsub" -> (build_fsub v1 v2 "_subT" bx, fType)
-			| "fmul" -> (build_fmul v1 v2 "_mulT" bx, fType)
-			| "fdiv" -> (build_fdiv v1 v2 "_divT" bx, fType)
-			| "fmod" -> (build_frem v1 v2 "_modT" bx, fType)
-			| "ieq" -> (build_icmp Icmp.Eq v1 v2 "_cmpT" bx, bType)
-			| "ineq" -> (build_icmp Icmp.Ne v1 v2 "_cmpT" bx, bType)
+				(* generic int ops *)
+			"xadd" -> (build_add v1 v2 "_addT" bx, tv)
+			| "xsub" -> (build_sub v1 v2 "_subT" bx, tv)
+			| "xmul" -> (build_mul v1 v2 "_mulT" bx, tv)
+			| "xeq" -> (build_icmp Icmp.Eq v1 v2 "_cmpT" bx, bType)
+			| "xneq" -> (build_icmp Icmp.Ne v1 v2 "_cmpT" bx, bType)
+				(* signed int ops *)
+			| "idiv" -> (build_sdiv v1 v2 "_divT" bx, tv)
+			| "imod" -> (build_srem v1 v2 "_modT" bx, tv)
 			| "ileq" -> (build_icmp Icmp.Sle v1 v2 "_cmpT" bx, bType)
 			| "ilt" -> (build_icmp Icmp.Slt v1 v2 "_cmpT" bx, bType)
 			| "igeq" -> (build_icmp Icmp.Sge v1 v2 "_cmpT" bx, bType)
 			| "igt" -> (build_icmp Icmp.Sgt v1 v2 "_cmpT" bx, bType)
+			| "ifdiv" ->
+				let v1' = build_sitofp v1 fType "_castAT" bx in
+				let v2' = build_sitofp v2 fType "_castBT" bx in
+				(build_fdiv v1' v2' "_divT" bx, fType)
+				(* unsigned int ops *)
+			| "udiv" -> (build_udiv v1 v2 "_divT" bx, tv)
+			| "umod" -> (build_urem v1 v2 "_modT" bx, tv)
+			| "uleq" -> (build_icmp Icmp.Ule v1 v2 "_cmpT" bx, bType)
+			| "ult" -> (build_icmp Icmp.Ult v1 v2 "_cmpT" bx, bType)
+			| "ugeq" -> (build_icmp Icmp.Uge v1 v2 "_cmpT" bx, bType)
+			| "ugt" -> (build_icmp Icmp.Ugt v1 v2 "_cmpT" bx, bType)
+				(* float ops *)
+			| "fadd" -> (build_fadd v1 v2 "_addT" bx, tv)
+			| "fsub" -> (build_fsub v1 v2 "_subT" bx, tv)
+			| "fmul" -> (build_fmul v1 v2 "_mulT" bx, tv)
+			| "fdiv" -> (build_fdiv v1 v2 "_divT" bx, tv)
+			| "fmod" -> (build_frem v1 v2 "_modT" bx, tv)
 			| "feq" -> (build_fcmp Fcmp.Oeq v1 v2 "_cmpT" bx, bType)
 			| "fneq" -> (build_fcmp Fcmp.One v1 v2 "_cmpT" bx, bType)
 			| "fleq" -> (build_fcmp Fcmp.Ole v1 v2 "_cmpT" bx, bType)
 			| "flt" -> (build_fcmp Fcmp.Olt v1 v2 "_cmpT" bx, bType)
 			| "fgeq" -> (build_fcmp Fcmp.Oge v1 v2 "_cmpT" bx, bType)
 			| "fgt" -> (build_fcmp Fcmp.Ogt v1 v2 "_cmpT" bx, bType)
+				(* boolean ops *)
 			| "band" -> (build_and v1 v2 "_andT" bx, bType)
 			| "bor" -> (build_or v1 v2 "_orT" bx, bType)
-			| "ui64add" -> (build_add v1 v2 "_addT" bx, i64Type)
-			| "ui64sub" -> (build_sub v1 v2 "_subT" bx, i64Type)
-			| "ui64mul" -> (build_mul v1 v2 "_mulT" bx, i64Type)
-			| "ui64div" -> (build_udiv v1 v2 "_divT" bx, i64Type)
-			| "ui64mod" -> (build_urem v1 v2 "_modT" bx, i64Type)
-			| "tag_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, tagType)
-			| "ptr_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, tagType)
-			| "ifdiv" ->
-				let v1' = build_sitofp v1 fType "_castAT" bx in
-				let v2' = build_sitofp v2 fType "_castBT" bx in
-				(build_fdiv v1' v2' "_divT" bx, fType)
+				(* enum/ptr ops *)
+			| "tag_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
+			| "ptr_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
+				(* bitwise ops *)
+			| "bit_and" -> (build_and v1 v2 "_bitAndT" bx, tv)
+			| "bit_or" -> (build_or v1 v2 "_bitOrT" bx, tv)
+			| "bit_xor" -> (build_xor v1 v2 "_bitXorT" bx, tv)
 			| _ -> failwith ("BUG: gen_exp.ml - Unexpected operator \"" ^ xOp ^ "\" encountered in generation phase.")
 		) in (vf, PrimDT t)
 	| CallExpC(boxOpt, ef, el, _) ->
@@ -316,6 +353,9 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 				failwith ("BUG: gen_exp.ml - Ungenerated box for boxed function return value.")
 			| _ -> (build_call (genType tf) vf (Array.of_list vl) "" cont.builder, tr)
 		)
+	| BoxExpC(boxId, e, _) ->
+		let (v, _) = genExp cont env e in
+		genStoreBox "(Boxed Value)" cont env boxId v
 	| TagExpC e ->
 		let (v, _) = genExp cont env e in
 		(build_trunc v tagType "_dropT" bx, PrimDT tagType)
@@ -424,6 +464,10 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 			(* heap allocate + initialize *)
 		let sPtr = genAlloc cont env tx (StructIDT tau_sl) in
 		ignore (build_store sVal (fst sPtr) bx); sPtr
+	| SizeExpC t ->
+		let tau_store = toStoreType "(Size of Type)" env t in
+		let size = size_of_type cont (genStoreType tau_store) in
+		(const_int i64Type size, PrimDT i64Type)
 	| GCNewRootExpC e ->
 		let (v, t) = genExp cont env e in
 		let (new_root_fun, new_root_type) = !(cont.gc).gc_new_root in

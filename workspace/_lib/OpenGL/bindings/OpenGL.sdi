@@ -1,0 +1,1279 @@
+fn glCullFace(U32 mode)  as glad_glCullFace
+fn glFrontFace(U32 mode)  as glad_glFrontFace
+fn glHint(U32 target, U32 mode)  as glad_glHint
+fn glLineWidth(Float width)  as glad_glLineWidth
+fn glPointSize(Float size)  as glad_glPointSize
+fn glPolygonMode(U32 face, U32 mode)  as glad_glPolygonMode
+fn glScissor(Int x, Int y, Int width, Int height)  as glad_glScissor
+fn glTexParameterf(U32 target, U32 pname, Float param)  as glad_glTexParameterf
+fn glTexParameterfv(U32 target, U32 pname, CPtr[Float] params)  as glad_glTexParameterfv
+fn glTexParameteri(U32 target, U32 pname, Int param)  as glad_glTexParameteri
+fn glTexParameteriv(U32 target, U32 pname, CPtr[Int] params)  as glad_glTexParameteriv
+fn glTexImage1D(U32 target, Int level, Int internalformat, Int width, Int border, U32 format, U32 type, VPtr pixels)  as glad_glTexImage1D
+fn glTexImage2D(U32 target, Int level, Int internalformat, Int width, Int height, Int border, U32 format, U32 type, VPtr pixels)  as glad_glTexImage2D
+fn glDrawBuffer(U32 buf)  as glad_glDrawBuffer
+fn glClear(U32 mask)  as glad_glClear
+fn glClearColor(Float red, Float green, Float blue, Float alpha)  as glad_glClearColor
+fn glClearStencil(Int s)  as glad_glClearStencil
+fn glClearDepth(F64 depth)  as glad_glClearDepth
+fn glStencilMask(U32 mask)  as glad_glStencilMask
+fn glColorMask(U8 red, U8 green, U8 blue, U8 alpha)  as glad_glColorMask
+fn glDepthMask(U8 flag)  as glad_glDepthMask
+fn glDisable(U32 cap)  as glad_glDisable
+fn glEnable(U32 cap)  as glad_glEnable
+fn glFinish()  as glad_glFinish
+fn glFlush()  as glad_glFlush
+fn glBlendFunc(U32 sfactor, U32 dfactor)  as glad_glBlendFunc
+fn glLogicOp(U32 opcode)  as glad_glLogicOp
+fn glStencilFunc(U32 func, Int ref, U32 mask)  as glad_glStencilFunc
+fn glStencilOp(U32 fail, U32 zfail, U32 zpass)  as glad_glStencilOp
+fn glDepthFunc(U32 func)  as glad_glDepthFunc
+fn glPixelStoref(U32 pname, Float param)  as glad_glPixelStoref
+fn glPixelStorei(U32 pname, Int param)  as glad_glPixelStorei
+fn glReadBuffer(U32 src)  as glad_glReadBuffer
+fn glReadPixels(Int x, Int y, Int width, Int height, U32 format, U32 type, VPtr pixels)  as glad_glReadPixels
+fn glGetBooleanv(U32 pname, CPtr[U8] data)  as glad_glGetBooleanv
+fn glGetDoublev(U32 pname, CPtr[F64] data)  as glad_glGetDoublev
+fn glGetError() U32 as glad_glGetError
+fn glGetFloatv(U32 pname, CPtr[Float] data)  as glad_glGetFloatv
+fn glGetIntegerv(U32 pname, CPtr[Int] data)  as glad_glGetIntegerv
+fn glGetTexImage(U32 target, Int level, U32 format, U32 type, VPtr pixels)  as glad_glGetTexImage
+fn glGetTexParameterfv(U32 target, U32 pname, CPtr[Float] params)  as glad_glGetTexParameterfv
+fn glGetTexParameteriv(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetTexParameteriv
+fn glGetTexLevelParameterfv(U32 target, Int level, U32 pname, CPtr[Float] params)  as glad_glGetTexLevelParameterfv
+fn glGetTexLevelParameteriv(U32 target, Int level, U32 pname, CPtr[Int] params)  as glad_glGetTexLevelParameteriv
+fn glIsEnabled(U32 cap) U8 as glad_glIsEnabled
+fn glDepthRange(F64 n, F64 f)  as glad_glDepthRange
+fn glViewport(Int x, Int y, Int width, Int height)  as glad_glViewport
+fn glDrawArrays(U32 mode, Int first, Int count)  as glad_glDrawArrays
+fn glDrawElements(U32 mode, Int count, U32 type, VPtr indices)  as glad_glDrawElements
+fn glGetPointerv(U32 pname, VPtr params)  as glad_glGetPointerv
+fn glPolygonOffset(Float factor, Float units)  as glad_glPolygonOffset
+fn glCopyTexImage1D(U32 target, Int level, U32 internalformat, Int x, Int y, Int width, Int border)  as glad_glCopyTexImage1D
+fn glCopyTexImage2D(U32 target, Int level, U32 internalformat, Int x, Int y, Int width, Int height, Int border)  as glad_glCopyTexImage2D
+fn glCopyTexSubImage1D(U32 target, Int level, Int xoffset, Int x, Int y, Int width)  as glad_glCopyTexSubImage1D
+fn glCopyTexSubImage2D(U32 target, Int level, Int xoffset, Int yoffset, Int x, Int y, Int width, Int height)  as glad_glCopyTexSubImage2D
+fn glTexSubImage1D(U32 target, Int level, Int xoffset, Int width, U32 format, U32 type, VPtr pixels)  as glad_glTexSubImage1D
+fn glTexSubImage2D(U32 target, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, U32 type, VPtr pixels)  as glad_glTexSubImage2D
+fn glBindTexture(U32 target, U32 texture)  as glad_glBindTexture
+fn glDeleteTextures(Int n, CPtr[U32] textures)  as glad_glDeleteTextures
+fn glGenTextures(Int n, CPtr[U32] textures)  as glad_glGenTextures
+fn glIsTexture(U32 texture) U8 as glad_glIsTexture
+fn glDrawRangeElements(U32 mode, U32 start, U32 end, Int count, U32 type, VPtr indices)  as glad_glDrawRangeElements
+fn glTexImage3D(U32 target, Int level, Int internalformat, Int width, Int height, Int depth, Int border, U32 format, U32 type, VPtr pixels)  as glad_glTexImage3D
+fn glTexSubImage3D(U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, U32 type, VPtr pixels)  as glad_glTexSubImage3D
+fn glCopyTexSubImage3D(U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int x, Int y, Int width, Int height)  as glad_glCopyTexSubImage3D
+fn glActiveTexture(U32 texture)  as glad_glActiveTexture
+fn glSampleCoverage(Float value, U8 invert)  as glad_glSampleCoverage
+fn glCompressedTexImage3D(U32 target, Int level, U32 internalformat, Int width, Int height, Int depth, Int border, Int imageSize, VPtr data)  as glad_glCompressedTexImage3D
+fn glCompressedTexImage2D(U32 target, Int level, U32 internalformat, Int width, Int height, Int border, Int imageSize, VPtr data)  as glad_glCompressedTexImage2D
+fn glCompressedTexImage1D(U32 target, Int level, U32 internalformat, Int width, Int border, Int imageSize, VPtr data)  as glad_glCompressedTexImage1D
+fn glCompressedTexSubImage3D(U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, Int imageSize, VPtr data)  as glad_glCompressedTexSubImage3D
+fn glCompressedTexSubImage2D(U32 target, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, Int imageSize, VPtr data)  as glad_glCompressedTexSubImage2D
+fn glCompressedTexSubImage1D(U32 target, Int level, Int xoffset, Int width, U32 format, Int imageSize, VPtr data)  as glad_glCompressedTexSubImage1D
+fn glGetCompressedTexImage(U32 target, Int level, VPtr img)  as glad_glGetCompressedTexImage
+fn glBlendFuncSeparate(U32 sfactorRGB, U32 dfactorRGB, U32 sfactorAlpha, U32 dfactorAlpha)  as glad_glBlendFuncSeparate
+fn glMultiDrawArrays(U32 mode, CPtr[Int] first, CPtr[Int] count, Int drawcount)  as glad_glMultiDrawArrays
+fn glMultiDrawElements(U32 mode, CPtr[Int] count, U32 type, VPtr indices, Int drawcount)  as glad_glMultiDrawElements
+fn glPointParameterf(U32 pname, Float param)  as glad_glPointParameterf
+fn glPointParameterfv(U32 pname, CPtr[Float] params)  as glad_glPointParameterfv
+fn glPointParameteri(U32 pname, Int param)  as glad_glPointParameteri
+fn glPointParameteriv(U32 pname, CPtr[Int] params)  as glad_glPointParameteriv
+fn glBlendColor(Float red, Float green, Float blue, Float alpha)  as glad_glBlendColor
+fn glBlendEquation(U32 mode)  as glad_glBlendEquation
+fn glGenQueries(Int n, CPtr[U32] ids)  as glad_glGenQueries
+fn glDeleteQueries(Int n, CPtr[U32] ids)  as glad_glDeleteQueries
+fn glIsQuery(U32 id) U8 as glad_glIsQuery
+fn glBeginQuery(U32 target, U32 id)  as glad_glBeginQuery
+fn glEndQuery(U32 target)  as glad_glEndQuery
+fn glGetQueryiv(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetQueryiv
+fn glGetQueryObjectiv(U32 id, U32 pname, CPtr[Int] params)  as glad_glGetQueryObjectiv
+fn glGetQueryObjectuiv(U32 id, U32 pname, CPtr[U32] params)  as glad_glGetQueryObjectuiv
+fn glBindBuffer(U32 target, U32 buffer)  as glad_glBindBuffer
+fn glDeleteBuffers(Int n, CPtr[U32] buffers)  as glad_glDeleteBuffers
+fn glGenBuffers(Int n, CPtr[U32] buffers)  as glad_glGenBuffers
+fn glIsBuffer(U32 buffer) U8 as glad_glIsBuffer
+fn glBufferData(U32 target, I64 size, VPtr data, U32 usage)  as glad_glBufferData
+fn glBufferSubData(U32 target, I64 offset, I64 size, VPtr data)  as glad_glBufferSubData
+fn glGetBufferSubData(U32 target, I64 offset, I64 size, VPtr data)  as glad_glGetBufferSubData
+fn glUnmapBuffer(U32 target) U8 as glad_glUnmapBuffer
+fn glGetBufferParameteriv(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetBufferParameteriv
+fn glGetBufferPointerv(U32 target, U32 pname, VPtr params)  as glad_glGetBufferPointerv
+fn glBlendEquationSeparate(U32 modeRGB, U32 modeAlpha)  as glad_glBlendEquationSeparate
+fn glDrawBuffers(Int n, CPtr[U32] bufs)  as glad_glDrawBuffers
+fn glStencilOpSeparate(U32 face, U32 sfail, U32 dpfail, U32 dppass)  as glad_glStencilOpSeparate
+fn glStencilFuncSeparate(U32 face, U32 func, Int ref, U32 mask)  as glad_glStencilFuncSeparate
+fn glStencilMaskSeparate(U32 face, U32 mask)  as glad_glStencilMaskSeparate
+fn glAttachShader(U32 program, U32 shader)  as glad_glAttachShader
+fn glBindAttribLocation(U32 program, U32 index, CPtr[U8] name)  as glad_glBindAttribLocation
+fn glCompileShader(U32 shader)  as glad_glCompileShader
+fn glCreateProgram() U32 as glad_glCreateProgram
+fn glCreateShader(U32 type) U32 as glad_glCreateShader
+fn glDeleteProgram(U32 program)  as glad_glDeleteProgram
+fn glDeleteShader(U32 shader)  as glad_glDeleteShader
+fn glDetachShader(U32 program, U32 shader)  as glad_glDetachShader
+fn glDisableVertexAttribArray(U32 index)  as glad_glDisableVertexAttribArray
+fn glEnableVertexAttribArray(U32 index)  as glad_glEnableVertexAttribArray
+fn glGetActiveAttrib(U32 program, U32 index, Int bufSize, CPtr[Int] length, CPtr[Int] size, CPtr[U32] type, CPtr[U8] name)  as glad_glGetActiveAttrib
+fn glGetActiveUniform(U32 program, U32 index, Int bufSize, CPtr[Int] length, CPtr[Int] size, CPtr[U32] type, CPtr[U8] name)  as glad_glGetActiveUniform
+fn glGetAttachedShaders(U32 program, Int maxCount, CPtr[Int] count, CPtr[U32] shaders)  as glad_glGetAttachedShaders
+fn glGetAttribLocation(U32 program, CPtr[U8] name) Int as glad_glGetAttribLocation
+fn glGetProgramiv(U32 program, U32 pname, CPtr[Int] params)  as glad_glGetProgramiv
+fn glGetProgramInfoLog(U32 program, Int bufSize, CPtr[Int] length, CPtr[U8] infoLog)  as glad_glGetProgramInfoLog
+fn glGetShaderiv(U32 shader, U32 pname, CPtr[Int] params)  as glad_glGetShaderiv
+fn glGetShaderInfoLog(U32 shader, Int bufSize, CPtr[Int] length, CPtr[U8] infoLog)  as glad_glGetShaderInfoLog
+fn glGetShaderSource(U32 shader, Int bufSize, CPtr[Int] length, CPtr[U8] source)  as glad_glGetShaderSource
+fn glGetUniformLocation(U32 program, CPtr[U8] name) Int as glad_glGetUniformLocation
+fn glGetUniformfv(U32 program, Int location, CPtr[Float] params)  as glad_glGetUniformfv
+fn glGetUniformiv(U32 program, Int location, CPtr[Int] params)  as glad_glGetUniformiv
+fn glGetVertexAttribdv(U32 index, U32 pname, CPtr[F64] params)  as glad_glGetVertexAttribdv
+fn glGetVertexAttribfv(U32 index, U32 pname, CPtr[Float] params)  as glad_glGetVertexAttribfv
+fn glGetVertexAttribiv(U32 index, U32 pname, CPtr[Int] params)  as glad_glGetVertexAttribiv
+fn glGetVertexAttribPointerv(U32 index, U32 pname, VPtr pointer)  as glad_glGetVertexAttribPointerv
+fn glIsProgram(U32 program) U8 as glad_glIsProgram
+fn glIsShader(U32 shader) U8 as glad_glIsShader
+fn glLinkProgram(U32 program)  as glad_glLinkProgram
+fn glShaderSource(U32 shader, Int count, CPtr[CPtr[U8]] string, CPtr[Int] length)  as glad_glShaderSource
+fn glUseProgram(U32 program)  as glad_glUseProgram
+fn glUniform1f(Int location, Float v0)  as glad_glUniform1f
+fn glUniform2f(Int location, Float v0, Float v1)  as glad_glUniform2f
+fn glUniform3f(Int location, Float v0, Float v1, Float v2)  as glad_glUniform3f
+fn glUniform4f(Int location, Float v0, Float v1, Float v2, Float v3)  as glad_glUniform4f
+fn glUniform1i(Int location, Int v0)  as glad_glUniform1i
+fn glUniform2i(Int location, Int v0, Int v1)  as glad_glUniform2i
+fn glUniform3i(Int location, Int v0, Int v1, Int v2)  as glad_glUniform3i
+fn glUniform4i(Int location, Int v0, Int v1, Int v2, Int v3)  as glad_glUniform4i
+fn glUniform1fv(Int location, Int count, CPtr[Float] value)  as glad_glUniform1fv
+fn glUniform2fv(Int location, Int count, CPtr[Float] value)  as glad_glUniform2fv
+fn glUniform3fv(Int location, Int count, CPtr[Float] value)  as glad_glUniform3fv
+fn glUniform4fv(Int location, Int count, CPtr[Float] value)  as glad_glUniform4fv
+fn glUniform1iv(Int location, Int count, CPtr[Int] value)  as glad_glUniform1iv
+fn glUniform2iv(Int location, Int count, CPtr[Int] value)  as glad_glUniform2iv
+fn glUniform3iv(Int location, Int count, CPtr[Int] value)  as glad_glUniform3iv
+fn glUniform4iv(Int location, Int count, CPtr[Int] value)  as glad_glUniform4iv
+fn glUniformMatrix2fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix2fv
+fn glUniformMatrix3fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix3fv
+fn glUniformMatrix4fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix4fv
+fn glValidateProgram(U32 program)  as glad_glValidateProgram
+fn glVertexAttrib1d(U32 index, F64 x)  as glad_glVertexAttrib1d
+fn glVertexAttrib1dv(U32 index, CPtr[F64] v)  as glad_glVertexAttrib1dv
+fn glVertexAttrib1f(U32 index, Float x)  as glad_glVertexAttrib1f
+fn glVertexAttrib1fv(U32 index, CPtr[Float] v)  as glad_glVertexAttrib1fv
+fn glVertexAttrib1s(U32 index, I16 x)  as glad_glVertexAttrib1s
+fn glVertexAttrib1sv(U32 index, CPtr[I16] v)  as glad_glVertexAttrib1sv
+fn glVertexAttrib2d(U32 index, F64 x, F64 y)  as glad_glVertexAttrib2d
+fn glVertexAttrib2dv(U32 index, CPtr[F64] v)  as glad_glVertexAttrib2dv
+fn glVertexAttrib2f(U32 index, Float x, Float y)  as glad_glVertexAttrib2f
+fn glVertexAttrib2fv(U32 index, CPtr[Float] v)  as glad_glVertexAttrib2fv
+fn glVertexAttrib2s(U32 index, I16 x, I16 y)  as glad_glVertexAttrib2s
+fn glVertexAttrib2sv(U32 index, CPtr[I16] v)  as glad_glVertexAttrib2sv
+fn glVertexAttrib3d(U32 index, F64 x, F64 y, F64 z)  as glad_glVertexAttrib3d
+fn glVertexAttrib3dv(U32 index, CPtr[F64] v)  as glad_glVertexAttrib3dv
+fn glVertexAttrib3f(U32 index, Float x, Float y, Float z)  as glad_glVertexAttrib3f
+fn glVertexAttrib3fv(U32 index, CPtr[Float] v)  as glad_glVertexAttrib3fv
+fn glVertexAttrib3s(U32 index, I16 x, I16 y, I16 z)  as glad_glVertexAttrib3s
+fn glVertexAttrib3sv(U32 index, CPtr[I16] v)  as glad_glVertexAttrib3sv
+fn glVertexAttrib4Nbv(U32 index, CPtr[I8] v)  as glad_glVertexAttrib4Nbv
+fn glVertexAttrib4Niv(U32 index, CPtr[Int] v)  as glad_glVertexAttrib4Niv
+fn glVertexAttrib4Nsv(U32 index, CPtr[I16] v)  as glad_glVertexAttrib4Nsv
+fn glVertexAttrib4Nub(U32 index, U8 x, U8 y, U8 z, U8 w)  as glad_glVertexAttrib4Nub
+fn glVertexAttrib4Nubv(U32 index, CPtr[U8] v)  as glad_glVertexAttrib4Nubv
+fn glVertexAttrib4Nuiv(U32 index, CPtr[U32] v)  as glad_glVertexAttrib4Nuiv
+fn glVertexAttrib4Nusv(U32 index, CPtr[U16] v)  as glad_glVertexAttrib4Nusv
+fn glVertexAttrib4bv(U32 index, CPtr[I8] v)  as glad_glVertexAttrib4bv
+fn glVertexAttrib4d(U32 index, F64 x, F64 y, F64 z, F64 w)  as glad_glVertexAttrib4d
+fn glVertexAttrib4dv(U32 index, CPtr[F64] v)  as glad_glVertexAttrib4dv
+fn glVertexAttrib4f(U32 index, Float x, Float y, Float z, Float w)  as glad_glVertexAttrib4f
+fn glVertexAttrib4fv(U32 index, CPtr[Float] v)  as glad_glVertexAttrib4fv
+fn glVertexAttrib4iv(U32 index, CPtr[Int] v)  as glad_glVertexAttrib4iv
+fn glVertexAttrib4s(U32 index, I16 x, I16 y, I16 z, I16 w)  as glad_glVertexAttrib4s
+fn glVertexAttrib4sv(U32 index, CPtr[I16] v)  as glad_glVertexAttrib4sv
+fn glVertexAttrib4ubv(U32 index, CPtr[U8] v)  as glad_glVertexAttrib4ubv
+fn glVertexAttrib4uiv(U32 index, CPtr[U32] v)  as glad_glVertexAttrib4uiv
+fn glVertexAttrib4usv(U32 index, CPtr[U16] v)  as glad_glVertexAttrib4usv
+fn glVertexAttribPointer(U32 index, Int size, U32 type, U8 normalized, Int stride, VPtr pointer)  as glad_glVertexAttribPointer
+fn glUniformMatrix2x3fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix2x3fv
+fn glUniformMatrix3x2fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix3x2fv
+fn glUniformMatrix2x4fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix2x4fv
+fn glUniformMatrix4x2fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix4x2fv
+fn glUniformMatrix3x4fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix3x4fv
+fn glUniformMatrix4x3fv(Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glUniformMatrix4x3fv
+fn glColorMaski(U32 index, U8 r, U8 g, U8 b, U8 a)  as glad_glColorMaski
+fn glGetBooleani_v(U32 target, U32 index, CPtr[U8] data)  as glad_glGetBooleani_v
+fn glGetIntegeri_v(U32 target, U32 index, CPtr[Int] data)  as glad_glGetIntegeri_v
+fn glEnablei(U32 target, U32 index)  as glad_glEnablei
+fn glDisablei(U32 target, U32 index)  as glad_glDisablei
+fn glIsEnabledi(U32 target, U32 index) U8 as glad_glIsEnabledi
+fn glBeginTransformFeedback(U32 primitiveMode)  as glad_glBeginTransformFeedback
+fn glEndTransformFeedback()  as glad_glEndTransformFeedback
+fn glBindBufferRange(U32 target, U32 index, U32 buffer, I64 offset, I64 size)  as glad_glBindBufferRange
+fn glBindBufferBase(U32 target, U32 index, U32 buffer)  as glad_glBindBufferBase
+fn glTransformFeedbackVaryings(U32 program, Int count, CPtr[CPtr[U8]] varyings, U32 bufferMode)  as glad_glTransformFeedbackVaryings
+fn glGetTransformFeedbackVarying(U32 program, U32 index, Int bufSize, CPtr[Int] length, CPtr[Int] size, CPtr[U32] type, CPtr[U8] name)  as glad_glGetTransformFeedbackVarying
+fn glClampColor(U32 target, U32 clamp)  as glad_glClampColor
+fn glBeginConditionalRender(U32 id, U32 mode)  as glad_glBeginConditionalRender
+fn glEndConditionalRender()  as glad_glEndConditionalRender
+fn glVertexAttribIPointer(U32 index, Int size, U32 type, Int stride, VPtr pointer)  as glad_glVertexAttribIPointer
+fn glGetVertexAttribIiv(U32 index, U32 pname, CPtr[Int] params)  as glad_glGetVertexAttribIiv
+fn glGetVertexAttribIuiv(U32 index, U32 pname, CPtr[U32] params)  as glad_glGetVertexAttribIuiv
+fn glVertexAttribI1i(U32 index, Int x)  as glad_glVertexAttribI1i
+fn glVertexAttribI2i(U32 index, Int x, Int y)  as glad_glVertexAttribI2i
+fn glVertexAttribI3i(U32 index, Int x, Int y, Int z)  as glad_glVertexAttribI3i
+fn glVertexAttribI4i(U32 index, Int x, Int y, Int z, Int w)  as glad_glVertexAttribI4i
+fn glVertexAttribI1ui(U32 index, U32 x)  as glad_glVertexAttribI1ui
+fn glVertexAttribI2ui(U32 index, U32 x, U32 y)  as glad_glVertexAttribI2ui
+fn glVertexAttribI3ui(U32 index, U32 x, U32 y, U32 z)  as glad_glVertexAttribI3ui
+fn glVertexAttribI4ui(U32 index, U32 x, U32 y, U32 z, U32 w)  as glad_glVertexAttribI4ui
+fn glVertexAttribI1iv(U32 index, CPtr[Int] v)  as glad_glVertexAttribI1iv
+fn glVertexAttribI2iv(U32 index, CPtr[Int] v)  as glad_glVertexAttribI2iv
+fn glVertexAttribI3iv(U32 index, CPtr[Int] v)  as glad_glVertexAttribI3iv
+fn glVertexAttribI4iv(U32 index, CPtr[Int] v)  as glad_glVertexAttribI4iv
+fn glVertexAttribI1uiv(U32 index, CPtr[U32] v)  as glad_glVertexAttribI1uiv
+fn glVertexAttribI2uiv(U32 index, CPtr[U32] v)  as glad_glVertexAttribI2uiv
+fn glVertexAttribI3uiv(U32 index, CPtr[U32] v)  as glad_glVertexAttribI3uiv
+fn glVertexAttribI4uiv(U32 index, CPtr[U32] v)  as glad_glVertexAttribI4uiv
+fn glVertexAttribI4bv(U32 index, CPtr[I8] v)  as glad_glVertexAttribI4bv
+fn glVertexAttribI4sv(U32 index, CPtr[I16] v)  as glad_glVertexAttribI4sv
+fn glVertexAttribI4ubv(U32 index, CPtr[U8] v)  as glad_glVertexAttribI4ubv
+fn glVertexAttribI4usv(U32 index, CPtr[U16] v)  as glad_glVertexAttribI4usv
+fn glGetUniformuiv(U32 program, Int location, CPtr[U32] params)  as glad_glGetUniformuiv
+fn glBindFragDataLocation(U32 program, U32 color, CPtr[U8] name)  as glad_glBindFragDataLocation
+fn glGetFragDataLocation(U32 program, CPtr[U8] name) Int as glad_glGetFragDataLocation
+fn glUniform1ui(Int location, U32 v0)  as glad_glUniform1ui
+fn glUniform2ui(Int location, U32 v0, U32 v1)  as glad_glUniform2ui
+fn glUniform3ui(Int location, U32 v0, U32 v1, U32 v2)  as glad_glUniform3ui
+fn glUniform4ui(Int location, U32 v0, U32 v1, U32 v2, U32 v3)  as glad_glUniform4ui
+fn glUniform1uiv(Int location, Int count, CPtr[U32] value)  as glad_glUniform1uiv
+fn glUniform2uiv(Int location, Int count, CPtr[U32] value)  as glad_glUniform2uiv
+fn glUniform3uiv(Int location, Int count, CPtr[U32] value)  as glad_glUniform3uiv
+fn glUniform4uiv(Int location, Int count, CPtr[U32] value)  as glad_glUniform4uiv
+fn glTexParameterIiv(U32 target, U32 pname, CPtr[Int] params)  as glad_glTexParameterIiv
+fn glTexParameterIuiv(U32 target, U32 pname, CPtr[U32] params)  as glad_glTexParameterIuiv
+fn glGetTexParameterIiv(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetTexParameterIiv
+fn glGetTexParameterIuiv(U32 target, U32 pname, CPtr[U32] params)  as glad_glGetTexParameterIuiv
+fn glClearBufferiv(U32 buffer, Int drawbuffer, CPtr[Int] value)  as glad_glClearBufferiv
+fn glClearBufferuiv(U32 buffer, Int drawbuffer, CPtr[U32] value)  as glad_glClearBufferuiv
+fn glClearBufferfv(U32 buffer, Int drawbuffer, CPtr[Float] value)  as glad_glClearBufferfv
+fn glClearBufferfi(U32 buffer, Int drawbuffer, Float depth, Int stencil)  as glad_glClearBufferfi
+fn glIsRenderbuffer(U32 renderbuffer) U8 as glad_glIsRenderbuffer
+fn glBindRenderbuffer(U32 target, U32 renderbuffer)  as glad_glBindRenderbuffer
+fn glDeleteRenderbuffers(Int n, CPtr[U32] renderbuffers)  as glad_glDeleteRenderbuffers
+fn glGenRenderbuffers(Int n, CPtr[U32] renderbuffers)  as glad_glGenRenderbuffers
+fn glRenderbufferStorage(U32 target, U32 internalformat, Int width, Int height)  as glad_glRenderbufferStorage
+fn glGetRenderbufferParameteriv(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetRenderbufferParameteriv
+fn glIsFramebuffer(U32 framebuffer) U8 as glad_glIsFramebuffer
+fn glBindFramebuffer(U32 target, U32 framebuffer)  as glad_glBindFramebuffer
+fn glDeleteFramebuffers(Int n, CPtr[U32] framebuffers)  as glad_glDeleteFramebuffers
+fn glGenFramebuffers(Int n, CPtr[U32] framebuffers)  as glad_glGenFramebuffers
+fn glCheckFramebufferStatus(U32 target) U32 as glad_glCheckFramebufferStatus
+fn glFramebufferTexture1D(U32 target, U32 attachment, U32 textarget, U32 texture, Int level)  as glad_glFramebufferTexture1D
+fn glFramebufferTexture2D(U32 target, U32 attachment, U32 textarget, U32 texture, Int level)  as glad_glFramebufferTexture2D
+fn glFramebufferTexture3D(U32 target, U32 attachment, U32 textarget, U32 texture, Int level, Int zoffset)  as glad_glFramebufferTexture3D
+fn glFramebufferRenderbuffer(U32 target, U32 attachment, U32 renderbuffertarget, U32 renderbuffer)  as glad_glFramebufferRenderbuffer
+fn glGetFramebufferAttachmentParameteriv(U32 target, U32 attachment, U32 pname, CPtr[Int] params)  as glad_glGetFramebufferAttachmentParameteriv
+fn glGenerateMipmap(U32 target)  as glad_glGenerateMipmap
+fn glBlitFramebuffer(Int srcX0, Int srcY0, Int srcX1, Int srcY1, Int dstX0, Int dstY0, Int dstX1, Int dstY1, U32 mask, U32 filter)  as glad_glBlitFramebuffer
+fn glRenderbufferStorageMultisample(U32 target, Int samples, U32 internalformat, Int width, Int height)  as glad_glRenderbufferStorageMultisample
+fn glFramebufferTextureLayer(U32 target, U32 attachment, U32 texture, Int level, Int layer)  as glad_glFramebufferTextureLayer
+fn glFlushMappedBufferRange(U32 target, I64 offset, I64 length)  as glad_glFlushMappedBufferRange
+fn glBindVertexArray(U32 array)  as glad_glBindVertexArray
+fn glDeleteVertexArrays(Int n, CPtr[U32] arrays)  as glad_glDeleteVertexArrays
+fn glGenVertexArrays(Int n, CPtr[U32] arrays)  as glad_glGenVertexArrays
+fn glIsVertexArray(U32 array) U8 as glad_glIsVertexArray
+fn glDrawArraysInstanced(U32 mode, Int first, Int count, Int instancecount)  as glad_glDrawArraysInstanced
+fn glDrawElementsInstanced(U32 mode, Int count, U32 type, VPtr indices, Int instancecount)  as glad_glDrawElementsInstanced
+fn glTexBuffer(U32 target, U32 internalformat, U32 buffer)  as glad_glTexBuffer
+fn glPrimitiveRestartIndex(U32 index)  as glad_glPrimitiveRestartIndex
+fn glCopyBufferSubData(U32 readTarget, U32 writeTarget, I64 readOffset, I64 writeOffset, I64 size)  as glad_glCopyBufferSubData
+fn glGetUniformIndices(U32 program, Int uniformCount, CPtr[CPtr[U8]] uniformNames, CPtr[U32] uniformIndices)  as glad_glGetUniformIndices
+fn glGetActiveUniformsiv(U32 program, Int uniformCount, CPtr[U32] uniformIndices, U32 pname, CPtr[Int] params)  as glad_glGetActiveUniformsiv
+fn glGetActiveUniformName(U32 program, U32 uniformIndex, Int bufSize, CPtr[Int] length, CPtr[U8] uniformName)  as glad_glGetActiveUniformName
+fn glGetUniformBlockIndex(U32 program, CPtr[U8] uniformBlockName) U32 as glad_glGetUniformBlockIndex
+fn glGetActiveUniformBlockiv(U32 program, U32 uniformBlockIndex, U32 pname, CPtr[Int] params)  as glad_glGetActiveUniformBlockiv
+fn glGetActiveUniformBlockName(U32 program, U32 uniformBlockIndex, Int bufSize, CPtr[Int] length, CPtr[U8] uniformBlockName)  as glad_glGetActiveUniformBlockName
+fn glUniformBlockBinding(U32 program, U32 uniformBlockIndex, U32 uniformBlockBinding)  as glad_glUniformBlockBinding
+fn glDrawElementsBaseVertex(U32 mode, Int count, U32 type, VPtr indices, Int basevertex)  as glad_glDrawElementsBaseVertex
+fn glDrawRangeElementsBaseVertex(U32 mode, U32 start, U32 end, Int count, U32 type, VPtr indices, Int basevertex)  as glad_glDrawRangeElementsBaseVertex
+fn glDrawElementsInstancedBaseVertex(U32 mode, Int count, U32 type, VPtr indices, Int instancecount, Int basevertex)  as glad_glDrawElementsInstancedBaseVertex
+fn glMultiDrawElementsBaseVertex(U32 mode, CPtr[Int] count, U32 type, VPtr indices, Int drawcount, CPtr[Int] basevertex)  as glad_glMultiDrawElementsBaseVertex
+fn glProvokingVertex(U32 mode)  as glad_glProvokingVertex
+fn glFenceSync(U32 condition, U32 flags) VPtr as glad_glFenceSync
+fn glIsSync(VPtr sync) U8 as glad_glIsSync
+fn glDeleteSync(VPtr sync)  as glad_glDeleteSync
+fn glClientWaitSync(VPtr sync, U32 flags, U64 timeout) U32 as glad_glClientWaitSync
+fn glWaitSync(VPtr sync, U32 flags, U64 timeout)  as glad_glWaitSync
+fn glGetInteger64v(U32 pname, CPtr[I64] data)  as glad_glGetInteger64v
+fn glGetSynciv(VPtr sync, U32 pname, Int count, CPtr[Int] length, CPtr[Int] values)  as glad_glGetSynciv
+fn glGetInteger64i_v(U32 target, U32 index, CPtr[I64] data)  as glad_glGetInteger64i_v
+fn glGetBufferParameteri64v(U32 target, U32 pname, CPtr[I64] params)  as glad_glGetBufferParameteri64v
+fn glFramebufferTexture(U32 target, U32 attachment, U32 texture, Int level)  as glad_glFramebufferTexture
+fn glTexImage2DMultisample(U32 target, Int samples, U32 internalformat, Int width, Int height, U8 fixedsamplelocations)  as glad_glTexImage2DMultisample
+fn glTexImage3DMultisample(U32 target, Int samples, U32 internalformat, Int width, Int height, Int depth, U8 fixedsamplelocations)  as glad_glTexImage3DMultisample
+fn glGetMultisamplefv(U32 pname, U32 index, CPtr[Float] val)  as glad_glGetMultisamplefv
+fn glSampleMaski(U32 maskNumber, U32 mask)  as glad_glSampleMaski
+fn glBindFragDataLocationIndexed(U32 program, U32 colorNumber, U32 index, CPtr[U8] name)  as glad_glBindFragDataLocationIndexed
+fn glGetFragDataIndex(U32 program, CPtr[U8] name) Int as glad_glGetFragDataIndex
+fn glGenSamplers(Int count, CPtr[U32] samplers)  as glad_glGenSamplers
+fn glDeleteSamplers(Int count, CPtr[U32] samplers)  as glad_glDeleteSamplers
+fn glIsSampler(U32 sampler) U8 as glad_glIsSampler
+fn glBindSampler(U32 unit, U32 sampler)  as glad_glBindSampler
+fn glSamplerParameteri(U32 sampler, U32 pname, Int param)  as glad_glSamplerParameteri
+fn glSamplerParameteriv(U32 sampler, U32 pname, CPtr[Int] param)  as glad_glSamplerParameteriv
+fn glSamplerParameterf(U32 sampler, U32 pname, Float param)  as glad_glSamplerParameterf
+fn glSamplerParameterfv(U32 sampler, U32 pname, CPtr[Float] param)  as glad_glSamplerParameterfv
+fn glSamplerParameterIiv(U32 sampler, U32 pname, CPtr[Int] param)  as glad_glSamplerParameterIiv
+fn glSamplerParameterIuiv(U32 sampler, U32 pname, CPtr[U32] param)  as glad_glSamplerParameterIuiv
+fn glGetSamplerParameteriv(U32 sampler, U32 pname, CPtr[Int] params)  as glad_glGetSamplerParameteriv
+fn glGetSamplerParameterIiv(U32 sampler, U32 pname, CPtr[Int] params)  as glad_glGetSamplerParameterIiv
+fn glGetSamplerParameterfv(U32 sampler, U32 pname, CPtr[Float] params)  as glad_glGetSamplerParameterfv
+fn glGetSamplerParameterIuiv(U32 sampler, U32 pname, CPtr[U32] params)  as glad_glGetSamplerParameterIuiv
+fn glQueryCounter(U32 id, U32 target)  as glad_glQueryCounter
+fn glGetQueryObjecti64v(U32 id, U32 pname, CPtr[I64] params)  as glad_glGetQueryObjecti64v
+fn glGetQueryObjectui64v(U32 id, U32 pname, CPtr[U64] params)  as glad_glGetQueryObjectui64v
+fn glVertexAttribDivisor(U32 index, U32 divisor)  as glad_glVertexAttribDivisor
+fn glVertexAttribP1ui(U32 index, U32 type, U8 normalized, U32 value)  as glad_glVertexAttribP1ui
+fn glVertexAttribP1uiv(U32 index, U32 type, U8 normalized, CPtr[U32] value)  as glad_glVertexAttribP1uiv
+fn glVertexAttribP2ui(U32 index, U32 type, U8 normalized, U32 value)  as glad_glVertexAttribP2ui
+fn glVertexAttribP2uiv(U32 index, U32 type, U8 normalized, CPtr[U32] value)  as glad_glVertexAttribP2uiv
+fn glVertexAttribP3ui(U32 index, U32 type, U8 normalized, U32 value)  as glad_glVertexAttribP3ui
+fn glVertexAttribP3uiv(U32 index, U32 type, U8 normalized, CPtr[U32] value)  as glad_glVertexAttribP3uiv
+fn glVertexAttribP4ui(U32 index, U32 type, U8 normalized, U32 value)  as glad_glVertexAttribP4ui
+fn glVertexAttribP4uiv(U32 index, U32 type, U8 normalized, CPtr[U32] value)  as glad_glVertexAttribP4uiv
+fn glMinSampleShading(Float value)  as glad_glMinSampleShading
+fn glBlendEquationi(U32 buf, U32 mode)  as glad_glBlendEquationi
+fn glBlendEquationSeparatei(U32 buf, U32 modeRGB, U32 modeAlpha)  as glad_glBlendEquationSeparatei
+fn glBlendFunci(U32 buf, U32 src, U32 dst)  as glad_glBlendFunci
+fn glBlendFuncSeparatei(U32 buf, U32 srcRGB, U32 dstRGB, U32 srcAlpha, U32 dstAlpha)  as glad_glBlendFuncSeparatei
+fn glDrawArraysIndirect(U32 mode, VPtr indirect)  as glad_glDrawArraysIndirect
+fn glDrawElementsIndirect(U32 mode, U32 type, VPtr indirect)  as glad_glDrawElementsIndirect
+fn glUniform1d(Int location, F64 x)  as glad_glUniform1d
+fn glUniform2d(Int location, F64 x, F64 y)  as glad_glUniform2d
+fn glUniform3d(Int location, F64 x, F64 y, F64 z)  as glad_glUniform3d
+fn glUniform4d(Int location, F64 x, F64 y, F64 z, F64 w)  as glad_glUniform4d
+fn glUniform1dv(Int location, Int count, CPtr[F64] value)  as glad_glUniform1dv
+fn glUniform2dv(Int location, Int count, CPtr[F64] value)  as glad_glUniform2dv
+fn glUniform3dv(Int location, Int count, CPtr[F64] value)  as glad_glUniform3dv
+fn glUniform4dv(Int location, Int count, CPtr[F64] value)  as glad_glUniform4dv
+fn glUniformMatrix2dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix2dv
+fn glUniformMatrix3dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix3dv
+fn glUniformMatrix4dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix4dv
+fn glUniformMatrix2x3dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix2x3dv
+fn glUniformMatrix2x4dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix2x4dv
+fn glUniformMatrix3x2dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix3x2dv
+fn glUniformMatrix3x4dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix3x4dv
+fn glUniformMatrix4x2dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix4x2dv
+fn glUniformMatrix4x3dv(Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glUniformMatrix4x3dv
+fn glGetUniformdv(U32 program, Int location, CPtr[F64] params)  as glad_glGetUniformdv
+fn glGetSubroutineUniformLocation(U32 program, U32 shadertype, CPtr[U8] name) Int as glad_glGetSubroutineUniformLocation
+fn glGetSubroutineIndex(U32 program, U32 shadertype, CPtr[U8] name) U32 as glad_glGetSubroutineIndex
+fn glGetActiveSubroutineUniformiv(U32 program, U32 shadertype, U32 index, U32 pname, CPtr[Int] values)  as glad_glGetActiveSubroutineUniformiv
+fn glGetActiveSubroutineUniformName(U32 program, U32 shadertype, U32 index, Int bufSize, CPtr[Int] length, CPtr[U8] name)  as glad_glGetActiveSubroutineUniformName
+fn glGetActiveSubroutineName(U32 program, U32 shadertype, U32 index, Int bufSize, CPtr[Int] length, CPtr[U8] name)  as glad_glGetActiveSubroutineName
+fn glUniformSubroutinesuiv(U32 shadertype, Int count, CPtr[U32] indices)  as glad_glUniformSubroutinesuiv
+fn glGetUniformSubroutineuiv(U32 shadertype, Int location, CPtr[U32] params)  as glad_glGetUniformSubroutineuiv
+fn glGetProgramStageiv(U32 program, U32 shadertype, U32 pname, CPtr[Int] values)  as glad_glGetProgramStageiv
+fn glPatchParameteri(U32 pname, Int value)  as glad_glPatchParameteri
+fn glPatchParameterfv(U32 pname, CPtr[Float] values)  as glad_glPatchParameterfv
+fn glBindTransformFeedback(U32 target, U32 id)  as glad_glBindTransformFeedback
+fn glDeleteTransformFeedbacks(Int n, CPtr[U32] ids)  as glad_glDeleteTransformFeedbacks
+fn glGenTransformFeedbacks(Int n, CPtr[U32] ids)  as glad_glGenTransformFeedbacks
+fn glIsTransformFeedback(U32 id) U8 as glad_glIsTransformFeedback
+fn glPauseTransformFeedback()  as glad_glPauseTransformFeedback
+fn glResumeTransformFeedback()  as glad_glResumeTransformFeedback
+fn glDrawTransformFeedback(U32 mode, U32 id)  as glad_glDrawTransformFeedback
+fn glDrawTransformFeedbackStream(U32 mode, U32 id, U32 stream)  as glad_glDrawTransformFeedbackStream
+fn glBeginQueryIndexed(U32 target, U32 index, U32 id)  as glad_glBeginQueryIndexed
+fn glEndQueryIndexed(U32 target, U32 index)  as glad_glEndQueryIndexed
+fn glGetQueryIndexediv(U32 target, U32 index, U32 pname, CPtr[Int] params)  as glad_glGetQueryIndexediv
+fn glReleaseShaderCompiler()  as glad_glReleaseShaderCompiler
+fn glShaderBinary(Int count, CPtr[U32] shaders, U32 binaryFormat, VPtr binary, Int length)  as glad_glShaderBinary
+fn glGetShaderPrecisionFormat(U32 shadertype, U32 precisiontype, CPtr[Int] range, CPtr[Int] precision)  as glad_glGetShaderPrecisionFormat
+fn glDepthRangef(Float n, Float f)  as glad_glDepthRangef
+fn glClearDepthf(Float d)  as glad_glClearDepthf
+fn glGetProgramBinary(U32 program, Int bufSize, CPtr[Int] length, CPtr[U32] binaryFormat, VPtr binary)  as glad_glGetProgramBinary
+fn glProgramBinary(U32 program, U32 binaryFormat, VPtr binary, Int length)  as glad_glProgramBinary
+fn glProgramParameteri(U32 program, U32 pname, Int value)  as glad_glProgramParameteri
+fn glUseProgramStages(U32 pipeline, U32 stages, U32 program)  as glad_glUseProgramStages
+fn glActiveShaderProgram(U32 pipeline, U32 program)  as glad_glActiveShaderProgram
+fn glCreateShaderProgramv(U32 type, Int count, CPtr[CPtr[U8]] strings) U32 as glad_glCreateShaderProgramv
+fn glBindProgramPipeline(U32 pipeline)  as glad_glBindProgramPipeline
+fn glDeleteProgramPipelines(Int n, CPtr[U32] pipelines)  as glad_glDeleteProgramPipelines
+fn glGenProgramPipelines(Int n, CPtr[U32] pipelines)  as glad_glGenProgramPipelines
+fn glIsProgramPipeline(U32 pipeline) U8 as glad_glIsProgramPipeline
+fn glGetProgramPipelineiv(U32 pipeline, U32 pname, CPtr[Int] params)  as glad_glGetProgramPipelineiv
+fn glProgramUniform1i(U32 program, Int location, Int v0)  as glad_glProgramUniform1i
+fn glProgramUniform1iv(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform1iv
+fn glProgramUniform1f(U32 program, Int location, Float v0)  as glad_glProgramUniform1f
+fn glProgramUniform1fv(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform1fv
+fn glProgramUniform1d(U32 program, Int location, F64 v0)  as glad_glProgramUniform1d
+fn glProgramUniform1dv(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform1dv
+fn glProgramUniform1ui(U32 program, Int location, U32 v0)  as glad_glProgramUniform1ui
+fn glProgramUniform1uiv(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform1uiv
+fn glProgramUniform2i(U32 program, Int location, Int v0, Int v1)  as glad_glProgramUniform2i
+fn glProgramUniform2iv(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform2iv
+fn glProgramUniform2f(U32 program, Int location, Float v0, Float v1)  as glad_glProgramUniform2f
+fn glProgramUniform2fv(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform2fv
+fn glProgramUniform2d(U32 program, Int location, F64 v0, F64 v1)  as glad_glProgramUniform2d
+fn glProgramUniform2dv(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform2dv
+fn glProgramUniform2ui(U32 program, Int location, U32 v0, U32 v1)  as glad_glProgramUniform2ui
+fn glProgramUniform2uiv(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform2uiv
+fn glProgramUniform3i(U32 program, Int location, Int v0, Int v1, Int v2)  as glad_glProgramUniform3i
+fn glProgramUniform3iv(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform3iv
+fn glProgramUniform3f(U32 program, Int location, Float v0, Float v1, Float v2)  as glad_glProgramUniform3f
+fn glProgramUniform3fv(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform3fv
+fn glProgramUniform3d(U32 program, Int location, F64 v0, F64 v1, F64 v2)  as glad_glProgramUniform3d
+fn glProgramUniform3dv(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform3dv
+fn glProgramUniform3ui(U32 program, Int location, U32 v0, U32 v1, U32 v2)  as glad_glProgramUniform3ui
+fn glProgramUniform3uiv(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform3uiv
+fn glProgramUniform4i(U32 program, Int location, Int v0, Int v1, Int v2, Int v3)  as glad_glProgramUniform4i
+fn glProgramUniform4iv(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform4iv
+fn glProgramUniform4f(U32 program, Int location, Float v0, Float v1, Float v2, Float v3)  as glad_glProgramUniform4f
+fn glProgramUniform4fv(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform4fv
+fn glProgramUniform4d(U32 program, Int location, F64 v0, F64 v1, F64 v2, F64 v3)  as glad_glProgramUniform4d
+fn glProgramUniform4dv(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform4dv
+fn glProgramUniform4ui(U32 program, Int location, U32 v0, U32 v1, U32 v2, U32 v3)  as glad_glProgramUniform4ui
+fn glProgramUniform4uiv(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform4uiv
+fn glProgramUniformMatrix2fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix2fv
+fn glProgramUniformMatrix3fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix3fv
+fn glProgramUniformMatrix4fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix4fv
+fn glProgramUniformMatrix2dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix2dv
+fn glProgramUniformMatrix3dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix3dv
+fn glProgramUniformMatrix4dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix4dv
+fn glProgramUniformMatrix2x3fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix2x3fv
+fn glProgramUniformMatrix3x2fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix3x2fv
+fn glProgramUniformMatrix2x4fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix2x4fv
+fn glProgramUniformMatrix4x2fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix4x2fv
+fn glProgramUniformMatrix3x4fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix3x4fv
+fn glProgramUniformMatrix4x3fv(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix4x3fv
+fn glProgramUniformMatrix2x3dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix2x3dv
+fn glProgramUniformMatrix3x2dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix3x2dv
+fn glProgramUniformMatrix2x4dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix2x4dv
+fn glProgramUniformMatrix4x2dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix4x2dv
+fn glProgramUniformMatrix3x4dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix3x4dv
+fn glProgramUniformMatrix4x3dv(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix4x3dv
+fn glValidateProgramPipeline(U32 pipeline)  as glad_glValidateProgramPipeline
+fn glGetProgramPipelineInfoLog(U32 pipeline, Int bufSize, CPtr[Int] length, CPtr[U8] infoLog)  as glad_glGetProgramPipelineInfoLog
+fn glVertexAttribL1d(U32 index, F64 x)  as glad_glVertexAttribL1d
+fn glVertexAttribL2d(U32 index, F64 x, F64 y)  as glad_glVertexAttribL2d
+fn glVertexAttribL3d(U32 index, F64 x, F64 y, F64 z)  as glad_glVertexAttribL3d
+fn glVertexAttribL4d(U32 index, F64 x, F64 y, F64 z, F64 w)  as glad_glVertexAttribL4d
+fn glVertexAttribL1dv(U32 index, CPtr[F64] v)  as glad_glVertexAttribL1dv
+fn glVertexAttribL2dv(U32 index, CPtr[F64] v)  as glad_glVertexAttribL2dv
+fn glVertexAttribL3dv(U32 index, CPtr[F64] v)  as glad_glVertexAttribL3dv
+fn glVertexAttribL4dv(U32 index, CPtr[F64] v)  as glad_glVertexAttribL4dv
+fn glVertexAttribLPointer(U32 index, Int size, U32 type, Int stride, VPtr pointer)  as glad_glVertexAttribLPointer
+fn glGetVertexAttribLdv(U32 index, U32 pname, CPtr[F64] params)  as glad_glGetVertexAttribLdv
+fn glViewportArrayv(U32 first, Int count, CPtr[Float] v)  as glad_glViewportArrayv
+fn glViewportIndexedf(U32 index, Float x, Float y, Float w, Float h)  as glad_glViewportIndexedf
+fn glViewportIndexedfv(U32 index, CPtr[Float] v)  as glad_glViewportIndexedfv
+fn glScissorArrayv(U32 first, Int count, CPtr[Int] v)  as glad_glScissorArrayv
+fn glScissorIndexed(U32 index, Int left, Int bottom, Int width, Int height)  as glad_glScissorIndexed
+fn glScissorIndexedv(U32 index, CPtr[Int] v)  as glad_glScissorIndexedv
+fn glDepthRangeArrayv(U32 first, Int count, CPtr[F64] v)  as glad_glDepthRangeArrayv
+fn glDepthRangeIndexed(U32 index, F64 n, F64 f)  as glad_glDepthRangeIndexed
+fn glGetFloati_v(U32 target, U32 index, CPtr[Float] data)  as glad_glGetFloati_v
+fn glGetDoublei_v(U32 target, U32 index, CPtr[F64] data)  as glad_glGetDoublei_v
+fn glDrawArraysInstancedBaseInstance(U32 mode, Int first, Int count, Int instancecount, U32 baseinstance)  as glad_glDrawArraysInstancedBaseInstance
+fn glDrawElementsInstancedBaseInstance(U32 mode, Int count, U32 type, VPtr indices, Int instancecount, U32 baseinstance)  as glad_glDrawElementsInstancedBaseInstance
+fn glDrawElementsInstancedBaseVertexBaseInstance(U32 mode, Int count, U32 type, VPtr indices, Int instancecount, Int basevertex, U32 baseinstance)  as glad_glDrawElementsInstancedBaseVertexBaseInstance
+fn glGetInternalformativ(U32 target, U32 internalformat, U32 pname, Int count, CPtr[Int] params)  as glad_glGetInternalformativ
+fn glGetActiveAtomicCounterBufferiv(U32 program, U32 bufferIndex, U32 pname, CPtr[Int] params)  as glad_glGetActiveAtomicCounterBufferiv
+fn glBindImageTexture(U32 unit, U32 texture, Int level, U8 layered, Int layer, U32 access, U32 format)  as glad_glBindImageTexture
+fn glMemoryBarrier(U32 barriers)  as glad_glMemoryBarrier
+fn glTexStorage1D(U32 target, Int levels, U32 internalformat, Int width)  as glad_glTexStorage1D
+fn glTexStorage2D(U32 target, Int levels, U32 internalformat, Int width, Int height)  as glad_glTexStorage2D
+fn glTexStorage3D(U32 target, Int levels, U32 internalformat, Int width, Int height, Int depth)  as glad_glTexStorage3D
+fn glDrawTransformFeedbackInstanced(U32 mode, U32 id, Int instancecount)  as glad_glDrawTransformFeedbackInstanced
+fn glDrawTransformFeedbackStreamInstanced(U32 mode, U32 id, U32 stream, Int instancecount)  as glad_glDrawTransformFeedbackStreamInstanced
+fn glClearBufferData(U32 target, U32 internalformat, U32 format, U32 type, VPtr data)  as glad_glClearBufferData
+fn glClearBufferSubData(U32 target, U32 internalformat, I64 offset, I64 size, U32 format, U32 type, VPtr data)  as glad_glClearBufferSubData
+fn glDispatchCompute(U32 num_groups_x, U32 num_groups_y, U32 num_groups_z)  as glad_glDispatchCompute
+fn glDispatchComputeIndirect(I64 indirect)  as glad_glDispatchComputeIndirect
+fn glCopyImageSubData(U32 srcName, U32 srcTarget, Int srcLevel, Int srcX, Int srcY, Int srcZ, U32 dstName, U32 dstTarget, Int dstLevel, Int dstX, Int dstY, Int dstZ, Int srcWidth, Int srcHeight, Int srcDepth)  as glad_glCopyImageSubData
+fn glFramebufferParameteri(U32 target, U32 pname, Int param)  as glad_glFramebufferParameteri
+fn glGetFramebufferParameteriv(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetFramebufferParameteriv
+fn glGetInternalformati64v(U32 target, U32 internalformat, U32 pname, Int count, CPtr[I64] params)  as glad_glGetInternalformati64v
+fn glInvalidateTexSubImage(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth)  as glad_glInvalidateTexSubImage
+fn glInvalidateTexImage(U32 texture, Int level)  as glad_glInvalidateTexImage
+fn glInvalidateBufferSubData(U32 buffer, I64 offset, I64 length)  as glad_glInvalidateBufferSubData
+fn glInvalidateBufferData(U32 buffer)  as glad_glInvalidateBufferData
+fn glInvalidateFramebuffer(U32 target, Int numAttachments, CPtr[U32] attachments)  as glad_glInvalidateFramebuffer
+fn glInvalidateSubFramebuffer(U32 target, Int numAttachments, CPtr[U32] attachments, Int x, Int y, Int width, Int height)  as glad_glInvalidateSubFramebuffer
+fn glMultiDrawArraysIndirect(U32 mode, VPtr indirect, Int drawcount, Int stride)  as glad_glMultiDrawArraysIndirect
+fn glMultiDrawElementsIndirect(U32 mode, U32 type, VPtr indirect, Int drawcount, Int stride)  as glad_glMultiDrawElementsIndirect
+fn glGetProgramInterfaceiv(U32 program, U32 programInterface, U32 pname, CPtr[Int] params)  as glad_glGetProgramInterfaceiv
+fn glGetProgramResourceIndex(U32 program, U32 programInterface, CPtr[U8] name) U32 as glad_glGetProgramResourceIndex
+fn glGetProgramResourceName(U32 program, U32 programInterface, U32 index, Int bufSize, CPtr[Int] length, CPtr[U8] name)  as glad_glGetProgramResourceName
+fn glGetProgramResourceiv(U32 program, U32 programInterface, U32 index, Int propCount, CPtr[U32] props, Int count, CPtr[Int] length, CPtr[Int] params)  as glad_glGetProgramResourceiv
+fn glGetProgramResourceLocation(U32 program, U32 programInterface, CPtr[U8] name) Int as glad_glGetProgramResourceLocation
+fn glGetProgramResourceLocationIndex(U32 program, U32 programInterface, CPtr[U8] name) Int as glad_glGetProgramResourceLocationIndex
+fn glShaderStorageBlockBinding(U32 program, U32 storageBlockIndex, U32 storageBlockBinding)  as glad_glShaderStorageBlockBinding
+fn glTexBufferRange(U32 target, U32 internalformat, U32 buffer, I64 offset, I64 size)  as glad_glTexBufferRange
+fn glTexStorage2DMultisample(U32 target, Int samples, U32 internalformat, Int width, Int height, U8 fixedsamplelocations)  as glad_glTexStorage2DMultisample
+fn glTexStorage3DMultisample(U32 target, Int samples, U32 internalformat, Int width, Int height, Int depth, U8 fixedsamplelocations)  as glad_glTexStorage3DMultisample
+fn glTextureView(U32 texture, U32 target, U32 origtexture, U32 internalformat, U32 minlevel, U32 numlevels, U32 minlayer, U32 numlayers)  as glad_glTextureView
+fn glBindVertexBuffer(U32 bindingindex, U32 buffer, I64 offset, Int stride)  as glad_glBindVertexBuffer
+fn glVertexAttribFormat(U32 attribindex, Int size, U32 type, U8 normalized, U32 relativeoffset)  as glad_glVertexAttribFormat
+fn glVertexAttribIFormat(U32 attribindex, Int size, U32 type, U32 relativeoffset)  as glad_glVertexAttribIFormat
+fn glVertexAttribLFormat(U32 attribindex, Int size, U32 type, U32 relativeoffset)  as glad_glVertexAttribLFormat
+fn glVertexAttribBinding(U32 attribindex, U32 bindingindex)  as glad_glVertexAttribBinding
+fn glVertexBindingDivisor(U32 bindingindex, U32 divisor)  as glad_glVertexBindingDivisor
+fn glDebugMessageControl(U32 source, U32 type, U32 severity, Int count, CPtr[U32] ids, U8 enabled)  as glad_glDebugMessageControl
+fn glDebugMessageInsert(U32 source, U32 type, U32 id, U32 severity, Int length, CPtr[U8] buf)  as glad_glDebugMessageInsert
+fn glDebugMessageCallback(VPtr callback, VPtr userParam)  as glad_glDebugMessageCallback
+fn glGetDebugMessageLog(U32 count, Int bufSize, CPtr[U32] sources, CPtr[U32] types, CPtr[U32] ids, CPtr[U32] severities, CPtr[Int] lengths, CPtr[U8] messageLog) U32 as glad_glGetDebugMessageLog
+fn glPushDebugGroup(U32 source, U32 id, Int length, CPtr[U8] message)  as glad_glPushDebugGroup
+fn glPopDebugGroup()  as glad_glPopDebugGroup
+fn glObjectLabel(U32 identifier, U32 name, Int length, CPtr[U8] label)  as glad_glObjectLabel
+fn glGetObjectLabel(U32 identifier, U32 name, Int bufSize, CPtr[Int] length, CPtr[U8] label)  as glad_glGetObjectLabel
+fn glObjectPtrLabel(VPtr ptr, Int length, CPtr[U8] label)  as glad_glObjectPtrLabel
+fn glGetObjectPtrLabel(VPtr ptr, Int bufSize, CPtr[Int] length, CPtr[U8] label)  as glad_glGetObjectPtrLabel
+fn glBufferStorage(U32 target, I64 size, VPtr data, U32 flags)  as glad_glBufferStorage
+fn glClearTexImage(U32 texture, Int level, U32 format, U32 type, VPtr data)  as glad_glClearTexImage
+fn glClearTexSubImage(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, U32 type, VPtr data)  as glad_glClearTexSubImage
+fn glBindBuffersBase(U32 target, U32 first, Int count, CPtr[U32] buffers)  as glad_glBindBuffersBase
+fn glBindBuffersRange(U32 target, U32 first, Int count, CPtr[U32] buffers, CPtr[I64] offsets, CPtr[I64] sizes)  as glad_glBindBuffersRange
+fn glBindTextures(U32 first, Int count, CPtr[U32] textures)  as glad_glBindTextures
+fn glBindSamplers(U32 first, Int count, CPtr[U32] samplers)  as glad_glBindSamplers
+fn glBindImageTextures(U32 first, Int count, CPtr[U32] textures)  as glad_glBindImageTextures
+fn glBindVertexBuffers(U32 first, Int count, CPtr[U32] buffers, CPtr[I64] offsets, CPtr[Int] strides)  as glad_glBindVertexBuffers
+fn glClipControl(U32 origin, U32 depth)  as glad_glClipControl
+fn glCreateTransformFeedbacks(Int n, CPtr[U32] ids)  as glad_glCreateTransformFeedbacks
+fn glTransformFeedbackBufferBase(U32 xfb, U32 index, U32 buffer)  as glad_glTransformFeedbackBufferBase
+fn glTransformFeedbackBufferRange(U32 xfb, U32 index, U32 buffer, I64 offset, I64 size)  as glad_glTransformFeedbackBufferRange
+fn glGetTransformFeedbackiv(U32 xfb, U32 pname, CPtr[Int] param)  as glad_glGetTransformFeedbackiv
+fn glGetTransformFeedbacki_v(U32 xfb, U32 pname, U32 index, CPtr[Int] param)  as glad_glGetTransformFeedbacki_v
+fn glGetTransformFeedbacki64_v(U32 xfb, U32 pname, U32 index, CPtr[I64] param)  as glad_glGetTransformFeedbacki64_v
+fn glCreateBuffers(Int n, CPtr[U32] buffers)  as glad_glCreateBuffers
+fn glNamedBufferStorage(U32 buffer, I64 size, VPtr data, U32 flags)  as glad_glNamedBufferStorage
+fn glNamedBufferData(U32 buffer, I64 size, VPtr data, U32 usage)  as glad_glNamedBufferData
+fn glNamedBufferSubData(U32 buffer, I64 offset, I64 size, VPtr data)  as glad_glNamedBufferSubData
+fn glCopyNamedBufferSubData(U32 readBuffer, U32 writeBuffer, I64 readOffset, I64 writeOffset, I64 size)  as glad_glCopyNamedBufferSubData
+fn glClearNamedBufferData(U32 buffer, U32 internalformat, U32 format, U32 type, VPtr data)  as glad_glClearNamedBufferData
+fn glClearNamedBufferSubData(U32 buffer, U32 internalformat, I64 offset, I64 size, U32 format, U32 type, VPtr data)  as glad_glClearNamedBufferSubData
+fn glUnmapNamedBuffer(U32 buffer) U8 as glad_glUnmapNamedBuffer
+fn glFlushMappedNamedBufferRange(U32 buffer, I64 offset, I64 length)  as glad_glFlushMappedNamedBufferRange
+fn glGetNamedBufferParameteriv(U32 buffer, U32 pname, CPtr[Int] params)  as glad_glGetNamedBufferParameteriv
+fn glGetNamedBufferParameteri64v(U32 buffer, U32 pname, CPtr[I64] params)  as glad_glGetNamedBufferParameteri64v
+fn glGetNamedBufferPointerv(U32 buffer, U32 pname, VPtr params)  as glad_glGetNamedBufferPointerv
+fn glGetNamedBufferSubData(U32 buffer, I64 offset, I64 size, VPtr data)  as glad_glGetNamedBufferSubData
+fn glCreateFramebuffers(Int n, CPtr[U32] framebuffers)  as glad_glCreateFramebuffers
+fn glNamedFramebufferRenderbuffer(U32 framebuffer, U32 attachment, U32 renderbuffertarget, U32 renderbuffer)  as glad_glNamedFramebufferRenderbuffer
+fn glNamedFramebufferParameteri(U32 framebuffer, U32 pname, Int param)  as glad_glNamedFramebufferParameteri
+fn glNamedFramebufferTexture(U32 framebuffer, U32 attachment, U32 texture, Int level)  as glad_glNamedFramebufferTexture
+fn glNamedFramebufferTextureLayer(U32 framebuffer, U32 attachment, U32 texture, Int level, Int layer)  as glad_glNamedFramebufferTextureLayer
+fn glNamedFramebufferDrawBuffer(U32 framebuffer, U32 buf)  as glad_glNamedFramebufferDrawBuffer
+fn glNamedFramebufferDrawBuffers(U32 framebuffer, Int n, CPtr[U32] bufs)  as glad_glNamedFramebufferDrawBuffers
+fn glNamedFramebufferReadBuffer(U32 framebuffer, U32 src)  as glad_glNamedFramebufferReadBuffer
+fn glInvalidateNamedFramebufferData(U32 framebuffer, Int numAttachments, CPtr[U32] attachments)  as glad_glInvalidateNamedFramebufferData
+fn glInvalidateNamedFramebufferSubData(U32 framebuffer, Int numAttachments, CPtr[U32] attachments, Int x, Int y, Int width, Int height)  as glad_glInvalidateNamedFramebufferSubData
+fn glClearNamedFramebufferiv(U32 framebuffer, U32 buffer, Int drawbuffer, CPtr[Int] value)  as glad_glClearNamedFramebufferiv
+fn glClearNamedFramebufferuiv(U32 framebuffer, U32 buffer, Int drawbuffer, CPtr[U32] value)  as glad_glClearNamedFramebufferuiv
+fn glClearNamedFramebufferfv(U32 framebuffer, U32 buffer, Int drawbuffer, CPtr[Float] value)  as glad_glClearNamedFramebufferfv
+fn glClearNamedFramebufferfi(U32 framebuffer, U32 buffer, Int drawbuffer, Float depth, Int stencil)  as glad_glClearNamedFramebufferfi
+fn glBlitNamedFramebuffer(U32 readFramebuffer, U32 drawFramebuffer, Int srcX0, Int srcY0, Int srcX1, Int srcY1, Int dstX0, Int dstY0, Int dstX1, Int dstY1, U32 mask, U32 filter)  as glad_glBlitNamedFramebuffer
+fn glCheckNamedFramebufferStatus(U32 framebuffer, U32 target) U32 as glad_glCheckNamedFramebufferStatus
+fn glGetNamedFramebufferParameteriv(U32 framebuffer, U32 pname, CPtr[Int] param)  as glad_glGetNamedFramebufferParameteriv
+fn glGetNamedFramebufferAttachmentParameteriv(U32 framebuffer, U32 attachment, U32 pname, CPtr[Int] params)  as glad_glGetNamedFramebufferAttachmentParameteriv
+fn glCreateRenderbuffers(Int n, CPtr[U32] renderbuffers)  as glad_glCreateRenderbuffers
+fn glNamedRenderbufferStorage(U32 renderbuffer, U32 internalformat, Int width, Int height)  as glad_glNamedRenderbufferStorage
+fn glNamedRenderbufferStorageMultisample(U32 renderbuffer, Int samples, U32 internalformat, Int width, Int height)  as glad_glNamedRenderbufferStorageMultisample
+fn glGetNamedRenderbufferParameteriv(U32 renderbuffer, U32 pname, CPtr[Int] params)  as glad_glGetNamedRenderbufferParameteriv
+fn glCreateTextures(U32 target, Int n, CPtr[U32] textures)  as glad_glCreateTextures
+fn glTextureBuffer(U32 texture, U32 internalformat, U32 buffer)  as glad_glTextureBuffer
+fn glTextureBufferRange(U32 texture, U32 internalformat, U32 buffer, I64 offset, I64 size)  as glad_glTextureBufferRange
+fn glTextureStorage1D(U32 texture, Int levels, U32 internalformat, Int width)  as glad_glTextureStorage1D
+fn glTextureStorage2D(U32 texture, Int levels, U32 internalformat, Int width, Int height)  as glad_glTextureStorage2D
+fn glTextureStorage3D(U32 texture, Int levels, U32 internalformat, Int width, Int height, Int depth)  as glad_glTextureStorage3D
+fn glTextureStorage2DMultisample(U32 texture, Int samples, U32 internalformat, Int width, Int height, U8 fixedsamplelocations)  as glad_glTextureStorage2DMultisample
+fn glTextureStorage3DMultisample(U32 texture, Int samples, U32 internalformat, Int width, Int height, Int depth, U8 fixedsamplelocations)  as glad_glTextureStorage3DMultisample
+fn glTextureSubImage1D(U32 texture, Int level, Int xoffset, Int width, U32 format, U32 type, VPtr pixels)  as glad_glTextureSubImage1D
+fn glTextureSubImage2D(U32 texture, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, U32 type, VPtr pixels)  as glad_glTextureSubImage2D
+fn glTextureSubImage3D(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, U32 type, VPtr pixels)  as glad_glTextureSubImage3D
+fn glCompressedTextureSubImage1D(U32 texture, Int level, Int xoffset, Int width, U32 format, Int imageSize, VPtr data)  as glad_glCompressedTextureSubImage1D
+fn glCompressedTextureSubImage2D(U32 texture, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, Int imageSize, VPtr data)  as glad_glCompressedTextureSubImage2D
+fn glCompressedTextureSubImage3D(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, Int imageSize, VPtr data)  as glad_glCompressedTextureSubImage3D
+fn glCopyTextureSubImage1D(U32 texture, Int level, Int xoffset, Int x, Int y, Int width)  as glad_glCopyTextureSubImage1D
+fn glCopyTextureSubImage2D(U32 texture, Int level, Int xoffset, Int yoffset, Int x, Int y, Int width, Int height)  as glad_glCopyTextureSubImage2D
+fn glCopyTextureSubImage3D(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int x, Int y, Int width, Int height)  as glad_glCopyTextureSubImage3D
+fn glTextureParameterf(U32 texture, U32 pname, Float param)  as glad_glTextureParameterf
+fn glTextureParameterfv(U32 texture, U32 pname, CPtr[Float] param)  as glad_glTextureParameterfv
+fn glTextureParameteri(U32 texture, U32 pname, Int param)  as glad_glTextureParameteri
+fn glTextureParameterIiv(U32 texture, U32 pname, CPtr[Int] params)  as glad_glTextureParameterIiv
+fn glTextureParameterIuiv(U32 texture, U32 pname, CPtr[U32] params)  as glad_glTextureParameterIuiv
+fn glTextureParameteriv(U32 texture, U32 pname, CPtr[Int] param)  as glad_glTextureParameteriv
+fn glGenerateTextureMipmap(U32 texture)  as glad_glGenerateTextureMipmap
+fn glBindTextureUnit(U32 unit, U32 texture)  as glad_glBindTextureUnit
+fn glGetTextureImage(U32 texture, Int level, U32 format, U32 type, Int bufSize, VPtr pixels)  as glad_glGetTextureImage
+fn glGetCompressedTextureImage(U32 texture, Int level, Int bufSize, VPtr pixels)  as glad_glGetCompressedTextureImage
+fn glGetTextureLevelParameterfv(U32 texture, Int level, U32 pname, CPtr[Float] params)  as glad_glGetTextureLevelParameterfv
+fn glGetTextureLevelParameteriv(U32 texture, Int level, U32 pname, CPtr[Int] params)  as glad_glGetTextureLevelParameteriv
+fn glGetTextureParameterfv(U32 texture, U32 pname, CPtr[Float] params)  as glad_glGetTextureParameterfv
+fn glGetTextureParameterIiv(U32 texture, U32 pname, CPtr[Int] params)  as glad_glGetTextureParameterIiv
+fn glGetTextureParameterIuiv(U32 texture, U32 pname, CPtr[U32] params)  as glad_glGetTextureParameterIuiv
+fn glGetTextureParameteriv(U32 texture, U32 pname, CPtr[Int] params)  as glad_glGetTextureParameteriv
+fn glCreateVertexArrays(Int n, CPtr[U32] arrays)  as glad_glCreateVertexArrays
+fn glDisableVertexArrayAttrib(U32 vaobj, U32 index)  as glad_glDisableVertexArrayAttrib
+fn glEnableVertexArrayAttrib(U32 vaobj, U32 index)  as glad_glEnableVertexArrayAttrib
+fn glVertexArrayElementBuffer(U32 vaobj, U32 buffer)  as glad_glVertexArrayElementBuffer
+fn glVertexArrayVertexBuffer(U32 vaobj, U32 bindingindex, U32 buffer, I64 offset, Int stride)  as glad_glVertexArrayVertexBuffer
+fn glVertexArrayVertexBuffers(U32 vaobj, U32 first, Int count, CPtr[U32] buffers, CPtr[I64] offsets, CPtr[Int] strides)  as glad_glVertexArrayVertexBuffers
+fn glVertexArrayAttribBinding(U32 vaobj, U32 attribindex, U32 bindingindex)  as glad_glVertexArrayAttribBinding
+fn glVertexArrayAttribFormat(U32 vaobj, U32 attribindex, Int size, U32 type, U8 normalized, U32 relativeoffset)  as glad_glVertexArrayAttribFormat
+fn glVertexArrayAttribIFormat(U32 vaobj, U32 attribindex, Int size, U32 type, U32 relativeoffset)  as glad_glVertexArrayAttribIFormat
+fn glVertexArrayAttribLFormat(U32 vaobj, U32 attribindex, Int size, U32 type, U32 relativeoffset)  as glad_glVertexArrayAttribLFormat
+fn glVertexArrayBindingDivisor(U32 vaobj, U32 bindingindex, U32 divisor)  as glad_glVertexArrayBindingDivisor
+fn glGetVertexArrayiv(U32 vaobj, U32 pname, CPtr[Int] param)  as glad_glGetVertexArrayiv
+fn glGetVertexArrayIndexediv(U32 vaobj, U32 index, U32 pname, CPtr[Int] param)  as glad_glGetVertexArrayIndexediv
+fn glGetVertexArrayIndexed64iv(U32 vaobj, U32 index, U32 pname, CPtr[I64] param)  as glad_glGetVertexArrayIndexed64iv
+fn glCreateSamplers(Int n, CPtr[U32] samplers)  as glad_glCreateSamplers
+fn glCreateProgramPipelines(Int n, CPtr[U32] pipelines)  as glad_glCreateProgramPipelines
+fn glCreateQueries(U32 target, Int n, CPtr[U32] ids)  as glad_glCreateQueries
+fn glGetQueryBufferObjecti64v(U32 id, U32 buffer, U32 pname, I64 offset)  as glad_glGetQueryBufferObjecti64v
+fn glGetQueryBufferObjectiv(U32 id, U32 buffer, U32 pname, I64 offset)  as glad_glGetQueryBufferObjectiv
+fn glGetQueryBufferObjectui64v(U32 id, U32 buffer, U32 pname, I64 offset)  as glad_glGetQueryBufferObjectui64v
+fn glGetQueryBufferObjectuiv(U32 id, U32 buffer, U32 pname, I64 offset)  as glad_glGetQueryBufferObjectuiv
+fn glMemoryBarrierByRegion(U32 barriers)  as glad_glMemoryBarrierByRegion
+fn glGetTextureSubImage(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, U32 type, Int bufSize, VPtr pixels)  as glad_glGetTextureSubImage
+fn glGetCompressedTextureSubImage(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, Int bufSize, VPtr pixels)  as glad_glGetCompressedTextureSubImage
+fn glGetGraphicsResetStatus() U32 as glad_glGetGraphicsResetStatus
+fn glGetnCompressedTexImage(U32 target, Int lod, Int bufSize, VPtr pixels)  as glad_glGetnCompressedTexImage
+fn glGetnTexImage(U32 target, Int level, U32 format, U32 type, Int bufSize, VPtr pixels)  as glad_glGetnTexImage
+fn glGetnUniformdv(U32 program, Int location, Int bufSize, CPtr[F64] params)  as glad_glGetnUniformdv
+fn glGetnUniformfv(U32 program, Int location, Int bufSize, CPtr[Float] params)  as glad_glGetnUniformfv
+fn glGetnUniformiv(U32 program, Int location, Int bufSize, CPtr[Int] params)  as glad_glGetnUniformiv
+fn glGetnUniformuiv(U32 program, Int location, Int bufSize, CPtr[U32] params)  as glad_glGetnUniformuiv
+fn glReadnPixels(Int x, Int y, Int width, Int height, U32 format, U32 type, Int bufSize, VPtr data)  as glad_glReadnPixels
+fn glTextureBarrier()  as glad_glTextureBarrier
+fn glSpecializeShader(U32 shader, CPtr[U8] pEntryPoint, U32 numSpecializationConstants, CPtr[U32] pConstantIndex, CPtr[U32] pConstantValue)  as glad_glSpecializeShader
+fn glMultiDrawArraysIndirectCount(U32 mode, VPtr indirect, I64 drawcount, Int maxdrawcount, Int stride)  as glad_glMultiDrawArraysIndirectCount
+fn glMultiDrawElementsIndirectCount(U32 mode, U32 type, VPtr indirect, I64 drawcount, Int maxdrawcount, Int stride)  as glad_glMultiDrawElementsIndirectCount
+fn glPolygonOffsetClamp(Float factor, Float units, Float clamp)  as glad_glPolygonOffsetClamp
+fn glPrimitiveBoundingBoxARB(Float minX, Float minY, Float minZ, Float minW, Float maxX, Float maxY, Float maxZ, Float maxW)  as glad_glPrimitiveBoundingBoxARB
+fn glGetTextureHandleARB(U32 texture) U64 as glad_glGetTextureHandleARB
+fn glGetTextureSamplerHandleARB(U32 texture, U32 sampler) U64 as glad_glGetTextureSamplerHandleARB
+fn glMakeTextureHandleResidentARB(U64 handle)  as glad_glMakeTextureHandleResidentARB
+fn glMakeTextureHandleNonResidentARB(U64 handle)  as glad_glMakeTextureHandleNonResidentARB
+fn glGetImageHandleARB(U32 texture, Int level, U8 layered, Int layer, U32 format) U64 as glad_glGetImageHandleARB
+fn glMakeImageHandleResidentARB(U64 handle, U32 access)  as glad_glMakeImageHandleResidentARB
+fn glMakeImageHandleNonResidentARB(U64 handle)  as glad_glMakeImageHandleNonResidentARB
+fn glUniformHandleui64ARB(Int location, U64 value)  as glad_glUniformHandleui64ARB
+fn glUniformHandleui64vARB(Int location, Int count, CPtr[U64] value)  as glad_glUniformHandleui64vARB
+fn glProgramUniformHandleui64ARB(U32 program, Int location, U64 value)  as glad_glProgramUniformHandleui64ARB
+fn glProgramUniformHandleui64vARB(U32 program, Int location, Int count, CPtr[U64] values)  as glad_glProgramUniformHandleui64vARB
+fn glIsTextureHandleResidentARB(U64 handle) U8 as glad_glIsTextureHandleResidentARB
+fn glIsImageHandleResidentARB(U64 handle) U8 as glad_glIsImageHandleResidentARB
+fn glVertexAttribL1ui64ARB(U32 index, U64 x)  as glad_glVertexAttribL1ui64ARB
+fn glVertexAttribL1ui64vARB(U32 index, CPtr[U64] v)  as glad_glVertexAttribL1ui64vARB
+fn glGetVertexAttribLui64vARB(U32 index, U32 pname, CPtr[U64] params)  as glad_glGetVertexAttribLui64vARB
+fn glCreateSyncFromCLeventARB(VPtr context, VPtr event, U32 flags) VPtr as glad_glCreateSyncFromCLeventARB
+fn glDispatchComputeGroupSizeARB(U32 num_groups_x, U32 num_groups_y, U32 num_groups_z, U32 group_size_x, U32 group_size_y, U32 group_size_z)  as glad_glDispatchComputeGroupSizeARB
+fn glDebugMessageControlARB(U32 source, U32 type, U32 severity, Int count, CPtr[U32] ids, U8 enabled)  as glad_glDebugMessageControlARB
+fn glDebugMessageInsertARB(U32 source, U32 type, U32 id, U32 severity, Int length, CPtr[U8] buf)  as glad_glDebugMessageInsertARB
+fn glDebugMessageCallbackARB(VPtr callback, VPtr userParam)  as glad_glDebugMessageCallbackARB
+fn glGetDebugMessageLogARB(U32 count, Int bufSize, CPtr[U32] sources, CPtr[U32] types, CPtr[U32] ids, CPtr[U32] severities, CPtr[Int] lengths, CPtr[U8] messageLog) U32 as glad_glGetDebugMessageLogARB
+fn glBlendEquationiARB(U32 buf, U32 mode)  as glad_glBlendEquationiARB
+fn glBlendEquationSeparateiARB(U32 buf, U32 modeRGB, U32 modeAlpha)  as glad_glBlendEquationSeparateiARB
+fn glBlendFunciARB(U32 buf, U32 src, U32 dst)  as glad_glBlendFunciARB
+fn glBlendFuncSeparateiARB(U32 buf, U32 srcRGB, U32 dstRGB, U32 srcAlpha, U32 dstAlpha)  as glad_glBlendFuncSeparateiARB
+fn glDrawArraysInstancedARB(U32 mode, Int first, Int count, Int primcount)  as glad_glDrawArraysInstancedARB
+fn glDrawElementsInstancedARB(U32 mode, Int count, U32 type, VPtr indices, Int primcount)  as glad_glDrawElementsInstancedARB
+fn glProgramParameteriARB(U32 program, U32 pname, Int value)  as glad_glProgramParameteriARB
+fn glFramebufferTextureARB(U32 target, U32 attachment, U32 texture, Int level)  as glad_glFramebufferTextureARB
+fn glFramebufferTextureLayerARB(U32 target, U32 attachment, U32 texture, Int level, Int layer)  as glad_glFramebufferTextureLayerARB
+fn glFramebufferTextureFaceARB(U32 target, U32 attachment, U32 texture, Int level, U32 face)  as glad_glFramebufferTextureFaceARB
+fn glSpecializeShaderARB(U32 shader, CPtr[U8] pEntryPoint, U32 numSpecializationConstants, CPtr[U32] pConstantIndex, CPtr[U32] pConstantValue)  as glad_glSpecializeShaderARB
+fn glUniform1i64ARB(Int location, I64 x)  as glad_glUniform1i64ARB
+fn glUniform2i64ARB(Int location, I64 x, I64 y)  as glad_glUniform2i64ARB
+fn glUniform3i64ARB(Int location, I64 x, I64 y, I64 z)  as glad_glUniform3i64ARB
+fn glUniform4i64ARB(Int location, I64 x, I64 y, I64 z, I64 w)  as glad_glUniform4i64ARB
+fn glUniform1i64vARB(Int location, Int count, CPtr[I64] value)  as glad_glUniform1i64vARB
+fn glUniform2i64vARB(Int location, Int count, CPtr[I64] value)  as glad_glUniform2i64vARB
+fn glUniform3i64vARB(Int location, Int count, CPtr[I64] value)  as glad_glUniform3i64vARB
+fn glUniform4i64vARB(Int location, Int count, CPtr[I64] value)  as glad_glUniform4i64vARB
+fn glUniform1ui64ARB(Int location, U64 x)  as glad_glUniform1ui64ARB
+fn glUniform2ui64ARB(Int location, U64 x, U64 y)  as glad_glUniform2ui64ARB
+fn glUniform3ui64ARB(Int location, U64 x, U64 y, U64 z)  as glad_glUniform3ui64ARB
+fn glUniform4ui64ARB(Int location, U64 x, U64 y, U64 z, U64 w)  as glad_glUniform4ui64ARB
+fn glUniform1ui64vARB(Int location, Int count, CPtr[U64] value)  as glad_glUniform1ui64vARB
+fn glUniform2ui64vARB(Int location, Int count, CPtr[U64] value)  as glad_glUniform2ui64vARB
+fn glUniform3ui64vARB(Int location, Int count, CPtr[U64] value)  as glad_glUniform3ui64vARB
+fn glUniform4ui64vARB(Int location, Int count, CPtr[U64] value)  as glad_glUniform4ui64vARB
+fn glGetUniformi64vARB(U32 program, Int location, CPtr[I64] params)  as glad_glGetUniformi64vARB
+fn glGetUniformui64vARB(U32 program, Int location, CPtr[U64] params)  as glad_glGetUniformui64vARB
+fn glGetnUniformi64vARB(U32 program, Int location, Int bufSize, CPtr[I64] params)  as glad_glGetnUniformi64vARB
+fn glGetnUniformui64vARB(U32 program, Int location, Int bufSize, CPtr[U64] params)  as glad_glGetnUniformui64vARB
+fn glProgramUniform1i64ARB(U32 program, Int location, I64 x)  as glad_glProgramUniform1i64ARB
+fn glProgramUniform2i64ARB(U32 program, Int location, I64 x, I64 y)  as glad_glProgramUniform2i64ARB
+fn glProgramUniform3i64ARB(U32 program, Int location, I64 x, I64 y, I64 z)  as glad_glProgramUniform3i64ARB
+fn glProgramUniform4i64ARB(U32 program, Int location, I64 x, I64 y, I64 z, I64 w)  as glad_glProgramUniform4i64ARB
+fn glProgramUniform1i64vARB(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform1i64vARB
+fn glProgramUniform2i64vARB(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform2i64vARB
+fn glProgramUniform3i64vARB(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform3i64vARB
+fn glProgramUniform4i64vARB(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform4i64vARB
+fn glProgramUniform1ui64ARB(U32 program, Int location, U64 x)  as glad_glProgramUniform1ui64ARB
+fn glProgramUniform2ui64ARB(U32 program, Int location, U64 x, U64 y)  as glad_glProgramUniform2ui64ARB
+fn glProgramUniform3ui64ARB(U32 program, Int location, U64 x, U64 y, U64 z)  as glad_glProgramUniform3ui64ARB
+fn glProgramUniform4ui64ARB(U32 program, Int location, U64 x, U64 y, U64 z, U64 w)  as glad_glProgramUniform4ui64ARB
+fn glProgramUniform1ui64vARB(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform1ui64vARB
+fn glProgramUniform2ui64vARB(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform2ui64vARB
+fn glProgramUniform3ui64vARB(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform3ui64vARB
+fn glProgramUniform4ui64vARB(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform4ui64vARB
+fn glMultiDrawArraysIndirectCountARB(U32 mode, VPtr indirect, I64 drawcount, Int maxdrawcount, Int stride)  as glad_glMultiDrawArraysIndirectCountARB
+fn glMultiDrawElementsIndirectCountARB(U32 mode, U32 type, VPtr indirect, I64 drawcount, Int maxdrawcount, Int stride)  as glad_glMultiDrawElementsIndirectCountARB
+fn glVertexAttribDivisorARB(U32 index, U32 divisor)  as glad_glVertexAttribDivisorARB
+fn glMaxShaderCompilerThreadsARB(U32 count)  as glad_glMaxShaderCompilerThreadsARB
+fn glGetGraphicsResetStatusARB() U32 as glad_glGetGraphicsResetStatusARB
+fn glGetnTexImageARB(U32 target, Int level, U32 format, U32 type, Int bufSize, VPtr img)  as glad_glGetnTexImageARB
+fn glReadnPixelsARB(Int x, Int y, Int width, Int height, U32 format, U32 type, Int bufSize, VPtr data)  as glad_glReadnPixelsARB
+fn glGetnCompressedTexImageARB(U32 target, Int lod, Int bufSize, VPtr img)  as glad_glGetnCompressedTexImageARB
+fn glGetnUniformfvARB(U32 program, Int location, Int bufSize, CPtr[Float] params)  as glad_glGetnUniformfvARB
+fn glGetnUniformivARB(U32 program, Int location, Int bufSize, CPtr[Int] params)  as glad_glGetnUniformivARB
+fn glGetnUniformuivARB(U32 program, Int location, Int bufSize, CPtr[U32] params)  as glad_glGetnUniformuivARB
+fn glGetnUniformdvARB(U32 program, Int location, Int bufSize, CPtr[F64] params)  as glad_glGetnUniformdvARB
+fn glFramebufferSampleLocationsfvARB(U32 target, U32 start, Int count, CPtr[Float] v)  as glad_glFramebufferSampleLocationsfvARB
+fn glNamedFramebufferSampleLocationsfvARB(U32 framebuffer, U32 start, Int count, CPtr[Float] v)  as glad_glNamedFramebufferSampleLocationsfvARB
+fn glEvaluateDepthValuesARB()  as glad_glEvaluateDepthValuesARB
+fn glMinSampleShadingARB(Float value)  as glad_glMinSampleShadingARB
+fn glNamedStringARB(U32 type, Int namelen, CPtr[U8] name, Int stringlen, CPtr[U8] string)  as glad_glNamedStringARB
+fn glDeleteNamedStringARB(Int namelen, CPtr[U8] name)  as glad_glDeleteNamedStringARB
+fn glCompileShaderIncludeARB(U32 shader, Int count, CPtr[CPtr[U8]] path, CPtr[Int] length)  as glad_glCompileShaderIncludeARB
+fn glIsNamedStringARB(Int namelen, CPtr[U8] name) U8 as glad_glIsNamedStringARB
+fn glGetNamedStringARB(Int namelen, CPtr[U8] name, Int bufSize, CPtr[Int] stringlen, CPtr[U8] string)  as glad_glGetNamedStringARB
+fn glGetNamedStringivARB(Int namelen, CPtr[U8] name, U32 pname, CPtr[Int] params)  as glad_glGetNamedStringivARB
+fn glBufferPageCommitmentARB(U32 target, I64 offset, I64 size, U8 commit)  as glad_glBufferPageCommitmentARB
+fn glNamedBufferPageCommitmentEXT(U32 buffer, I64 offset, I64 size, U8 commit)  as glad_glNamedBufferPageCommitmentEXT
+fn glNamedBufferPageCommitmentARB(U32 buffer, I64 offset, I64 size, U8 commit)  as glad_glNamedBufferPageCommitmentARB
+fn glTexPageCommitmentARB(U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U8 commit)  as glad_glTexPageCommitmentARB
+fn glTexBufferARB(U32 target, U32 internalformat, U32 buffer)  as glad_glTexBufferARB
+fn glDepthRangeArraydvNV(U32 first, Int count, CPtr[F64] v)  as glad_glDepthRangeArraydvNV
+fn glDepthRangeIndexeddNV(U32 index, F64 n, F64 f)  as glad_glDepthRangeIndexeddNV
+fn glBlendBarrierKHR()  as glad_glBlendBarrierKHR
+fn glMaxShaderCompilerThreadsKHR(U32 count)  as glad_glMaxShaderCompilerThreadsKHR
+fn glRenderbufferStorageMultisampleAdvancedAMD(U32 target, Int samples, Int storageSamples, U32 internalformat, Int width, Int height)  as glad_glRenderbufferStorageMultisampleAdvancedAMD
+fn glNamedRenderbufferStorageMultisampleAdvancedAMD(U32 renderbuffer, Int samples, Int storageSamples, U32 internalformat, Int width, Int height)  as glad_glNamedRenderbufferStorageMultisampleAdvancedAMD
+fn glGetPerfMonitorGroupsAMD(CPtr[Int] numGroups, Int groupsSize, CPtr[U32] groups)  as glad_glGetPerfMonitorGroupsAMD
+fn glGetPerfMonitorCountersAMD(U32 group, CPtr[Int] numCounters, CPtr[Int] maxActiveCounters, Int counterSize, CPtr[U32] counters)  as glad_glGetPerfMonitorCountersAMD
+fn glGetPerfMonitorGroupStringAMD(U32 group, Int bufSize, CPtr[Int] length, CPtr[U8] groupString)  as glad_glGetPerfMonitorGroupStringAMD
+fn glGetPerfMonitorCounterStringAMD(U32 group, U32 counter, Int bufSize, CPtr[Int] length, CPtr[U8] counterString)  as glad_glGetPerfMonitorCounterStringAMD
+fn glGetPerfMonitorCounterInfoAMD(U32 group, U32 counter, U32 pname, VPtr data)  as glad_glGetPerfMonitorCounterInfoAMD
+fn glGenPerfMonitorsAMD(Int n, CPtr[U32] monitors)  as glad_glGenPerfMonitorsAMD
+fn glDeletePerfMonitorsAMD(Int n, CPtr[U32] monitors)  as glad_glDeletePerfMonitorsAMD
+fn glSelectPerfMonitorCountersAMD(U32 monitor, U8 enable, U32 group, Int numCounters, CPtr[U32] counterList)  as glad_glSelectPerfMonitorCountersAMD
+fn glBeginPerfMonitorAMD(U32 monitor)  as glad_glBeginPerfMonitorAMD
+fn glEndPerfMonitorAMD(U32 monitor)  as glad_glEndPerfMonitorAMD
+fn glGetPerfMonitorCounterDataAMD(U32 monitor, U32 pname, Int dataSize, CPtr[U32] data, CPtr[Int] bytesWritten)  as glad_glGetPerfMonitorCounterDataAMD
+fn glEGLImageTargetTexStorageEXT(U32 target, VPtr image, CPtr[Int] attrib_list)  as glad_glEGLImageTargetTexStorageEXT
+fn glEGLImageTargetTextureStorageEXT(U32 texture, VPtr image, CPtr[Int] attrib_list)  as glad_glEGLImageTargetTextureStorageEXT
+fn glLabelObjectEXT(U32 type, U32 object, Int length, CPtr[U8] label)  as glad_glLabelObjectEXT
+fn glGetObjectLabelEXT(U32 type, U32 object, Int bufSize, CPtr[Int] length, CPtr[U8] label)  as glad_glGetObjectLabelEXT
+fn glInsertEventMarkerEXT(Int length, CPtr[U8] marker)  as glad_glInsertEventMarkerEXT
+fn glPushGroupMarkerEXT(Int length, CPtr[U8] marker)  as glad_glPushGroupMarkerEXT
+fn glPopGroupMarkerEXT()  as glad_glPopGroupMarkerEXT
+fn glMatrixLoadfEXT(U32 mode, CPtr[Float] m)  as glad_glMatrixLoadfEXT
+fn glMatrixLoaddEXT(U32 mode, CPtr[F64] m)  as glad_glMatrixLoaddEXT
+fn glMatrixMultfEXT(U32 mode, CPtr[Float] m)  as glad_glMatrixMultfEXT
+fn glMatrixMultdEXT(U32 mode, CPtr[F64] m)  as glad_glMatrixMultdEXT
+fn glMatrixLoadIdentityEXT(U32 mode)  as glad_glMatrixLoadIdentityEXT
+fn glMatrixRotatefEXT(U32 mode, Float angle, Float x, Float y, Float z)  as glad_glMatrixRotatefEXT
+fn glMatrixRotatedEXT(U32 mode, F64 angle, F64 x, F64 y, F64 z)  as glad_glMatrixRotatedEXT
+fn glMatrixScalefEXT(U32 mode, Float x, Float y, Float z)  as glad_glMatrixScalefEXT
+fn glMatrixScaledEXT(U32 mode, F64 x, F64 y, F64 z)  as glad_glMatrixScaledEXT
+fn glMatrixTranslatefEXT(U32 mode, Float x, Float y, Float z)  as glad_glMatrixTranslatefEXT
+fn glMatrixTranslatedEXT(U32 mode, F64 x, F64 y, F64 z)  as glad_glMatrixTranslatedEXT
+fn glMatrixFrustumEXT(U32 mode, F64 left, F64 right, F64 bottom, F64 top, F64 zNear, F64 zFar)  as glad_glMatrixFrustumEXT
+fn glMatrixOrthoEXT(U32 mode, F64 left, F64 right, F64 bottom, F64 top, F64 zNear, F64 zFar)  as glad_glMatrixOrthoEXT
+fn glMatrixPopEXT(U32 mode)  as glad_glMatrixPopEXT
+fn glMatrixPushEXT(U32 mode)  as glad_glMatrixPushEXT
+fn glClientAttribDefaultEXT(U32 mask)  as glad_glClientAttribDefaultEXT
+fn glPushClientAttribDefaultEXT(U32 mask)  as glad_glPushClientAttribDefaultEXT
+fn glTextureParameterfEXT(U32 texture, U32 target, U32 pname, Float param)  as glad_glTextureParameterfEXT
+fn glTextureParameterfvEXT(U32 texture, U32 target, U32 pname, CPtr[Float] params)  as glad_glTextureParameterfvEXT
+fn glTextureParameteriEXT(U32 texture, U32 target, U32 pname, Int param)  as glad_glTextureParameteriEXT
+fn glTextureParameterivEXT(U32 texture, U32 target, U32 pname, CPtr[Int] params)  as glad_glTextureParameterivEXT
+fn glTextureImage1DEXT(U32 texture, U32 target, Int level, Int internalformat, Int width, Int border, U32 format, U32 type, VPtr pixels)  as glad_glTextureImage1DEXT
+fn glTextureImage2DEXT(U32 texture, U32 target, Int level, Int internalformat, Int width, Int height, Int border, U32 format, U32 type, VPtr pixels)  as glad_glTextureImage2DEXT
+fn glTextureSubImage1DEXT(U32 texture, U32 target, Int level, Int xoffset, Int width, U32 format, U32 type, VPtr pixels)  as glad_glTextureSubImage1DEXT
+fn glTextureSubImage2DEXT(U32 texture, U32 target, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, U32 type, VPtr pixels)  as glad_glTextureSubImage2DEXT
+fn glCopyTextureImage1DEXT(U32 texture, U32 target, Int level, U32 internalformat, Int x, Int y, Int width, Int border)  as glad_glCopyTextureImage1DEXT
+fn glCopyTextureImage2DEXT(U32 texture, U32 target, Int level, U32 internalformat, Int x, Int y, Int width, Int height, Int border)  as glad_glCopyTextureImage2DEXT
+fn glCopyTextureSubImage1DEXT(U32 texture, U32 target, Int level, Int xoffset, Int x, Int y, Int width)  as glad_glCopyTextureSubImage1DEXT
+fn glCopyTextureSubImage2DEXT(U32 texture, U32 target, Int level, Int xoffset, Int yoffset, Int x, Int y, Int width, Int height)  as glad_glCopyTextureSubImage2DEXT
+fn glGetTextureImageEXT(U32 texture, U32 target, Int level, U32 format, U32 type, VPtr pixels)  as glad_glGetTextureImageEXT
+fn glGetTextureParameterfvEXT(U32 texture, U32 target, U32 pname, CPtr[Float] params)  as glad_glGetTextureParameterfvEXT
+fn glGetTextureParameterivEXT(U32 texture, U32 target, U32 pname, CPtr[Int] params)  as glad_glGetTextureParameterivEXT
+fn glGetTextureLevelParameterfvEXT(U32 texture, U32 target, Int level, U32 pname, CPtr[Float] params)  as glad_glGetTextureLevelParameterfvEXT
+fn glGetTextureLevelParameterivEXT(U32 texture, U32 target, Int level, U32 pname, CPtr[Int] params)  as glad_glGetTextureLevelParameterivEXT
+fn glTextureImage3DEXT(U32 texture, U32 target, Int level, Int internalformat, Int width, Int height, Int depth, Int border, U32 format, U32 type, VPtr pixels)  as glad_glTextureImage3DEXT
+fn glTextureSubImage3DEXT(U32 texture, U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, U32 type, VPtr pixels)  as glad_glTextureSubImage3DEXT
+fn glCopyTextureSubImage3DEXT(U32 texture, U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int x, Int y, Int width, Int height)  as glad_glCopyTextureSubImage3DEXT
+fn glBindMultiTextureEXT(U32 texunit, U32 target, U32 texture)  as glad_glBindMultiTextureEXT
+fn glMultiTexCoordPointerEXT(U32 texunit, Int size, U32 type, Int stride, VPtr pointer)  as glad_glMultiTexCoordPointerEXT
+fn glMultiTexEnvfEXT(U32 texunit, U32 target, U32 pname, Float param)  as glad_glMultiTexEnvfEXT
+fn glMultiTexEnvfvEXT(U32 texunit, U32 target, U32 pname, CPtr[Float] params)  as glad_glMultiTexEnvfvEXT
+fn glMultiTexEnviEXT(U32 texunit, U32 target, U32 pname, Int param)  as glad_glMultiTexEnviEXT
+fn glMultiTexEnvivEXT(U32 texunit, U32 target, U32 pname, CPtr[Int] params)  as glad_glMultiTexEnvivEXT
+fn glMultiTexGendEXT(U32 texunit, U32 coord, U32 pname, F64 param)  as glad_glMultiTexGendEXT
+fn glMultiTexGendvEXT(U32 texunit, U32 coord, U32 pname, CPtr[F64] params)  as glad_glMultiTexGendvEXT
+fn glMultiTexGenfEXT(U32 texunit, U32 coord, U32 pname, Float param)  as glad_glMultiTexGenfEXT
+fn glMultiTexGenfvEXT(U32 texunit, U32 coord, U32 pname, CPtr[Float] params)  as glad_glMultiTexGenfvEXT
+fn glMultiTexGeniEXT(U32 texunit, U32 coord, U32 pname, Int param)  as glad_glMultiTexGeniEXT
+fn glMultiTexGenivEXT(U32 texunit, U32 coord, U32 pname, CPtr[Int] params)  as glad_glMultiTexGenivEXT
+fn glGetMultiTexEnvfvEXT(U32 texunit, U32 target, U32 pname, CPtr[Float] params)  as glad_glGetMultiTexEnvfvEXT
+fn glGetMultiTexEnvivEXT(U32 texunit, U32 target, U32 pname, CPtr[Int] params)  as glad_glGetMultiTexEnvivEXT
+fn glGetMultiTexGendvEXT(U32 texunit, U32 coord, U32 pname, CPtr[F64] params)  as glad_glGetMultiTexGendvEXT
+fn glGetMultiTexGenfvEXT(U32 texunit, U32 coord, U32 pname, CPtr[Float] params)  as glad_glGetMultiTexGenfvEXT
+fn glGetMultiTexGenivEXT(U32 texunit, U32 coord, U32 pname, CPtr[Int] params)  as glad_glGetMultiTexGenivEXT
+fn glMultiTexParameteriEXT(U32 texunit, U32 target, U32 pname, Int param)  as glad_glMultiTexParameteriEXT
+fn glMultiTexParameterivEXT(U32 texunit, U32 target, U32 pname, CPtr[Int] params)  as glad_glMultiTexParameterivEXT
+fn glMultiTexParameterfEXT(U32 texunit, U32 target, U32 pname, Float param)  as glad_glMultiTexParameterfEXT
+fn glMultiTexParameterfvEXT(U32 texunit, U32 target, U32 pname, CPtr[Float] params)  as glad_glMultiTexParameterfvEXT
+fn glMultiTexImage1DEXT(U32 texunit, U32 target, Int level, Int internalformat, Int width, Int border, U32 format, U32 type, VPtr pixels)  as glad_glMultiTexImage1DEXT
+fn glMultiTexImage2DEXT(U32 texunit, U32 target, Int level, Int internalformat, Int width, Int height, Int border, U32 format, U32 type, VPtr pixels)  as glad_glMultiTexImage2DEXT
+fn glMultiTexSubImage1DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int width, U32 format, U32 type, VPtr pixels)  as glad_glMultiTexSubImage1DEXT
+fn glMultiTexSubImage2DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, U32 type, VPtr pixels)  as glad_glMultiTexSubImage2DEXT
+fn glCopyMultiTexImage1DEXT(U32 texunit, U32 target, Int level, U32 internalformat, Int x, Int y, Int width, Int border)  as glad_glCopyMultiTexImage1DEXT
+fn glCopyMultiTexImage2DEXT(U32 texunit, U32 target, Int level, U32 internalformat, Int x, Int y, Int width, Int height, Int border)  as glad_glCopyMultiTexImage2DEXT
+fn glCopyMultiTexSubImage1DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int x, Int y, Int width)  as glad_glCopyMultiTexSubImage1DEXT
+fn glCopyMultiTexSubImage2DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int yoffset, Int x, Int y, Int width, Int height)  as glad_glCopyMultiTexSubImage2DEXT
+fn glGetMultiTexImageEXT(U32 texunit, U32 target, Int level, U32 format, U32 type, VPtr pixels)  as glad_glGetMultiTexImageEXT
+fn glGetMultiTexParameterfvEXT(U32 texunit, U32 target, U32 pname, CPtr[Float] params)  as glad_glGetMultiTexParameterfvEXT
+fn glGetMultiTexParameterivEXT(U32 texunit, U32 target, U32 pname, CPtr[Int] params)  as glad_glGetMultiTexParameterivEXT
+fn glGetMultiTexLevelParameterfvEXT(U32 texunit, U32 target, Int level, U32 pname, CPtr[Float] params)  as glad_glGetMultiTexLevelParameterfvEXT
+fn glGetMultiTexLevelParameterivEXT(U32 texunit, U32 target, Int level, U32 pname, CPtr[Int] params)  as glad_glGetMultiTexLevelParameterivEXT
+fn glMultiTexImage3DEXT(U32 texunit, U32 target, Int level, Int internalformat, Int width, Int height, Int depth, Int border, U32 format, U32 type, VPtr pixels)  as glad_glMultiTexImage3DEXT
+fn glMultiTexSubImage3DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, U32 type, VPtr pixels)  as glad_glMultiTexSubImage3DEXT
+fn glCopyMultiTexSubImage3DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int x, Int y, Int width, Int height)  as glad_glCopyMultiTexSubImage3DEXT
+fn glEnableClientStateIndexedEXT(U32 array, U32 index)  as glad_glEnableClientStateIndexedEXT
+fn glDisableClientStateIndexedEXT(U32 array, U32 index)  as glad_glDisableClientStateIndexedEXT
+fn glGetFloatIndexedvEXT(U32 target, U32 index, CPtr[Float] data)  as glad_glGetFloatIndexedvEXT
+fn glGetDoubleIndexedvEXT(U32 target, U32 index, CPtr[F64] data)  as glad_glGetDoubleIndexedvEXT
+fn glGetPointerIndexedvEXT(U32 target, U32 index, VPtr data)  as glad_glGetPointerIndexedvEXT
+fn glEnableIndexedEXT(U32 target, U32 index)  as glad_glEnableIndexedEXT
+fn glDisableIndexedEXT(U32 target, U32 index)  as glad_glDisableIndexedEXT
+fn glIsEnabledIndexedEXT(U32 target, U32 index) U8 as glad_glIsEnabledIndexedEXT
+fn glGetIntegerIndexedvEXT(U32 target, U32 index, CPtr[Int] data)  as glad_glGetIntegerIndexedvEXT
+fn glGetBooleanIndexedvEXT(U32 target, U32 index, CPtr[U8] data)  as glad_glGetBooleanIndexedvEXT
+fn glCompressedTextureImage3DEXT(U32 texture, U32 target, Int level, U32 internalformat, Int width, Int height, Int depth, Int border, Int imageSize, VPtr bits)  as glad_glCompressedTextureImage3DEXT
+fn glCompressedTextureImage2DEXT(U32 texture, U32 target, Int level, U32 internalformat, Int width, Int height, Int border, Int imageSize, VPtr bits)  as glad_glCompressedTextureImage2DEXT
+fn glCompressedTextureImage1DEXT(U32 texture, U32 target, Int level, U32 internalformat, Int width, Int border, Int imageSize, VPtr bits)  as glad_glCompressedTextureImage1DEXT
+fn glCompressedTextureSubImage3DEXT(U32 texture, U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, Int imageSize, VPtr bits)  as glad_glCompressedTextureSubImage3DEXT
+fn glCompressedTextureSubImage2DEXT(U32 texture, U32 target, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, Int imageSize, VPtr bits)  as glad_glCompressedTextureSubImage2DEXT
+fn glCompressedTextureSubImage1DEXT(U32 texture, U32 target, Int level, Int xoffset, Int width, U32 format, Int imageSize, VPtr bits)  as glad_glCompressedTextureSubImage1DEXT
+fn glGetCompressedTextureImageEXT(U32 texture, U32 target, Int lod, VPtr img)  as glad_glGetCompressedTextureImageEXT
+fn glCompressedMultiTexImage3DEXT(U32 texunit, U32 target, Int level, U32 internalformat, Int width, Int height, Int depth, Int border, Int imageSize, VPtr bits)  as glad_glCompressedMultiTexImage3DEXT
+fn glCompressedMultiTexImage2DEXT(U32 texunit, U32 target, Int level, U32 internalformat, Int width, Int height, Int border, Int imageSize, VPtr bits)  as glad_glCompressedMultiTexImage2DEXT
+fn glCompressedMultiTexImage1DEXT(U32 texunit, U32 target, Int level, U32 internalformat, Int width, Int border, Int imageSize, VPtr bits)  as glad_glCompressedMultiTexImage1DEXT
+fn glCompressedMultiTexSubImage3DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 format, Int imageSize, VPtr bits)  as glad_glCompressedMultiTexSubImage3DEXT
+fn glCompressedMultiTexSubImage2DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int yoffset, Int width, Int height, U32 format, Int imageSize, VPtr bits)  as glad_glCompressedMultiTexSubImage2DEXT
+fn glCompressedMultiTexSubImage1DEXT(U32 texunit, U32 target, Int level, Int xoffset, Int width, U32 format, Int imageSize, VPtr bits)  as glad_glCompressedMultiTexSubImage1DEXT
+fn glGetCompressedMultiTexImageEXT(U32 texunit, U32 target, Int lod, VPtr img)  as glad_glGetCompressedMultiTexImageEXT
+fn glMatrixLoadTransposefEXT(U32 mode, CPtr[Float] m)  as glad_glMatrixLoadTransposefEXT
+fn glMatrixLoadTransposedEXT(U32 mode, CPtr[F64] m)  as glad_glMatrixLoadTransposedEXT
+fn glMatrixMultTransposefEXT(U32 mode, CPtr[Float] m)  as glad_glMatrixMultTransposefEXT
+fn glMatrixMultTransposedEXT(U32 mode, CPtr[F64] m)  as glad_glMatrixMultTransposedEXT
+fn glNamedBufferDataEXT(U32 buffer, I64 size, VPtr data, U32 usage)  as glad_glNamedBufferDataEXT
+fn glNamedBufferSubDataEXT(U32 buffer, I64 offset, I64 size, VPtr data)  as glad_glNamedBufferSubDataEXT
+fn glUnmapNamedBufferEXT(U32 buffer) U8 as glad_glUnmapNamedBufferEXT
+fn glGetNamedBufferParameterivEXT(U32 buffer, U32 pname, CPtr[Int] params)  as glad_glGetNamedBufferParameterivEXT
+fn glGetNamedBufferPointervEXT(U32 buffer, U32 pname, VPtr params)  as glad_glGetNamedBufferPointervEXT
+fn glGetNamedBufferSubDataEXT(U32 buffer, I64 offset, I64 size, VPtr data)  as glad_glGetNamedBufferSubDataEXT
+fn glProgramUniform1fEXT(U32 program, Int location, Float v0)  as glad_glProgramUniform1fEXT
+fn glProgramUniform2fEXT(U32 program, Int location, Float v0, Float v1)  as glad_glProgramUniform2fEXT
+fn glProgramUniform3fEXT(U32 program, Int location, Float v0, Float v1, Float v2)  as glad_glProgramUniform3fEXT
+fn glProgramUniform4fEXT(U32 program, Int location, Float v0, Float v1, Float v2, Float v3)  as glad_glProgramUniform4fEXT
+fn glProgramUniform1iEXT(U32 program, Int location, Int v0)  as glad_glProgramUniform1iEXT
+fn glProgramUniform2iEXT(U32 program, Int location, Int v0, Int v1)  as glad_glProgramUniform2iEXT
+fn glProgramUniform3iEXT(U32 program, Int location, Int v0, Int v1, Int v2)  as glad_glProgramUniform3iEXT
+fn glProgramUniform4iEXT(U32 program, Int location, Int v0, Int v1, Int v2, Int v3)  as glad_glProgramUniform4iEXT
+fn glProgramUniform1fvEXT(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform1fvEXT
+fn glProgramUniform2fvEXT(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform2fvEXT
+fn glProgramUniform3fvEXT(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform3fvEXT
+fn glProgramUniform4fvEXT(U32 program, Int location, Int count, CPtr[Float] value)  as glad_glProgramUniform4fvEXT
+fn glProgramUniform1ivEXT(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform1ivEXT
+fn glProgramUniform2ivEXT(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform2ivEXT
+fn glProgramUniform3ivEXT(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform3ivEXT
+fn glProgramUniform4ivEXT(U32 program, Int location, Int count, CPtr[Int] value)  as glad_glProgramUniform4ivEXT
+fn glProgramUniformMatrix2fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix2fvEXT
+fn glProgramUniformMatrix3fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix3fvEXT
+fn glProgramUniformMatrix4fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix4fvEXT
+fn glProgramUniformMatrix2x3fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix2x3fvEXT
+fn glProgramUniformMatrix3x2fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix3x2fvEXT
+fn glProgramUniformMatrix2x4fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix2x4fvEXT
+fn glProgramUniformMatrix4x2fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix4x2fvEXT
+fn glProgramUniformMatrix3x4fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix3x4fvEXT
+fn glProgramUniformMatrix4x3fvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[Float] value)  as glad_glProgramUniformMatrix4x3fvEXT
+fn glTextureBufferEXT(U32 texture, U32 target, U32 internalformat, U32 buffer)  as glad_glTextureBufferEXT
+fn glMultiTexBufferEXT(U32 texunit, U32 target, U32 internalformat, U32 buffer)  as glad_glMultiTexBufferEXT
+fn glTextureParameterIivEXT(U32 texture, U32 target, U32 pname, CPtr[Int] params)  as glad_glTextureParameterIivEXT
+fn glTextureParameterIuivEXT(U32 texture, U32 target, U32 pname, CPtr[U32] params)  as glad_glTextureParameterIuivEXT
+fn glGetTextureParameterIivEXT(U32 texture, U32 target, U32 pname, CPtr[Int] params)  as glad_glGetTextureParameterIivEXT
+fn glGetTextureParameterIuivEXT(U32 texture, U32 target, U32 pname, CPtr[U32] params)  as glad_glGetTextureParameterIuivEXT
+fn glMultiTexParameterIivEXT(U32 texunit, U32 target, U32 pname, CPtr[Int] params)  as glad_glMultiTexParameterIivEXT
+fn glMultiTexParameterIuivEXT(U32 texunit, U32 target, U32 pname, CPtr[U32] params)  as glad_glMultiTexParameterIuivEXT
+fn glGetMultiTexParameterIivEXT(U32 texunit, U32 target, U32 pname, CPtr[Int] params)  as glad_glGetMultiTexParameterIivEXT
+fn glGetMultiTexParameterIuivEXT(U32 texunit, U32 target, U32 pname, CPtr[U32] params)  as glad_glGetMultiTexParameterIuivEXT
+fn glProgramUniform1uiEXT(U32 program, Int location, U32 v0)  as glad_glProgramUniform1uiEXT
+fn glProgramUniform2uiEXT(U32 program, Int location, U32 v0, U32 v1)  as glad_glProgramUniform2uiEXT
+fn glProgramUniform3uiEXT(U32 program, Int location, U32 v0, U32 v1, U32 v2)  as glad_glProgramUniform3uiEXT
+fn glProgramUniform4uiEXT(U32 program, Int location, U32 v0, U32 v1, U32 v2, U32 v3)  as glad_glProgramUniform4uiEXT
+fn glProgramUniform1uivEXT(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform1uivEXT
+fn glProgramUniform2uivEXT(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform2uivEXT
+fn glProgramUniform3uivEXT(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform3uivEXT
+fn glProgramUniform4uivEXT(U32 program, Int location, Int count, CPtr[U32] value)  as glad_glProgramUniform4uivEXT
+fn glNamedProgramLocalParameters4fvEXT(U32 program, U32 target, U32 index, Int count, CPtr[Float] params)  as glad_glNamedProgramLocalParameters4fvEXT
+fn glNamedProgramLocalParameterI4iEXT(U32 program, U32 target, U32 index, Int x, Int y, Int z, Int w)  as glad_glNamedProgramLocalParameterI4iEXT
+fn glNamedProgramLocalParameterI4ivEXT(U32 program, U32 target, U32 index, CPtr[Int] params)  as glad_glNamedProgramLocalParameterI4ivEXT
+fn glNamedProgramLocalParametersI4ivEXT(U32 program, U32 target, U32 index, Int count, CPtr[Int] params)  as glad_glNamedProgramLocalParametersI4ivEXT
+fn glNamedProgramLocalParameterI4uiEXT(U32 program, U32 target, U32 index, U32 x, U32 y, U32 z, U32 w)  as glad_glNamedProgramLocalParameterI4uiEXT
+fn glNamedProgramLocalParameterI4uivEXT(U32 program, U32 target, U32 index, CPtr[U32] params)  as glad_glNamedProgramLocalParameterI4uivEXT
+fn glNamedProgramLocalParametersI4uivEXT(U32 program, U32 target, U32 index, Int count, CPtr[U32] params)  as glad_glNamedProgramLocalParametersI4uivEXT
+fn glGetNamedProgramLocalParameterIivEXT(U32 program, U32 target, U32 index, CPtr[Int] params)  as glad_glGetNamedProgramLocalParameterIivEXT
+fn glGetNamedProgramLocalParameterIuivEXT(U32 program, U32 target, U32 index, CPtr[U32] params)  as glad_glGetNamedProgramLocalParameterIuivEXT
+fn glEnableClientStateiEXT(U32 array, U32 index)  as glad_glEnableClientStateiEXT
+fn glDisableClientStateiEXT(U32 array, U32 index)  as glad_glDisableClientStateiEXT
+fn glGetFloati_vEXT(U32 pname, U32 index, CPtr[Float] params)  as glad_glGetFloati_vEXT
+fn glGetDoublei_vEXT(U32 pname, U32 index, CPtr[F64] params)  as glad_glGetDoublei_vEXT
+fn glGetPointeri_vEXT(U32 pname, U32 index, VPtr params)  as glad_glGetPointeri_vEXT
+fn glNamedProgramStringEXT(U32 program, U32 target, U32 format, Int len, VPtr string)  as glad_glNamedProgramStringEXT
+fn glNamedProgramLocalParameter4dEXT(U32 program, U32 target, U32 index, F64 x, F64 y, F64 z, F64 w)  as glad_glNamedProgramLocalParameter4dEXT
+fn glNamedProgramLocalParameter4dvEXT(U32 program, U32 target, U32 index, CPtr[F64] params)  as glad_glNamedProgramLocalParameter4dvEXT
+fn glNamedProgramLocalParameter4fEXT(U32 program, U32 target, U32 index, Float x, Float y, Float z, Float w)  as glad_glNamedProgramLocalParameter4fEXT
+fn glNamedProgramLocalParameter4fvEXT(U32 program, U32 target, U32 index, CPtr[Float] params)  as glad_glNamedProgramLocalParameter4fvEXT
+fn glGetNamedProgramLocalParameterdvEXT(U32 program, U32 target, U32 index, CPtr[F64] params)  as glad_glGetNamedProgramLocalParameterdvEXT
+fn glGetNamedProgramLocalParameterfvEXT(U32 program, U32 target, U32 index, CPtr[Float] params)  as glad_glGetNamedProgramLocalParameterfvEXT
+fn glGetNamedProgramivEXT(U32 program, U32 target, U32 pname, CPtr[Int] params)  as glad_glGetNamedProgramivEXT
+fn glGetNamedProgramStringEXT(U32 program, U32 target, U32 pname, VPtr string)  as glad_glGetNamedProgramStringEXT
+fn glNamedRenderbufferStorageEXT(U32 renderbuffer, U32 internalformat, Int width, Int height)  as glad_glNamedRenderbufferStorageEXT
+fn glGetNamedRenderbufferParameterivEXT(U32 renderbuffer, U32 pname, CPtr[Int] params)  as glad_glGetNamedRenderbufferParameterivEXT
+fn glNamedRenderbufferStorageMultisampleEXT(U32 renderbuffer, Int samples, U32 internalformat, Int width, Int height)  as glad_glNamedRenderbufferStorageMultisampleEXT
+fn glNamedRenderbufferStorageMultisampleCoverageEXT(U32 renderbuffer, Int coverageSamples, Int colorSamples, U32 internalformat, Int width, Int height)  as glad_glNamedRenderbufferStorageMultisampleCoverageEXT
+fn glCheckNamedFramebufferStatusEXT(U32 framebuffer, U32 target) U32 as glad_glCheckNamedFramebufferStatusEXT
+fn glNamedFramebufferTexture1DEXT(U32 framebuffer, U32 attachment, U32 textarget, U32 texture, Int level)  as glad_glNamedFramebufferTexture1DEXT
+fn glNamedFramebufferTexture2DEXT(U32 framebuffer, U32 attachment, U32 textarget, U32 texture, Int level)  as glad_glNamedFramebufferTexture2DEXT
+fn glNamedFramebufferTexture3DEXT(U32 framebuffer, U32 attachment, U32 textarget, U32 texture, Int level, Int zoffset)  as glad_glNamedFramebufferTexture3DEXT
+fn glNamedFramebufferRenderbufferEXT(U32 framebuffer, U32 attachment, U32 renderbuffertarget, U32 renderbuffer)  as glad_glNamedFramebufferRenderbufferEXT
+fn glGetNamedFramebufferAttachmentParameterivEXT(U32 framebuffer, U32 attachment, U32 pname, CPtr[Int] params)  as glad_glGetNamedFramebufferAttachmentParameterivEXT
+fn glGenerateTextureMipmapEXT(U32 texture, U32 target)  as glad_glGenerateTextureMipmapEXT
+fn glGenerateMultiTexMipmapEXT(U32 texunit, U32 target)  as glad_glGenerateMultiTexMipmapEXT
+fn glFramebufferDrawBufferEXT(U32 framebuffer, U32 mode)  as glad_glFramebufferDrawBufferEXT
+fn glFramebufferDrawBuffersEXT(U32 framebuffer, Int n, CPtr[U32] bufs)  as glad_glFramebufferDrawBuffersEXT
+fn glFramebufferReadBufferEXT(U32 framebuffer, U32 mode)  as glad_glFramebufferReadBufferEXT
+fn glGetFramebufferParameterivEXT(U32 framebuffer, U32 pname, CPtr[Int] params)  as glad_glGetFramebufferParameterivEXT
+fn glNamedCopyBufferSubDataEXT(U32 readBuffer, U32 writeBuffer, I64 readOffset, I64 writeOffset, I64 size)  as glad_glNamedCopyBufferSubDataEXT
+fn glNamedFramebufferTextureEXT(U32 framebuffer, U32 attachment, U32 texture, Int level)  as glad_glNamedFramebufferTextureEXT
+fn glNamedFramebufferTextureLayerEXT(U32 framebuffer, U32 attachment, U32 texture, Int level, Int layer)  as glad_glNamedFramebufferTextureLayerEXT
+fn glNamedFramebufferTextureFaceEXT(U32 framebuffer, U32 attachment, U32 texture, Int level, U32 face)  as glad_glNamedFramebufferTextureFaceEXT
+fn glTextureRenderbufferEXT(U32 texture, U32 target, U32 renderbuffer)  as glad_glTextureRenderbufferEXT
+fn glMultiTexRenderbufferEXT(U32 texunit, U32 target, U32 renderbuffer)  as glad_glMultiTexRenderbufferEXT
+fn glVertexArrayVertexOffsetEXT(U32 vaobj, U32 buffer, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArrayVertexOffsetEXT
+fn glVertexArrayColorOffsetEXT(U32 vaobj, U32 buffer, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArrayColorOffsetEXT
+fn glVertexArrayEdgeFlagOffsetEXT(U32 vaobj, U32 buffer, Int stride, I64 offset)  as glad_glVertexArrayEdgeFlagOffsetEXT
+fn glVertexArrayIndexOffsetEXT(U32 vaobj, U32 buffer, U32 type, Int stride, I64 offset)  as glad_glVertexArrayIndexOffsetEXT
+fn glVertexArrayNormalOffsetEXT(U32 vaobj, U32 buffer, U32 type, Int stride, I64 offset)  as glad_glVertexArrayNormalOffsetEXT
+fn glVertexArrayTexCoordOffsetEXT(U32 vaobj, U32 buffer, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArrayTexCoordOffsetEXT
+fn glVertexArrayMultiTexCoordOffsetEXT(U32 vaobj, U32 buffer, U32 texunit, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArrayMultiTexCoordOffsetEXT
+fn glVertexArrayFogCoordOffsetEXT(U32 vaobj, U32 buffer, U32 type, Int stride, I64 offset)  as glad_glVertexArrayFogCoordOffsetEXT
+fn glVertexArraySecondaryColorOffsetEXT(U32 vaobj, U32 buffer, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArraySecondaryColorOffsetEXT
+fn glVertexArrayVertexAttribOffsetEXT(U32 vaobj, U32 buffer, U32 index, Int size, U32 type, U8 normalized, Int stride, I64 offset)  as glad_glVertexArrayVertexAttribOffsetEXT
+fn glVertexArrayVertexAttribIOffsetEXT(U32 vaobj, U32 buffer, U32 index, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArrayVertexAttribIOffsetEXT
+fn glEnableVertexArrayEXT(U32 vaobj, U32 array)  as glad_glEnableVertexArrayEXT
+fn glDisableVertexArrayEXT(U32 vaobj, U32 array)  as glad_glDisableVertexArrayEXT
+fn glEnableVertexArrayAttribEXT(U32 vaobj, U32 index)  as glad_glEnableVertexArrayAttribEXT
+fn glDisableVertexArrayAttribEXT(U32 vaobj, U32 index)  as glad_glDisableVertexArrayAttribEXT
+fn glGetVertexArrayIntegervEXT(U32 vaobj, U32 pname, CPtr[Int] param)  as glad_glGetVertexArrayIntegervEXT
+fn glGetVertexArrayPointervEXT(U32 vaobj, U32 pname, VPtr param)  as glad_glGetVertexArrayPointervEXT
+fn glGetVertexArrayIntegeri_vEXT(U32 vaobj, U32 index, U32 pname, CPtr[Int] param)  as glad_glGetVertexArrayIntegeri_vEXT
+fn glGetVertexArrayPointeri_vEXT(U32 vaobj, U32 index, U32 pname, VPtr param)  as glad_glGetVertexArrayPointeri_vEXT
+fn glFlushMappedNamedBufferRangeEXT(U32 buffer, I64 offset, I64 length)  as glad_glFlushMappedNamedBufferRangeEXT
+fn glNamedBufferStorageEXT(U32 buffer, I64 size, VPtr data, U32 flags)  as glad_glNamedBufferStorageEXT
+fn glClearNamedBufferDataEXT(U32 buffer, U32 internalformat, U32 format, U32 type, VPtr data)  as glad_glClearNamedBufferDataEXT
+fn glClearNamedBufferSubDataEXT(U32 buffer, U32 internalformat, I64 offset, I64 size, U32 format, U32 type, VPtr data)  as glad_glClearNamedBufferSubDataEXT
+fn glNamedFramebufferParameteriEXT(U32 framebuffer, U32 pname, Int param)  as glad_glNamedFramebufferParameteriEXT
+fn glGetNamedFramebufferParameterivEXT(U32 framebuffer, U32 pname, CPtr[Int] params)  as glad_glGetNamedFramebufferParameterivEXT
+fn glProgramUniform1dEXT(U32 program, Int location, F64 x)  as glad_glProgramUniform1dEXT
+fn glProgramUniform2dEXT(U32 program, Int location, F64 x, F64 y)  as glad_glProgramUniform2dEXT
+fn glProgramUniform3dEXT(U32 program, Int location, F64 x, F64 y, F64 z)  as glad_glProgramUniform3dEXT
+fn glProgramUniform4dEXT(U32 program, Int location, F64 x, F64 y, F64 z, F64 w)  as glad_glProgramUniform4dEXT
+fn glProgramUniform1dvEXT(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform1dvEXT
+fn glProgramUniform2dvEXT(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform2dvEXT
+fn glProgramUniform3dvEXT(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform3dvEXT
+fn glProgramUniform4dvEXT(U32 program, Int location, Int count, CPtr[F64] value)  as glad_glProgramUniform4dvEXT
+fn glProgramUniformMatrix2dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix2dvEXT
+fn glProgramUniformMatrix3dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix3dvEXT
+fn glProgramUniformMatrix4dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix4dvEXT
+fn glProgramUniformMatrix2x3dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix2x3dvEXT
+fn glProgramUniformMatrix2x4dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix2x4dvEXT
+fn glProgramUniformMatrix3x2dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix3x2dvEXT
+fn glProgramUniformMatrix3x4dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix3x4dvEXT
+fn glProgramUniformMatrix4x2dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix4x2dvEXT
+fn glProgramUniformMatrix4x3dvEXT(U32 program, Int location, Int count, U8 transpose, CPtr[F64] value)  as glad_glProgramUniformMatrix4x3dvEXT
+fn glTextureBufferRangeEXT(U32 texture, U32 target, U32 internalformat, U32 buffer, I64 offset, I64 size)  as glad_glTextureBufferRangeEXT
+fn glTextureStorage1DEXT(U32 texture, U32 target, Int levels, U32 internalformat, Int width)  as glad_glTextureStorage1DEXT
+fn glTextureStorage2DEXT(U32 texture, U32 target, Int levels, U32 internalformat, Int width, Int height)  as glad_glTextureStorage2DEXT
+fn glTextureStorage3DEXT(U32 texture, U32 target, Int levels, U32 internalformat, Int width, Int height, Int depth)  as glad_glTextureStorage3DEXT
+fn glTextureStorage2DMultisampleEXT(U32 texture, U32 target, Int samples, U32 internalformat, Int width, Int height, U8 fixedsamplelocations)  as glad_glTextureStorage2DMultisampleEXT
+fn glTextureStorage3DMultisampleEXT(U32 texture, U32 target, Int samples, U32 internalformat, Int width, Int height, Int depth, U8 fixedsamplelocations)  as glad_glTextureStorage3DMultisampleEXT
+fn glVertexArrayBindVertexBufferEXT(U32 vaobj, U32 bindingindex, U32 buffer, I64 offset, Int stride)  as glad_glVertexArrayBindVertexBufferEXT
+fn glVertexArrayVertexAttribFormatEXT(U32 vaobj, U32 attribindex, Int size, U32 type, U8 normalized, U32 relativeoffset)  as glad_glVertexArrayVertexAttribFormatEXT
+fn glVertexArrayVertexAttribIFormatEXT(U32 vaobj, U32 attribindex, Int size, U32 type, U32 relativeoffset)  as glad_glVertexArrayVertexAttribIFormatEXT
+fn glVertexArrayVertexAttribLFormatEXT(U32 vaobj, U32 attribindex, Int size, U32 type, U32 relativeoffset)  as glad_glVertexArrayVertexAttribLFormatEXT
+fn glVertexArrayVertexAttribBindingEXT(U32 vaobj, U32 attribindex, U32 bindingindex)  as glad_glVertexArrayVertexAttribBindingEXT
+fn glVertexArrayVertexBindingDivisorEXT(U32 vaobj, U32 bindingindex, U32 divisor)  as glad_glVertexArrayVertexBindingDivisorEXT
+fn glVertexArrayVertexAttribLOffsetEXT(U32 vaobj, U32 buffer, U32 index, Int size, U32 type, Int stride, I64 offset)  as glad_glVertexArrayVertexAttribLOffsetEXT
+fn glTexturePageCommitmentEXT(U32 texture, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U8 commit)  as glad_glTexturePageCommitmentEXT
+fn glVertexArrayVertexAttribDivisorEXT(U32 vaobj, U32 index, U32 divisor)  as glad_glVertexArrayVertexAttribDivisorEXT
+fn glDrawArraysInstancedEXT(U32 mode, Int start, Int count, Int primcount)  as glad_glDrawArraysInstancedEXT
+fn glDrawElementsInstancedEXT(U32 mode, Int count, U32 type, VPtr indices, Int primcount)  as glad_glDrawElementsInstancedEXT
+fn glGetFragmentShadingRatesEXT(Int samples, Int maxCount, CPtr[Int] count, CPtr[U32] shadingRates)  as glad_glGetFragmentShadingRatesEXT
+fn glShadingRateEXT(U32 rate)  as glad_glShadingRateEXT
+fn glShadingRateCombinerOpsEXT(U32 combinerOp0, U32 combinerOp1)  as glad_glShadingRateCombinerOpsEXT
+fn glFramebufferShadingRateEXT(U32 target, U32 attachment, U32 texture, Int baseLayer, Int numLayers, Int texelWidth, Int texelHeight)  as glad_glFramebufferShadingRateEXT
+fn glDrawMeshTasksEXT(U32 num_groups_x, U32 num_groups_y, U32 num_groups_z)  as glad_glDrawMeshTasksEXT
+fn glDrawMeshTasksIndirectEXT(I64 indirect)  as glad_glDrawMeshTasksIndirectEXT
+fn glMultiDrawMeshTasksIndirectEXT(I64 indirect, Int drawcount, Int stride)  as glad_glMultiDrawMeshTasksIndirectEXT
+fn glMultiDrawMeshTasksIndirectCountEXT(I64 indirect, I64 drawcount, Int maxdrawcount, Int stride)  as glad_glMultiDrawMeshTasksIndirectCountEXT
+fn glPolygonOffsetClampEXT(Float factor, Float units, Float clamp)  as glad_glPolygonOffsetClampEXT
+fn glRasterSamplesEXT(U32 samples, U8 fixedsamplelocations)  as glad_glRasterSamplesEXT
+fn glUseShaderProgramEXT(U32 type, U32 program)  as glad_glUseShaderProgramEXT
+fn glActiveProgramEXT(U32 program)  as glad_glActiveProgramEXT
+fn glCreateShaderProgramEXT(U32 type, CPtr[U8] string) U32 as glad_glCreateShaderProgramEXT
+fn glFramebufferFetchBarrierEXT()  as glad_glFramebufferFetchBarrierEXT
+fn glTexStorage1DEXT(U32 target, Int levels, U32 internalformat, Int width)  as glad_glTexStorage1DEXT
+fn glTexStorage2DEXT(U32 target, Int levels, U32 internalformat, Int width, Int height)  as glad_glTexStorage2DEXT
+fn glTexStorage3DEXT(U32 target, Int levels, U32 internalformat, Int width, Int height, Int depth)  as glad_glTexStorage3DEXT
+fn glWindowRectanglesEXT(U32 mode, Int count, CPtr[Int] box)  as glad_glWindowRectanglesEXT
+fn glApplyFramebufferAttachmentCMAAINTEL()  as glad_glApplyFramebufferAttachmentCMAAINTEL
+fn glBeginPerfQueryINTEL(U32 queryHandle)  as glad_glBeginPerfQueryINTEL
+fn glCreatePerfQueryINTEL(U32 queryId, CPtr[U32] queryHandle)  as glad_glCreatePerfQueryINTEL
+fn glDeletePerfQueryINTEL(U32 queryHandle)  as glad_glDeletePerfQueryINTEL
+fn glEndPerfQueryINTEL(U32 queryHandle)  as glad_glEndPerfQueryINTEL
+fn glGetFirstPerfQueryIdINTEL(CPtr[U32] queryId)  as glad_glGetFirstPerfQueryIdINTEL
+fn glGetNextPerfQueryIdINTEL(U32 queryId, CPtr[U32] nextQueryId)  as glad_glGetNextPerfQueryIdINTEL
+fn glGetPerfCounterInfoINTEL(U32 queryId, U32 counterId, U32 counterNameLength, CPtr[U8] counterName, U32 counterDescLength, CPtr[U8] counterDesc, CPtr[U32] counterOffset, CPtr[U32] counterDataSize, CPtr[U32] counterTypeEnum, CPtr[U32] counterDataTypeEnum, CPtr[U64] rawCounterMaxValue)  as glad_glGetPerfCounterInfoINTEL
+fn glGetPerfQueryDataINTEL(U32 queryHandle, U32 flags, Int dataSize, VPtr data, CPtr[U32] bytesWritten)  as glad_glGetPerfQueryDataINTEL
+fn glGetPerfQueryIdByNameINTEL(CPtr[U8] queryName, CPtr[U32] queryId)  as glad_glGetPerfQueryIdByNameINTEL
+fn glGetPerfQueryInfoINTEL(U32 queryId, U32 queryNameLength, CPtr[U8] queryName, CPtr[U32] dataSize, CPtr[U32] noCounters, CPtr[U32] noInstances, CPtr[U32] capsMask)  as glad_glGetPerfQueryInfoINTEL
+fn glFramebufferParameteriMESA(U32 target, U32 pname, Int param)  as glad_glFramebufferParameteriMESA
+fn glGetFramebufferParameterivMESA(U32 target, U32 pname, CPtr[Int] params)  as glad_glGetFramebufferParameterivMESA
+fn glMultiDrawArraysIndirectBindlessNV(U32 mode, VPtr indirect, Int drawCount, Int stride, Int vertexBufferCount)  as glad_glMultiDrawArraysIndirectBindlessNV
+fn glMultiDrawElementsIndirectBindlessNV(U32 mode, U32 type, VPtr indirect, Int drawCount, Int stride, Int vertexBufferCount)  as glad_glMultiDrawElementsIndirectBindlessNV
+fn glMultiDrawArraysIndirectBindlessCountNV(U32 mode, VPtr indirect, Int drawCount, Int maxDrawCount, Int stride, Int vertexBufferCount)  as glad_glMultiDrawArraysIndirectBindlessCountNV
+fn glMultiDrawElementsIndirectBindlessCountNV(U32 mode, U32 type, VPtr indirect, Int drawCount, Int maxDrawCount, Int stride, Int vertexBufferCount)  as glad_glMultiDrawElementsIndirectBindlessCountNV
+fn glGetTextureHandleNV(U32 texture) U64 as glad_glGetTextureHandleNV
+fn glGetTextureSamplerHandleNV(U32 texture, U32 sampler) U64 as glad_glGetTextureSamplerHandleNV
+fn glMakeTextureHandleResidentNV(U64 handle)  as glad_glMakeTextureHandleResidentNV
+fn glMakeTextureHandleNonResidentNV(U64 handle)  as glad_glMakeTextureHandleNonResidentNV
+fn glGetImageHandleNV(U32 texture, Int level, U8 layered, Int layer, U32 format) U64 as glad_glGetImageHandleNV
+fn glMakeImageHandleResidentNV(U64 handle, U32 access)  as glad_glMakeImageHandleResidentNV
+fn glMakeImageHandleNonResidentNV(U64 handle)  as glad_glMakeImageHandleNonResidentNV
+fn glUniformHandleui64NV(Int location, U64 value)  as glad_glUniformHandleui64NV
+fn glUniformHandleui64vNV(Int location, Int count, CPtr[U64] value)  as glad_glUniformHandleui64vNV
+fn glProgramUniformHandleui64NV(U32 program, Int location, U64 value)  as glad_glProgramUniformHandleui64NV
+fn glProgramUniformHandleui64vNV(U32 program, Int location, Int count, CPtr[U64] values)  as glad_glProgramUniformHandleui64vNV
+fn glIsTextureHandleResidentNV(U64 handle) U8 as glad_glIsTextureHandleResidentNV
+fn glIsImageHandleResidentNV(U64 handle) U8 as glad_glIsImageHandleResidentNV
+fn glBlendParameteriNV(U32 pname, Int value)  as glad_glBlendParameteriNV
+fn glBlendBarrierNV()  as glad_glBlendBarrierNV
+fn glViewportPositionWScaleNV(U32 index, Float xcoeff, Float ycoeff)  as glad_glViewportPositionWScaleNV
+fn glCreateStatesNV(Int n, CPtr[U32] states)  as glad_glCreateStatesNV
+fn glDeleteStatesNV(Int n, CPtr[U32] states)  as glad_glDeleteStatesNV
+fn glIsStateNV(U32 state) U8 as glad_glIsStateNV
+fn glStateCaptureNV(U32 state, U32 mode)  as glad_glStateCaptureNV
+fn glGetCommandHeaderNV(U32 tokenID, U32 size) U32 as glad_glGetCommandHeaderNV
+fn glGetStageIndexNV(U32 shadertype) U16 as glad_glGetStageIndexNV
+fn glDrawCommandsNV(U32 primitiveMode, U32 buffer, CPtr[I64] indirects, CPtr[Int] sizes, U32 count)  as glad_glDrawCommandsNV
+fn glDrawCommandsAddressNV(U32 primitiveMode, CPtr[U64] indirects, CPtr[Int] sizes, U32 count)  as glad_glDrawCommandsAddressNV
+fn glDrawCommandsStatesNV(U32 buffer, CPtr[I64] indirects, CPtr[Int] sizes, CPtr[U32] states, CPtr[U32] fbos, U32 count)  as glad_glDrawCommandsStatesNV
+fn glDrawCommandsStatesAddressNV(CPtr[U64] indirects, CPtr[Int] sizes, CPtr[U32] states, CPtr[U32] fbos, U32 count)  as glad_glDrawCommandsStatesAddressNV
+fn glCreateCommandListsNV(Int n, CPtr[U32] lists)  as glad_glCreateCommandListsNV
+fn glDeleteCommandListsNV(Int n, CPtr[U32] lists)  as glad_glDeleteCommandListsNV
+fn glIsCommandListNV(U32 list) U8 as glad_glIsCommandListNV
+fn glListDrawCommandsStatesClientNV(U32 list, U32 segment, VPtr indirects, CPtr[Int] sizes, CPtr[U32] states, CPtr[U32] fbos, U32 count)  as glad_glListDrawCommandsStatesClientNV
+fn glCommandListSegmentsNV(U32 list, U32 segments)  as glad_glCommandListSegmentsNV
+fn glCompileCommandListNV(U32 list)  as glad_glCompileCommandListNV
+fn glCallCommandListNV(U32 list)  as glad_glCallCommandListNV
+fn glBeginConditionalRenderNV(U32 id, U32 mode)  as glad_glBeginConditionalRenderNV
+fn glEndConditionalRenderNV()  as glad_glEndConditionalRenderNV
+fn glSubpixelPrecisionBiasNV(U32 xbits, U32 ybits)  as glad_glSubpixelPrecisionBiasNV
+fn glConservativeRasterParameterfNV(U32 pname, Float value)  as glad_glConservativeRasterParameterfNV
+fn glConservativeRasterParameteriNV(U32 pname, Int param)  as glad_glConservativeRasterParameteriNV
+fn glDepthRangedNV(F64 zNear, F64 zFar)  as glad_glDepthRangedNV
+fn glClearDepthdNV(F64 depth)  as glad_glClearDepthdNV
+fn glDepthBoundsdNV(F64 zmin, F64 zmax)  as glad_glDepthBoundsdNV
+fn glDrawVkImageNV(U64 vkImage, U32 sampler, Float x0, Float y0, Float x1, Float y1, Float z, Float s0, Float t0, Float s1, Float t1)  as glad_glDrawVkImageNV
+fn glGetVkProcAddrNV(CPtr[U8] name) VPtr as glad_glGetVkProcAddrNV
+fn glWaitVkSemaphoreNV(U64 vkSemaphore)  as glad_glWaitVkSemaphoreNV
+fn glSignalVkSemaphoreNV(U64 vkSemaphore)  as glad_glSignalVkSemaphoreNV
+fn glSignalVkFenceNV(U64 vkFence)  as glad_glSignalVkFenceNV
+fn glFragmentCoverageColorNV(U32 color)  as glad_glFragmentCoverageColorNV
+fn glCoverageModulationTableNV(Int n, CPtr[Float] v)  as glad_glCoverageModulationTableNV
+fn glGetCoverageModulationTableNV(Int bufSize, CPtr[Float] v)  as glad_glGetCoverageModulationTableNV
+fn glCoverageModulationNV(U32 components)  as glad_glCoverageModulationNV
+fn glRenderbufferStorageMultisampleCoverageNV(U32 target, Int coverageSamples, Int colorSamples, U32 internalformat, Int width, Int height)  as glad_glRenderbufferStorageMultisampleCoverageNV
+fn glUniform1i64NV(Int location, I64 x)  as glad_glUniform1i64NV
+fn glUniform2i64NV(Int location, I64 x, I64 y)  as glad_glUniform2i64NV
+fn glUniform3i64NV(Int location, I64 x, I64 y, I64 z)  as glad_glUniform3i64NV
+fn glUniform4i64NV(Int location, I64 x, I64 y, I64 z, I64 w)  as glad_glUniform4i64NV
+fn glUniform1i64vNV(Int location, Int count, CPtr[I64] value)  as glad_glUniform1i64vNV
+fn glUniform2i64vNV(Int location, Int count, CPtr[I64] value)  as glad_glUniform2i64vNV
+fn glUniform3i64vNV(Int location, Int count, CPtr[I64] value)  as glad_glUniform3i64vNV
+fn glUniform4i64vNV(Int location, Int count, CPtr[I64] value)  as glad_glUniform4i64vNV
+fn glUniform1ui64NV(Int location, U64 x)  as glad_glUniform1ui64NV
+fn glUniform2ui64NV(Int location, U64 x, U64 y)  as glad_glUniform2ui64NV
+fn glUniform3ui64NV(Int location, U64 x, U64 y, U64 z)  as glad_glUniform3ui64NV
+fn glUniform4ui64NV(Int location, U64 x, U64 y, U64 z, U64 w)  as glad_glUniform4ui64NV
+fn glUniform1ui64vNV(Int location, Int count, CPtr[U64] value)  as glad_glUniform1ui64vNV
+fn glUniform2ui64vNV(Int location, Int count, CPtr[U64] value)  as glad_glUniform2ui64vNV
+fn glUniform3ui64vNV(Int location, Int count, CPtr[U64] value)  as glad_glUniform3ui64vNV
+fn glUniform4ui64vNV(Int location, Int count, CPtr[U64] value)  as glad_glUniform4ui64vNV
+fn glGetUniformi64vNV(U32 program, Int location, CPtr[I64] params)  as glad_glGetUniformi64vNV
+fn glProgramUniform1i64NV(U32 program, Int location, I64 x)  as glad_glProgramUniform1i64NV
+fn glProgramUniform2i64NV(U32 program, Int location, I64 x, I64 y)  as glad_glProgramUniform2i64NV
+fn glProgramUniform3i64NV(U32 program, Int location, I64 x, I64 y, I64 z)  as glad_glProgramUniform3i64NV
+fn glProgramUniform4i64NV(U32 program, Int location, I64 x, I64 y, I64 z, I64 w)  as glad_glProgramUniform4i64NV
+fn glProgramUniform1i64vNV(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform1i64vNV
+fn glProgramUniform2i64vNV(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform2i64vNV
+fn glProgramUniform3i64vNV(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform3i64vNV
+fn glProgramUniform4i64vNV(U32 program, Int location, Int count, CPtr[I64] value)  as glad_glProgramUniform4i64vNV
+fn glProgramUniform1ui64NV(U32 program, Int location, U64 x)  as glad_glProgramUniform1ui64NV
+fn glProgramUniform2ui64NV(U32 program, Int location, U64 x, U64 y)  as glad_glProgramUniform2ui64NV
+fn glProgramUniform3ui64NV(U32 program, Int location, U64 x, U64 y, U64 z)  as glad_glProgramUniform3ui64NV
+fn glProgramUniform4ui64NV(U32 program, Int location, U64 x, U64 y, U64 z, U64 w)  as glad_glProgramUniform4ui64NV
+fn glProgramUniform1ui64vNV(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform1ui64vNV
+fn glProgramUniform2ui64vNV(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform2ui64vNV
+fn glProgramUniform3ui64vNV(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform3ui64vNV
+fn glProgramUniform4ui64vNV(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniform4ui64vNV
+fn glGetInternalformatSampleivNV(U32 target, U32 internalformat, Int samples, U32 pname, Int count, CPtr[Int] params)  as glad_glGetInternalformatSampleivNV
+fn glGetMemoryObjectDetachedResourcesuivNV(U32 memory, U32 pname, Int first, Int count, CPtr[U32] params)  as glad_glGetMemoryObjectDetachedResourcesuivNV
+fn glResetMemoryObjectParameterNV(U32 memory, U32 pname)  as glad_glResetMemoryObjectParameterNV
+fn glTexAttachMemoryNV(U32 target, U32 memory, U64 offset)  as glad_glTexAttachMemoryNV
+fn glBufferAttachMemoryNV(U32 target, U32 memory, U64 offset)  as glad_glBufferAttachMemoryNV
+fn glTextureAttachMemoryNV(U32 texture, U32 memory, U64 offset)  as glad_glTextureAttachMemoryNV
+fn glNamedBufferAttachMemoryNV(U32 buffer, U32 memory, U64 offset)  as glad_glNamedBufferAttachMemoryNV
+fn glBufferPageCommitmentMemNV(U32 target, I64 offset, I64 size, U32 memory, U64 memOffset, U8 commit)  as glad_glBufferPageCommitmentMemNV
+fn glTexPageCommitmentMemNV(U32 target, Int layer, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 memory, U64 offset, U8 commit)  as glad_glTexPageCommitmentMemNV
+fn glNamedBufferPageCommitmentMemNV(U32 buffer, I64 offset, I64 size, U32 memory, U64 memOffset, U8 commit)  as glad_glNamedBufferPageCommitmentMemNV
+fn glTexturePageCommitmentMemNV(U32 texture, Int layer, Int level, Int xoffset, Int yoffset, Int zoffset, Int width, Int height, Int depth, U32 memory, U64 offset, U8 commit)  as glad_glTexturePageCommitmentMemNV
+fn glDrawMeshTasksNV(U32 first, U32 count)  as glad_glDrawMeshTasksNV
+fn glDrawMeshTasksIndirectNV(I64 indirect)  as glad_glDrawMeshTasksIndirectNV
+fn glMultiDrawMeshTasksIndirectNV(I64 indirect, Int drawcount, Int stride)  as glad_glMultiDrawMeshTasksIndirectNV
+fn glMultiDrawMeshTasksIndirectCountNV(I64 indirect, I64 drawcount, Int maxdrawcount, Int stride)  as glad_glMultiDrawMeshTasksIndirectCountNV
+fn glGenPathsNV(Int range) U32 as glad_glGenPathsNV
+fn glDeletePathsNV(U32 path, Int range)  as glad_glDeletePathsNV
+fn glIsPathNV(U32 path) U8 as glad_glIsPathNV
+fn glPathCommandsNV(U32 path, Int numCommands, CPtr[U8] commands, Int numCoords, U32 coordType, VPtr coords)  as glad_glPathCommandsNV
+fn glPathCoordsNV(U32 path, Int numCoords, U32 coordType, VPtr coords)  as glad_glPathCoordsNV
+fn glPathSubCommandsNV(U32 path, Int commandStart, Int commandsToDelete, Int numCommands, CPtr[U8] commands, Int numCoords, U32 coordType, VPtr coords)  as glad_glPathSubCommandsNV
+fn glPathSubCoordsNV(U32 path, Int coordStart, Int numCoords, U32 coordType, VPtr coords)  as glad_glPathSubCoordsNV
+fn glPathStringNV(U32 path, U32 format, Int length, VPtr pathString)  as glad_glPathStringNV
+fn glPathGlyphsNV(U32 firstPathName, U32 fontTarget, VPtr fontName, U32 fontStyle, Int numGlyphs, U32 type, VPtr charcodes, U32 handleMissingGlyphs, U32 pathParameterTemplate, Float emScale)  as glad_glPathGlyphsNV
+fn glPathGlyphRangeNV(U32 firstPathName, U32 fontTarget, VPtr fontName, U32 fontStyle, U32 firstGlyph, Int numGlyphs, U32 handleMissingGlyphs, U32 pathParameterTemplate, Float emScale)  as glad_glPathGlyphRangeNV
+fn glWeightPathsNV(U32 resultPath, Int numPaths, CPtr[U32] paths, CPtr[Float] weights)  as glad_glWeightPathsNV
+fn glCopyPathNV(U32 resultPath, U32 srcPath)  as glad_glCopyPathNV
+fn glInterpolatePathsNV(U32 resultPath, U32 pathA, U32 pathB, Float weight)  as glad_glInterpolatePathsNV
+fn glTransformPathNV(U32 resultPath, U32 srcPath, U32 transformType, CPtr[Float] transformValues)  as glad_glTransformPathNV
+fn glPathParameterivNV(U32 path, U32 pname, CPtr[Int] value)  as glad_glPathParameterivNV
+fn glPathParameteriNV(U32 path, U32 pname, Int value)  as glad_glPathParameteriNV
+fn glPathParameterfvNV(U32 path, U32 pname, CPtr[Float] value)  as glad_glPathParameterfvNV
+fn glPathParameterfNV(U32 path, U32 pname, Float value)  as glad_glPathParameterfNV
+fn glPathDashArrayNV(U32 path, Int dashCount, CPtr[Float] dashArray)  as glad_glPathDashArrayNV
+fn glPathStencilFuncNV(U32 func, Int ref, U32 mask)  as glad_glPathStencilFuncNV
+fn glPathStencilDepthOffsetNV(Float factor, Float units)  as glad_glPathStencilDepthOffsetNV
+fn glStencilFillPathNV(U32 path, U32 fillMode, U32 mask)  as glad_glStencilFillPathNV
+fn glStencilStrokePathNV(U32 path, Int reference, U32 mask)  as glad_glStencilStrokePathNV
+fn glStencilFillPathInstancedNV(Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, U32 fillMode, U32 mask, U32 transformType, CPtr[Float] transformValues)  as glad_glStencilFillPathInstancedNV
+fn glStencilStrokePathInstancedNV(Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, Int reference, U32 mask, U32 transformType, CPtr[Float] transformValues)  as glad_glStencilStrokePathInstancedNV
+fn glPathCoverDepthFuncNV(U32 func)  as glad_glPathCoverDepthFuncNV
+fn glCoverFillPathNV(U32 path, U32 coverMode)  as glad_glCoverFillPathNV
+fn glCoverStrokePathNV(U32 path, U32 coverMode)  as glad_glCoverStrokePathNV
+fn glCoverFillPathInstancedNV(Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, U32 coverMode, U32 transformType, CPtr[Float] transformValues)  as glad_glCoverFillPathInstancedNV
+fn glCoverStrokePathInstancedNV(Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, U32 coverMode, U32 transformType, CPtr[Float] transformValues)  as glad_glCoverStrokePathInstancedNV
+fn glGetPathParameterivNV(U32 path, U32 pname, CPtr[Int] value)  as glad_glGetPathParameterivNV
+fn glGetPathParameterfvNV(U32 path, U32 pname, CPtr[Float] value)  as glad_glGetPathParameterfvNV
+fn glGetPathCommandsNV(U32 path, CPtr[U8] commands)  as glad_glGetPathCommandsNV
+fn glGetPathCoordsNV(U32 path, CPtr[Float] coords)  as glad_glGetPathCoordsNV
+fn glGetPathDashArrayNV(U32 path, CPtr[Float] dashArray)  as glad_glGetPathDashArrayNV
+fn glGetPathMetricsNV(U32 metricQueryMask, Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, Int stride, CPtr[Float] metrics)  as glad_glGetPathMetricsNV
+fn glGetPathMetricRangeNV(U32 metricQueryMask, U32 firstPathName, Int numPaths, Int stride, CPtr[Float] metrics)  as glad_glGetPathMetricRangeNV
+fn glGetPathSpacingNV(U32 pathListMode, Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, Float advanceScale, Float kerningScale, U32 transformType, CPtr[Float] returnedSpacing)  as glad_glGetPathSpacingNV
+fn glIsPointInFillPathNV(U32 path, U32 mask, Float x, Float y) U8 as glad_glIsPointInFillPathNV
+fn glIsPointInStrokePathNV(U32 path, Float x, Float y) U8 as glad_glIsPointInStrokePathNV
+fn glGetPathLengthNV(U32 path, Int startSegment, Int numSegments) Float as glad_glGetPathLengthNV
+fn glPointAlongPathNV(U32 path, Int startSegment, Int numSegments, Float distance, CPtr[Float] x, CPtr[Float] y, CPtr[Float] tangentX, CPtr[Float] tangentY) U8 as glad_glPointAlongPathNV
+fn glMatrixLoad3x2fNV(U32 matrixMode, CPtr[Float] m)  as glad_glMatrixLoad3x2fNV
+fn glMatrixLoad3x3fNV(U32 matrixMode, CPtr[Float] m)  as glad_glMatrixLoad3x3fNV
+fn glMatrixLoadTranspose3x3fNV(U32 matrixMode, CPtr[Float] m)  as glad_glMatrixLoadTranspose3x3fNV
+fn glMatrixMult3x2fNV(U32 matrixMode, CPtr[Float] m)  as glad_glMatrixMult3x2fNV
+fn glMatrixMult3x3fNV(U32 matrixMode, CPtr[Float] m)  as glad_glMatrixMult3x3fNV
+fn glMatrixMultTranspose3x3fNV(U32 matrixMode, CPtr[Float] m)  as glad_glMatrixMultTranspose3x3fNV
+fn glStencilThenCoverFillPathNV(U32 path, U32 fillMode, U32 mask, U32 coverMode)  as glad_glStencilThenCoverFillPathNV
+fn glStencilThenCoverStrokePathNV(U32 path, Int reference, U32 mask, U32 coverMode)  as glad_glStencilThenCoverStrokePathNV
+fn glStencilThenCoverFillPathInstancedNV(Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, U32 fillMode, U32 mask, U32 coverMode, U32 transformType, CPtr[Float] transformValues)  as glad_glStencilThenCoverFillPathInstancedNV
+fn glStencilThenCoverStrokePathInstancedNV(Int numPaths, U32 pathNameType, VPtr paths, U32 pathBase, Int reference, U32 mask, U32 coverMode, U32 transformType, CPtr[Float] transformValues)  as glad_glStencilThenCoverStrokePathInstancedNV
+fn glPathGlyphIndexRangeNV(U32 fontTarget, VPtr fontName, U32 fontStyle, U32 pathParameterTemplate, Float emScale, CPtr[U32] baseAndCount) U32 as glad_glPathGlyphIndexRangeNV
+fn glPathGlyphIndexArrayNV(U32 firstPathName, U32 fontTarget, VPtr fontName, U32 fontStyle, U32 firstGlyphIndex, Int numGlyphs, U32 pathParameterTemplate, Float emScale) U32 as glad_glPathGlyphIndexArrayNV
+fn glPathMemoryGlyphIndexArrayNV(U32 firstPathName, U32 fontTarget, I64 fontSize, VPtr fontData, Int faceIndex, U32 firstGlyphIndex, Int numGlyphs, U32 pathParameterTemplate, Float emScale) U32 as glad_glPathMemoryGlyphIndexArrayNV
+fn glProgramPathFragmentInputGenNV(U32 program, Int location, U32 genMode, Int components, CPtr[Float] coeffs)  as glad_glProgramPathFragmentInputGenNV
+fn glGetProgramResourcefvNV(U32 program, U32 programInterface, U32 index, Int propCount, CPtr[U32] props, Int count, CPtr[Int] length, CPtr[Float] params)  as glad_glGetProgramResourcefvNV
+fn glFramebufferSampleLocationsfvNV(U32 target, U32 start, Int count, CPtr[Float] v)  as glad_glFramebufferSampleLocationsfvNV
+fn glNamedFramebufferSampleLocationsfvNV(U32 framebuffer, U32 start, Int count, CPtr[Float] v)  as glad_glNamedFramebufferSampleLocationsfvNV
+fn glResolveDepthValuesNV()  as glad_glResolveDepthValuesNV
+fn glScissorExclusiveNV(Int x, Int y, Int width, Int height)  as glad_glScissorExclusiveNV
+fn glScissorExclusiveArrayvNV(U32 first, Int count, CPtr[Int] v)  as glad_glScissorExclusiveArrayvNV
+fn glMakeBufferResidentNV(U32 target, U32 access)  as glad_glMakeBufferResidentNV
+fn glMakeBufferNonResidentNV(U32 target)  as glad_glMakeBufferNonResidentNV
+fn glIsBufferResidentNV(U32 target) U8 as glad_glIsBufferResidentNV
+fn glMakeNamedBufferResidentNV(U32 buffer, U32 access)  as glad_glMakeNamedBufferResidentNV
+fn glMakeNamedBufferNonResidentNV(U32 buffer)  as glad_glMakeNamedBufferNonResidentNV
+fn glIsNamedBufferResidentNV(U32 buffer) U8 as glad_glIsNamedBufferResidentNV
+fn glGetBufferParameterui64vNV(U32 target, U32 pname, CPtr[U64] params)  as glad_glGetBufferParameterui64vNV
+fn glGetNamedBufferParameterui64vNV(U32 buffer, U32 pname, CPtr[U64] params)  as glad_glGetNamedBufferParameterui64vNV
+fn glGetIntegerui64vNV(U32 value, CPtr[U64] result)  as glad_glGetIntegerui64vNV
+fn glUniformui64NV(Int location, U64 value)  as glad_glUniformui64NV
+fn glUniformui64vNV(Int location, Int count, CPtr[U64] value)  as glad_glUniformui64vNV
+fn glGetUniformui64vNV(U32 program, Int location, CPtr[U64] params)  as glad_glGetUniformui64vNV
+fn glProgramUniformui64NV(U32 program, Int location, U64 value)  as glad_glProgramUniformui64NV
+fn glProgramUniformui64vNV(U32 program, Int location, Int count, CPtr[U64] value)  as glad_glProgramUniformui64vNV
+fn glBindShadingRateImageNV(U32 texture)  as glad_glBindShadingRateImageNV
+fn glGetShadingRateImagePaletteNV(U32 viewport, U32 entry, CPtr[U32] rate)  as glad_glGetShadingRateImagePaletteNV
+fn glGetShadingRateSampleLocationivNV(U32 rate, U32 samples, U32 index, CPtr[Int] location)  as glad_glGetShadingRateSampleLocationivNV
+fn glShadingRateImageBarrierNV(U8 synchronize)  as glad_glShadingRateImageBarrierNV
+fn glShadingRateImagePaletteNV(U32 viewport, U32 first, Int count, CPtr[U32] rates)  as glad_glShadingRateImagePaletteNV
+fn glShadingRateSampleOrderNV(U32 order)  as glad_glShadingRateSampleOrderNV
+fn glShadingRateSampleOrderCustomNV(U32 rate, U32 samples, CPtr[Int] locations)  as glad_glShadingRateSampleOrderCustomNV
+fn glTextureBarrierNV()  as glad_glTextureBarrierNV
+fn glVertexAttribL1i64NV(U32 index, I64 x)  as glad_glVertexAttribL1i64NV
+fn glVertexAttribL2i64NV(U32 index, I64 x, I64 y)  as glad_glVertexAttribL2i64NV
+fn glVertexAttribL3i64NV(U32 index, I64 x, I64 y, I64 z)  as glad_glVertexAttribL3i64NV
+fn glVertexAttribL4i64NV(U32 index, I64 x, I64 y, I64 z, I64 w)  as glad_glVertexAttribL4i64NV
+fn glVertexAttribL1i64vNV(U32 index, CPtr[I64] v)  as glad_glVertexAttribL1i64vNV
+fn glVertexAttribL2i64vNV(U32 index, CPtr[I64] v)  as glad_glVertexAttribL2i64vNV
+fn glVertexAttribL3i64vNV(U32 index, CPtr[I64] v)  as glad_glVertexAttribL3i64vNV
+fn glVertexAttribL4i64vNV(U32 index, CPtr[I64] v)  as glad_glVertexAttribL4i64vNV
+fn glVertexAttribL1ui64NV(U32 index, U64 x)  as glad_glVertexAttribL1ui64NV
+fn glVertexAttribL2ui64NV(U32 index, U64 x, U64 y)  as glad_glVertexAttribL2ui64NV
+fn glVertexAttribL3ui64NV(U32 index, U64 x, U64 y, U64 z)  as glad_glVertexAttribL3ui64NV
+fn glVertexAttribL4ui64NV(U32 index, U64 x, U64 y, U64 z, U64 w)  as glad_glVertexAttribL4ui64NV
+fn glVertexAttribL1ui64vNV(U32 index, CPtr[U64] v)  as glad_glVertexAttribL1ui64vNV
+fn glVertexAttribL2ui64vNV(U32 index, CPtr[U64] v)  as glad_glVertexAttribL2ui64vNV
+fn glVertexAttribL3ui64vNV(U32 index, CPtr[U64] v)  as glad_glVertexAttribL3ui64vNV
+fn glVertexAttribL4ui64vNV(U32 index, CPtr[U64] v)  as glad_glVertexAttribL4ui64vNV
+fn glGetVertexAttribLi64vNV(U32 index, U32 pname, CPtr[I64] params)  as glad_glGetVertexAttribLi64vNV
+fn glGetVertexAttribLui64vNV(U32 index, U32 pname, CPtr[U64] params)  as glad_glGetVertexAttribLui64vNV
+fn glVertexAttribLFormatNV(U32 index, Int size, U32 type, Int stride)  as glad_glVertexAttribLFormatNV
+fn glBufferAddressRangeNV(U32 pname, U32 index, U64 address, I64 length)  as glad_glBufferAddressRangeNV
+fn glVertexFormatNV(Int size, U32 type, Int stride)  as glad_glVertexFormatNV
+fn glNormalFormatNV(U32 type, Int stride)  as glad_glNormalFormatNV
+fn glColorFormatNV(Int size, U32 type, Int stride)  as glad_glColorFormatNV
+fn glIndexFormatNV(U32 type, Int stride)  as glad_glIndexFormatNV
+fn glTexCoordFormatNV(Int size, U32 type, Int stride)  as glad_glTexCoordFormatNV
+fn glEdgeFlagFormatNV(Int stride)  as glad_glEdgeFlagFormatNV
+fn glSecondaryColorFormatNV(Int size, U32 type, Int stride)  as glad_glSecondaryColorFormatNV
+fn glFogCoordFormatNV(U32 type, Int stride)  as glad_glFogCoordFormatNV
+fn glVertexAttribFormatNV(U32 index, Int size, U32 type, U8 normalized, Int stride)  as glad_glVertexAttribFormatNV
+fn glVertexAttribIFormatNV(U32 index, Int size, U32 type, Int stride)  as glad_glVertexAttribIFormatNV
+fn glGetIntegerui64i_vNV(U32 value, U32 index, CPtr[U64] result)  as glad_glGetIntegerui64i_vNV
+fn glViewportSwizzleNV(U32 index, U32 swizzlex, U32 swizzley, U32 swizzlez, U32 swizzlew)  as glad_glViewportSwizzleNV
+fn glFramebufferTextureMultiviewOVR(U32 target, U32 attachment, U32 texture, Int level, Int baseViewIndex, Int numViews)  as glad_glFramebufferTextureMultiviewOVR
+fn glNamedFramebufferTextureMultiviewOVR(U32 framebuffer, U32 attachment, U32 texture, Int level, Int baseViewIndex, Int numViews)  as glad_glNamedFramebufferTextureMultiviewOVR

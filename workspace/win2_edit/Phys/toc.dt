@@ -1,6 +1,0 @@
-
-module Main
-	references Sys modules Os, Sulfur, Rom
-	chapter GameTile
-	chapter GameRoom
-end

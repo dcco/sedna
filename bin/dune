@@ -1,7 +1,7 @@
 (executable
- (public_name dusk)
+ (public_name sedna)
  (name main)
- (libraries parser resolve tc codegen rom)
+ (libraries parser resolve tc codegen unix yojson)
  (modes native)
  (ocamlopt_flags (:standard -cclib -fuse-ld=lld))
  (link_flags (-cclib -fuse-ld=lld)))

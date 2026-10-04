@@ -1,6 +1,6 @@
 open Commons.Try_log
 open Commons.Tree_map
-open Builtin
+open Builtin.Builtin_core
 open Parser.Lex_token
 open Parser.Dusk_type
 open Parser.Dusk_ast
@@ -270,7 +270,7 @@ let add_import_renv (env: res_env) (p: l_pos) (path: string list) (handle: strin
 		(* check whether handle already exists *)
 	let* _ = (match Hashtbl.find_opt env.importHandles handle with
 		None -> Hashtbl.add env.importHandles handle (); Valid ()
-		| _ -> Error (ReuseHandle_Err(path, handle, p))
+		| _ -> dump_renv env; Error (ReuseHandle_Err(path, handle, p))
 	) in
 		(* otherwise, iterate through all bindings and dump them in *)
 	let symList = lookup_tree !(env.globalModules) path in

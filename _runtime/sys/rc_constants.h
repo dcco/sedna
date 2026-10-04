@@ -7,8 +7,4 @@
 
 typedef int16_t tag_type;
 
-#define GLYPH_SIZE 32
-#define GLYPH_3D_SIZE 32
-#define GL_VAL_SIZE 20
-
 #endif

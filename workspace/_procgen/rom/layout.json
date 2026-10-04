@@ -1,8 +1,0 @@
-{
-	"presets": [
-	],
-	"sprites": [
-		["TSET", "text", "sfont", [0, 0], 13],
-		["TSET", "x1", "tset", [0, 0], 8]
-	]
-}

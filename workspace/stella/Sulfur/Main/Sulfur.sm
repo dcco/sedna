@@ -1,0 +1,78 @@
+
+fn orthoMat(Float l, Float r, Float b, Float t, Float n, Float f) 1d[Float]
+	var lr = 1.0 /. (l - r)
+	var bt = 1.0 /. (b - t)
+	var nf = 1.0 /. (n - f)
+	return new 1d[
+		-2.0 * lr, 0.0, 0.0, 0.0,
+		0.0, -2.0 * bt, 0.0, 0.0,
+		0.0, 0.0, 2.0 * nf, 0.0,
+		(l + r) * lr, (t + b) * bt, (f + n) * nf, 1.0
+	]
+end
+
+struct Sulfur{
+	Int width,
+	Int height,
+	1d[Float] pMat,
+	RenderData frontBuffer,
+	Shader shaderMain,
+	Mesh defQuad,
+	TexArray? texArr
+}
+
+fn initSulfur(Int w, Int h) Sulfur
+	-- simple open gl defaults
+	glClearColor(0.1, 0.15, 0.15, 1.0)
+	glEnable(_GL_BLEND)
+	glBlendFunc(_GL_SRC_ALPHA, _GL_ONE_MINUS_SRC_ALPHA)
+	glEnable(_GL_DEPTH_TEST)
+	glDepthFunc(_GL_LESS)
+
+	-- initialize shader (sf2d)
+	var base2Def = new ShaderDef{
+		normalsFlag = false,
+		uSampler = "uSampler",
+		uPers = "uPMat",
+		instAttrList = new 1d[
+			new ShaderAttrDef{ arity = 3, glType = _GL_FLOAT, offset = toRawOffset(0) }, -- add 4*3, 0 + 12 = 12
+			new ShaderAttrDef{ arity = 2, glType = _GL_FLOAT, offset = toRawOffset(12) }, -- add 4*2, 12 + 8 = 20
+			new ShaderAttrDef{ arity = 1, glType = _GL_UNSIGNED_INT, offset = toRawOffset(20) }, -- add 4, 20 + 4 = 24
+			new ShaderAttrDef{ arity = 1, glType = _GL_UNSIGNED_INT, offset = toRawOffset(24) }, -- add 4, 24 + 4 = 28
+			new ShaderAttrDef{ arity = 2, glType = _GL_FLOAT, offset = toRawOffset(28) }, -- add 4*2, 28 + 8 = 36
+			new ShaderAttrDef{ arity = 2, glType = _GL_FLOAT, offset = toRawOffset(36) } -- add 4*2, 36 + 8 = 44
+		],
+		instSize = 44
+	}
+	var shaderMain = initShader(cString(cLoad("base2.vs")), cString(cLoad("base2.fs")), base2Def)
+
+	var defQuad = newMesh(squareZVertices(0.0, 0.0, 1.0, 1.0, 0.0), _SQUARE_TEX_COORDS)
+
+	-- return object
+	var self = new Sulfur{
+		width = w,
+		height = h,
+		pMat = orthoMat(0.0, toFloat(w), toFloat(h), 0.0, -1.0, 1.0),
+		frontBuffer = newRenderData(),
+		shaderMain = shaderMain,
+		defQuad = defQuad,
+		texArr = null
+	}
+
+	return self
+end
+
+fn render(Sulfur sulfur)
+	var texArr = sulfur.texArr
+	if texArr is null then return end
+
+	-- clear main frame buffer
+	glBindFramebuffer(_GL_FRAMEBUFFER, _0)
+	glViewport(0, 0, sulfur.width, sulfur.height)
+	glClear(_GL_COLOR_BUFFER_BIT | _GL_DEPTH_BUFFER_BIT)
+	glUseProgram(sulfur.shaderMain.prog)
+	glUniformMatrix4fv(sulfur.shaderMain.uPers, 1, _0b, toCPtr(sulfur.pMat))
+
+	-- 
+	sulfur.shaderMain.drawData(sulfur.defQuad, texArr, sulfur.frontBuffer.data, sulfur.frontBuffer.total)
+end

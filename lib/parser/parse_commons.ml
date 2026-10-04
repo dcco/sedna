@@ -137,6 +137,11 @@ let parseDeclTId (debug: string): string parser = fun tkList -> match tkList wit
 
 let parseBaseTId = parseDeclTId
 
+let parseVId (debug: string): string parser = fun tkList -> match tkList with
+	(VID x, _) :: tkRem -> Valid (x, tkRem)
+	| tk :: _ -> Error (BadToken_Err(tk, debug))
+	| _ -> Error (EOF_Err debug)
+
 let parseDerefId (debug: string): qual_name parser = fun tkList -> match tkList with
 	(ID x, _) :: tkRem -> Valid (qn x, tkRem)
 	| (CID x, _) :: tkRem -> Valid (qn x, tkRem)
@@ -179,6 +184,11 @@ let parseDeclCId (debug: string): string parser = fun tkList -> match tkList wit
 	(CID x, _) :: tkRem -> Valid (x, tkRem)
 	| tk :: _ -> Error (BadToken_Err(tk, debug))
 	| _ -> Error (EOF_Err debug) 
+
+let parseStrLit (debug: string): string parser = fun tkList -> match tkList with
+	(STRLIT x, _) :: tkRem -> Valid (x, tkRem)
+	| tk :: _ -> Error (BadToken_Err(tk, debug))
+	| _ -> Error (EOF_Err debug)
 
 	(*
 		bracket parse functions

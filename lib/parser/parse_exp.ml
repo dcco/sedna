@@ -55,12 +55,14 @@ let chkBrackR (tk: raw_token): bool = match tk with
 let rec chkTypeStart (tkList: token list): bool = match tkList with
 	(TID _, _) :: _ -> true
 	| (DIM _, _) :: _ -> true
+	| (T_INT _, _) :: _ -> true
 	| (LPAREN, _) :: tkRem -> chkTypeStart tkRem
 	| _ -> false
 
 let readUniOp (tk: raw_token): string option = match tk with
 	DASH -> Some "neg"
 	| EXCLAM -> Some "not"
+	| CARET -> Some "bitNeg"
 	| _ -> None
 
 let readMulOp (tk: raw_token): string option = match tk with
@@ -90,6 +92,12 @@ let readRelOp (tk: raw_token): string option = match tk with
 	| OR -> Some "or"
 	| _ -> None
 
+let readBitRelOp (tk: raw_token): string option = match tk with
+	AMPERSAND -> Some "bitAnd"
+	| BAR -> Some "bitOr"
+	| CARET -> Some "bitXor"
+	| _ -> None
+
 	(* type parsing *)
 
 let rec parseAtomType: m_type parser = fun tkList -> match tkList with
@@ -104,10 +112,16 @@ let rec parseAtomType: m_type parser = fun tkList -> match tkList with
 			parseOrEmpty (parseSepList parseType chkComma) chkBrackR) "Function Type" tkRem in
 		let* (tau_r, tkRem3) = parseRetTy tkRem2 in
 		Valid (FunTy(tau_pl, tau_r), tkRem3)
+	| (T_INT(u, s), _) :: tkRem -> Valid (IntTy(u, s), tkRem)
+	| (VID x, _) :: tkRem -> Valid (VarTy x, tkRem)
 	| _ ->
 		let* (QN(q, x), tkRem) = parseDerefTId "Type Name" tkList in
-		if List.mem x ["Unit"; "Int"; "Float"; "Bool"; "String"; "U8"; "U32"; "U64"] then Valid (primTy x, tkRem)
-		else if List.mem x ["PRNG"; "Mat4"; "Image"; "FixImage"; "Sprite"; "Mesh"; "RenderData"; "Font"] then Valid (builtinTy x, tkRem)
+		if x = "CPtr" then
+			let* (tau, tkRem2) = parseBraceWrap parseType "C Pointer Type" tkRem in
+			Valid (CPtrTy tau, tkRem2)
+		else if x = "VPtr" then Valid (CPtrTy u8Ty, tkRem)
+		else if x = "Int" then Valid (IntTy(false, S32), tkRem)
+		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64"; "PRNG"] then Valid (primTy x, tkRem)
 		else if x = "BOT" then Valid (BotTy, tkRem)
 		else Valid (NamedTy (QN(q, x)), tkRem)
 
@@ -191,7 +205,7 @@ let rec foldRangeList (rl: (string * range_type * m_exp) list) (body: m_stmt lis
 	(* main expression parsing *)
 
 let forceIntList (el: m_exp list): (int list) parse_res = map_try_res (fun e -> match e with
-		ConstExp(IConst i, _) -> Valid i
+		ConstExp(IConst(i, _, _), _) -> Valid (Int64.to_int i)
 		| e -> Error (NonIntExp_Err (ann_exp e))
 	) el
 
@@ -200,17 +214,30 @@ let parseTagOrNull (debug: string): (qual_name option) parser = fun tkList -> ma
 	| _ -> let* (y, tkRem) = parseDerefTId debug tkList in Valid (Some y, tkRem)
 
 let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
-	(INT i, p) :: tkRem -> Valid (ConstExp(IConst i, p), tkRem)
+	(INT(i, u, bw), p) :: tkRem -> Valid (ConstExp(IConst(i, u, bw), p), tkRem)
 	| (FLOAT f, p) :: tkRem -> Valid (ConstExp(FConst f, p), tkRem)
 	| (FALSE, p) :: tkRem -> Valid (ConstExp(BConst false, p), tkRem)
 	| (TRUE, p) :: tkRem -> Valid (ConstExp(BConst true, p), tkRem)
 	| (NULL, p) :: tkRem -> Valid (ConstExp(NullConst, p), tkRem)
+	(*(match tkRem with
+		(LBRACE, _) :: _ ->
+			let* (t, tkRem2) = parseBraceWrap (fun tkList ->
+				let* (_, tkRem) = parseTk TILDE "Null Type Annotation" tkList in
+				parseType tkRem
+			) "Null Type Annotation" tkRem in
+			Valid (NullConstExp(t, p), tkRem2)
+		| _ -> Valid (ConstExp(NullConst, p), tkRem)
+	)*)
 	| (STRLIT s, p) :: tkRem -> Valid (ConstExp(SConst s, p), tkRem)
-	| (U8 i, p) :: tkRem -> Valid (ConstExp(U8Const i, p), tkRem)
-	| (LONG l, p) :: tkRem -> Valid (ConstExp(LConst l, p), tkRem)
-	| (KLIT k, p) :: tkRem -> Valid (ConstExp(KConst k, p), tkRem)
+	| (TILDE, p) :: tkRem ->
+		let* (t, tkRem2) = parseType tkRem in Valid (TConstExp(t, p), tkRem2)
 	| (AT, p) :: tkRem ->
-		let* (x, tkRem2) = parseDerefTId "@ Enum Syntax" tkRem in Valid (AtCtorExp(x, p), tkRem2)
+		let* (x, tkRem2) = parseDerefTId "@ (Inferred Enum) Constructor" tkRem in
+		Valid (AtCtorExp(x, p), tkRem2)
+		(*let* (xx, tkRem2) = parseDerefXId "@ Reference" tkRem in (match xx with
+			ParseId(x, _) -> Valid (FunPtrExp(x, p), tkRem2)
+			| ParseTId(x, _) -> Valid (AtCtorExp(x, p), tkRem2)
+		)*)
 	| (NEW, p) :: tkRem -> (match tkRem with
 		(DIM i, _) :: tkRem2 -> (match tkRem2 with
 			(LPAREN, _) :: _ ->
@@ -241,7 +268,8 @@ let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
 		if List.length el = 1 then Valid (List.hd el, tkRem)
 		else Valid (TupleExp(None, el, p), tkRem)
 	| (BAR, p) :: tkRem ->
-		let* (e, tkRem2) = parseExp tkRem in
+			(* cannot contain bitwise ops bc of parsing ambiguity *)
+		let* (e, tkRem2) = parseArrOpExp tkRem in
 		let* (_, tkRem3) = parseTk BAR "Measure Operator" tkRem2 in
 		Valid (AppExp(OpExp(MeasureOp, p), [e], p), tkRem3)
 
@@ -293,8 +321,8 @@ and parseAppObj: appObj parser = fun tkList -> match tkList with
 				Valid (IndirectApp(qn f, el, p), tkRem3)
 			| _ -> Valid (StructFieldApp(f, p), tkRem2)
 		)
-		| (INT i, _) :: tkRem2 ->
-			Valid (TupleIndexApp(i, p), tkRem2)
+		| (INT(i, _, _), _) :: tkRem2 ->
+			Valid (TupleIndexApp(Int64.to_int i, p), tkRem2)
 		| tk :: _ ->  Error (BadToken_Err(tk, "Property / Function Call"))
 		| _ -> Error (EOF_Err "Property / Function Call")
 	)
@@ -339,8 +367,12 @@ and parseArrOpExp: m_exp parser = fun tkList ->
 		| _ -> Valid (e1, tkRem)
 	)
 
+and parseBitRelExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseArrOpExp readBitRelOp tkList in
+	Valid (foldOpListL e0 eOpList, tkRem)
+
 and parseCompExp: m_exp parser = fun tkList ->
-	let* ((e0, eOpList), tkRem) = parseSepListFull parseArrOpExp readCompOp tkList in
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseBitRelExp readCompOp tkList in
 	Valid (foldOpListL e0 eOpList, tkRem)
 
 and parseRelExp: m_exp parser = fun tkList ->
@@ -567,28 +599,42 @@ let parseEnumDefFull (p: l_pos): m_dec list parser = fun tkList ->
 	) in Valid ((TDefDec(qn x, EnumTD cl_e, p)) :: attrsOpt, tkRem4)
 
 	(* declaration / type definition parsing *)
-
+(*
 let parseGlobArg: qual_name option parser = fun tkList -> match tkList with
 	(IN, _) :: tkRem -> let* (x, tkRem2) = parseDeclTId "Global Context" tkRem in Valid (Some (qn x), tkRem2)
 	| _ -> Valid (None, tkList)
+*)
+
+let parseTArgs: (string list) parser = fun tkList -> match tkList with
+	(LBRACE, _) :: _ ->
+		parseBraceWrap (parseSepList (parseVId "Type Argument") chkComma) "Type Argument List" tkList
+	| _ -> Valid ([], tkList)
+
+let td_with_args (td: m_tdef) (arg_l: string list): m_tdef = match arg_l with
+	[] -> td
+	| _ -> TFunTD(arg_l, td)
 
 let parseDec: (m_dec list) parser = fun tkList -> match tkList with
+		(* - function declarations *)
 	(FN, p) :: tkRem ->
 		let* (m, tkRem2) = parseMet Fn tkRem in
 		Valid ([FunDec(m, p)], tkRem2)
 	| (LIN, p) :: tkRem ->
 		let* (m, tkRem2) = parseMet Lin tkRem in
 		Valid ([FunDec(m, p)], tkRem2)
+		(* - type definitions *)
 	| (STRUCT, p) :: tkRem ->
 		let* (x, tkRem2) = parseDeclTId "Struct Definition" tkRem in
-		let* (fl, tkRem3) = parseBrackWrap (parseSepList (parseFieldDef "Struct Definition") chkComma)
-			"Struct Definition" tkRem2 in
-		Valid ([TDefDec(qn x, StructTD fl, p)], tkRem3)
+		let* (arg_l, tkRem3) = parseTArgs tkRem2 in
+		let* (fl, tkRem4) = parseBrackWrap (parseSepList (parseFieldDef "Struct Definition") chkComma)
+			"Struct Definition" tkRem3 in
+		Valid ([TDefDec(qn x, td_with_args (StructTD fl) arg_l, p)], tkRem4)
 	| (ENUM, p) :: tkRem ->	parseEnumDefFull p tkRem
 	(*| (EXTENDS, p) :: tkRem ->
 		let* (_, tkRem2) = parseTk ENUM "Enum Extension" tkRem in
 		parseExtendsOnly p tkRem2*)
 	(*| (UNION, p) :: tkRem -> parseUnionDefFull p tkRem*)
+		(* - misc top-level definitions *)
 	| (CONST, p) :: tkRem ->
 		let* (x, tkRem2) = parseDeclCId "Constant Declaration" tkRem in
 		let* (_, tkRem3) = parseTk EQ "Constant Declaration" tkRem2 in
@@ -596,21 +642,28 @@ let parseDec: (m_dec list) parser = fun tkList -> match tkList with
 		Valid ([ConstDec(qn x, e, p)], tkRem4)
 	| (GLOBALS, p) :: tkRem ->
 		let* (x, tkRem2) = parseDeclTId "Global Declaration" tkRem in
-		let* (cont, tkRem3) = parseGlobArg tkRem2 in
-		let* (fl, tkRem4) = parseBrackWrap (parseSepList parseStructInit chkComma) "Global Initializer" tkRem3 in
+		(*let* (cont, tkRem3) = parseGlobArg tkRem2 in*)
+		let* (fl, tkRem3) = parseBrackWrap (parseSepList parseStructInit chkComma) "Global Initializer" tkRem2 in
 		let fl' = List.map (fun (f, e) -> (qn f, e)) fl in
-		Valid ([GlobalsDec(qn x, cont, fl', p)], tkRem4)
+		Valid ([GlobalsDec(qn x, None, fl', p)], tkRem3)
 	| tk :: _ -> Error (BadToken_Err(tk, "Dec"))
 	| _ -> Error (EOF_Err "Dec")
 
 	(* full file parsing *)
+
+let parseRenaming: string option parser = fun tkList -> match tkList with
+	(AS, _) :: tkRem ->
+		let* (c, tkRem2) = parseDeclTId "Module Requirement" tkRem in
+		Valid (Some c, tkRem2)
+	| _ -> Valid (None, tkList)
 
 let parseReq: m_req parser = fun tkList -> match tkList with
 	(REFERENCES, p) :: tkRem ->
 		let* (c, tkRem2) = parseDeclTId "Module Requirement" tkRem in (match tkRem2 with
 			(DOT, _) :: tkRem3 ->
 				let* (c2, tkRem4) = parseDeclTId "Module Requirement" tkRem3 in
-				Valid (ShortRefReq([c; c2], p), tkRem4)
+				let* (cOpt, tkRem5) = parseRenaming tkRem4 in
+				Valid (ShortRefReq([c; c2], cOpt, p), tkRem5)
 			| (MODULES, _) :: tkRem3 ->
 				let* (cl, tkRem4) = parseSepList (parseDeclTId "Module Requirement") chkComma tkRem3 in
 				Valid (LongRefReq([c], cl, p), tkRem4)
@@ -625,17 +678,34 @@ let parseMain (tkList: token list): m_section parse_res =
 
 	(* table of contents parsing *)
 
-let parseChapter: string parser = fun tkList ->
-	let* (_, tkRem) = parseTk CHAPTER "Module Chapter" tkList in
-	let* (x, tkRem2) = parseDeclTId "Module Chapter" tkRem in Valid (x, tkRem2)
+let parseFunHeader: (string * m_fun_header) parser = fun tkList -> 
+	let* (p, tkRem) = parseTk FN "Function Header" tkList in
+	let* (f, tkRem2) = parseDeclId "Function Header" tkRem in
+	let* (pl, tkRem3) = parseParenWrap parseParamList "Parameter List" tkRem2 in
+	let* (tau_r, tkRem4) = parseRetTy tkRem3 in
+	Valid ((f, FunHeader(pl, tau_r, p)), tkRem4)
 
-let parseModule: m_mod parser = fun tkList ->
-	let* (p, tkRem) = parseTk MODULE "Module" tkList in
-	let* (m, tkRem2) = parseDeclTId "Module" tkRem in
-	let* (rList, tkRem3) = (parseList parseReq chkReqEnd) tkRem2 in
-	let* (xl, tkRem4) = (parseList parseChapter chkPureEnd) tkRem3 in
-	let* (_, tkRem5) = parseTk END "Module Chapter" tkRem4 in
-	Valid (Module(m, rList, xl, p), tkRem5)
+let parseModUnit: m_mod_unit parser = fun tkList -> match tkList with
+	(TYPE, p) :: tkRem ->
+		let* (x, tkRem2) = parseDeclTId "Module Unit (Type)" tkRem in
+		Valid (TypeDefMU(x, p), tkRem2)
+	(*| (IFACE, p) :: tkRem ->
+		let* (t, tkRem2) = parseDeclTId "Module Unit (Iface)" tkRem in
+		let* (fl, tkRem3) = (parseList parseFunHeader chkPureEnd) tkRem2 in
+		let* (_, tkRem4) = parseTk END "Interface Definition" tkRem3 in
+		Valid (IfaceDefMU(t, fl, p), tkRem4)*)
+	| tk :: _ -> Error (BadToken_Err(tk, "Module Unit"))
+	| _ -> Error (EOF_Err "Module Unit")
+
+let parseModule: m_mod parser = fun tkList -> match tkList with
+	(MODULE, p) :: tkRem ->
+		let* (m, tkRem2) = parseDeclTId "Module" tkRem in
+		let* (rList, tkRem3) = (parseList parseReq chkReqEnd) tkRem2 in
+		let* (xl, tkRem4) = (parseList parseModUnit chkPureEnd) tkRem3 in
+		let* (_, tkRem5) = parseTk END "Module Unit" tkRem4 in
+		Valid (Module(m, rList, xl, p), tkRem5)
+	| tk :: _ -> Error (BadToken_Err(tk, "Module"))
+	| _ -> Error (EOF_Err "Module")
 
 let parseToc (tkList: token list): m_toc parse_res =
 	let* (mList, _) = (parseList parseModule neverEnd) tkList in Valid (Toc mList)

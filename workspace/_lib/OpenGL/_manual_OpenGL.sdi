@@ -1,0 +1,58 @@
+
+_linker references
+	"opengl32"
+	"glad.c"
+end
+
+	(* textures *)
+
+fn glActiveTexture(Int texture)
+fn glBindTexture(Int target, U32 texture)
+
+fn glCompressedTexImage1D(Int target, Int level, Int internalFormat, CSize width, Int border, CSize imageSize, VPtr data)
+fn glCompressedTexImage2D(Int target, Int level, Int internalFormat,
+	CSize width, CSize height, Int border, CSize imageSize, VPtr data)
+fn glCompressedTexImage3D(Int target, Int level, Int internalFormat,
+	CSize width, CSize height, CSize depth, Int border, CSize imageSize, VPtr data)
+
+fn glCompressedTexSubImage1D(Int target, Int level, Int xoffset, CSize width, Int format, CSize imageSize, VPtr data)
+fn glCompressedTexSubImage2D(Int target, Int level, Int xoffset,
+	CSize width, CSize height, Int format, CSize imageSize, VPtr data)
+fn glCompressedTexSubImage3D(Int target, Int level, Int xoffset,
+	CSize width, CSize height, CSize depth, Int format, CSize imageSize, VPtr data)
+
+fn glCopyTexImage1D(Int target, Int level, Int internalFormat, Int x, Int y, CSize width, Int border)
+fn glCopyTexImage2D(Int target, Int level, Int internalFormat, Int x, Int y, CSize width, CSize height, Int border)
+fn glCopyTexSubImage1D(Int target, Int level, Int xoffset, Int x, Int y, CSize width)
+fn glCopyTexSubImage2D(Int target, Int level, Int xoffset, Int yoffset, Int x, Int y, CSize width, CSize height)
+fn glCopyTexSubImage3D(Int target, Int level, Int xoffset, Int yoffset, Int zoffset, Int x, Int y, CSize width, CSize height)
+
+fn glDeleteTextures(CSize n, CPtr[U32] textures)
+fn glGenTextures(CSize n, CPtr[U32] textures)
+fn glGetCompressedTexImage(Int target, Int lod, VPtr img)
+
+fn glGetTexImage(Int target, Int level, Int format, Int type, VPtr img)
+fn glGetTexLevelParameterfv(Int target, Int level, Int pname, CPtr[Float] params)
+fn glGetTexLevelParameteriv(Int target, Int level, Int pname, CPtr[Int] params)
+fn glGetTexParameterfv(Int target, Int pname, CPtr[Float] params)
+fn glGetTexParameteriv(Int target, Int pname, CPtr[Int] params)
+
+fn glIsTexture(U32 texture) Bool
+
+fn glTexImage1D(Int target, Int level, Int internalFormat, CSize width, Int border, Int format, Int type, VPtr data)
+fn glTexImage2D(Int target, Int level, Int internalFormat, CSize width, CSize height, Int border, Int format, Int type, VPtr data)
+fn glTexImage3D(Int target, Int level, Int internalFormat,
+	CSize width, CSize height, CSize depth, Int border, Int format, Int type, VPtr data)
+
+fn glTexParameterf(Int target, Int pname, Float param)
+fn glTexParameteri(Int target, Int pname, Int param)
+
+fn glGetString(Int name) CString?
+
+fn glViewport(Int x, Int y, Int width, Int height)
+fn glClearColor(Float r, Float g, Float b, Float a)
+fn glClear()
+
+	(* glad *)
+
+fn gladLoadGLLoader(Fn(CString) VPtr? loader) Int

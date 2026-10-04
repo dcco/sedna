@@ -1,5 +1,5 @@
 open Commons.Try_log
-open Builtin
+open Builtin.Builtin_core
 open Parser.Lex_token
 open Parser.Dusk_type
 open Parser.Dusk_ast
@@ -24,12 +24,7 @@ let is_boxed_type (env: type_env) (tau: g_type): bool = match tau with
 	| _ -> false
 
 let is_heap_type (env: type_env) (tau: g_type): bool = match tau with
-		(* 
-			- does not include all built types, only ones needing GC
-			TODO: replace doing this for builtins with a more structured method
-		*)
-	BuiltinTy x -> List.mem x ["PRNG"; "Mat4"]
-	| NamedTy cx -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
+	NamedTy cx -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
 		Some (_, TcTDef td) -> (match td with
 			StructTD _ -> true
 			| _ -> false
@@ -58,7 +53,7 @@ type g_fun =
 	| ArrayDimsGF of int
 	| ArrayAddGF
 	| StructFieldGF of rw * int
-	| CallGF of int list
+	| CallGF
 	| EnumRawGF
 	| EnumAttrGF of canon_name * string
 
@@ -74,41 +69,77 @@ let lookup_field_list (fl: (string * g_type) list) (x: string): (g_type * int) o
 
 	(* basic type checks *)
 
-let rec is_subtype (s: g_type) (t: g_type): bool = match (s, t) with
+type tvar_env = (string, g_type) Hashtbl.t
+
+let new_sol (): tvar_env = Hashtbl.create 10
+
+let rec apply_sol (sol: tvar_env) (t: g_type): g_type = match t with
+	TupleTy _tl -> TupleTy (List.map (apply_sol sol) _tl)
+	| ArrayTy(i, t) -> ArrayTy(i, apply_sol sol t)
+	| TagOfTy t -> TagOfTy (apply_sol sol t)
+	| NullableTy t -> NullableTy (apply_sol sol t)
+	| EmptyableTy t -> EmptyableTy (apply_sol sol t)
+	| FunTy(t_pl, t_r) -> FunTy(List.map (apply_sol sol) t_pl, apply_sol sol t_r)
+	| CPtrTy t -> CPtrTy (apply_sol sol t)
+	| VarTy a -> (match Hashtbl.find_opt sol a with
+		Some t -> t
+		| _ -> failwith "BUG: tc_exp.ml - Failed lookup of variable type for return type."
+	)
+	| KindTy _ -> failwith "BUG: tc_exp.ml - Kind type found iun return type."
+	| TagTupleTy _ -> failwith "BUG: tc_exp.ml - Tag tuple type found in return type."
+	| BotTy | PrimTy _ | IntTy _ | NamedTy _ | NullTy -> t
+
+let rec is_subtype (sol: tvar_env) (s: g_type) (t: g_type): bool = match (s, t) with
 	(BotTy, _) -> true
 	| (PrimTy s', PrimTy t') -> s' = t'
-	| (BuiltinTy s', BuiltinTy t') -> s' = t'
+	| (IntTy(u', s'), IntTy(v', t')) -> u' = v' && s' = t'
 	| (NamedTy s', NamedTy t') -> cr s' = cr t'
 	| (TupleTy _sl, TupleTy _tl) ->
 		if List.length _sl <> List.length _tl then false
-		else List.for_all (fun (s, t) -> is_subtype s t) (List.combine _sl _tl)
+		else List.for_all (fun (s, t) -> is_subtype sol s t) (List.combine _sl _tl)
 	| (TagTupleTy(s', _), NamedTy t') -> cr s' = cr t'
-	| (ArrayTy(i, s'), ArrayTy(j, t')) -> i = j && is_subtype s' t'
-	(*| (ValArrayTy s', ValArrayTy t') -> is_subtype s' t'*)
-	| (TagOfTy s', TagOfTy t') -> is_subtype s' t'
+	| (ArrayTy(i, s'), ArrayTy(j, t')) -> i = j && is_subtype sol s' t'
+	| (TagOfTy s', TagOfTy t') -> is_subtype sol s' t'
 	| (NullTy, NullTy) -> true
 	| (NullTy, NullableTy _) -> true
-	| (NullableTy s, NullableTy t) -> is_subtype s t
-	| (s, NullableTy t) -> is_subtype s t
+	| (NullTy, CPtrTy _) -> true
+	| (NullableTy s, NullableTy t) -> is_subtype sol s t
+	| (s, NullableTy t) -> is_subtype sol s t
+	| (EmptyableTy s, EmptyableTy t) -> is_subtype sol s t
+	| (s, EmptyableTy t) -> is_subtype sol s t
 	| (FunTy(s_pl, s_r), FunTy(t_pl, t_r)) ->
-		(List.for_all (fun (s, t) -> is_subtype s t) (List.combine s_pl t_pl)) && (is_subtype s_r t_r)
-	| (ArrayTy(i, _), ArrayGenTy) -> i = 1
-	| (ArrayGenTy, ArrayGenTy) -> true
-	| (_, BotTy) | (_, PrimTy _) | (_, BuiltinTy _) | (_, NamedTy _)
+		(List.for_all (fun (s, t) -> is_subtype sol s t) (List.combine s_pl t_pl)) && (is_subtype sol s_r t_r)
+	| (CPtrTy s', CPtrTy t') -> is_subtype sol s' t'
+	| (VarTy _, _) -> failwith "BUG: tc_exp.ml - Variable type found in left-hand position."
+	| (_, VarTy i) -> (match Hashtbl.find_opt sol i with
+		None -> Hashtbl.add sol i s; true
+		| Some t' -> is_subtype sol s t' 
+	)
+	| (KindTy _, KindTy _) -> true
+	| (_, BotTy) | (_, PrimTy _) | (_, IntTy _) | (_, NamedTy _)
 	| (_, TupleTy _) | (_, TagTupleTy _) | (_, ArrayTy _) | (_, TagOfTy _)
-	| (_, NullTy) | (_, FunTy _) | (_, ArrayGenTy) -> false
+	| (_, NullTy) | (_, FunTy _) | (_, CPtrTy _) | (_, KindTy _) -> false
 
-let tc_type (s: g_type) (t: g_type) (p: l_pos): unit tc_res =
-	if is_subtype s t then Valid () else Error (BadType_Err(s, t, p))
+let tc_type (sol: tvar_env) (info: tc_info) (s: g_type) (t: g_type) (p: l_pos): unit tc_res =
+	if is_subtype sol s t then Valid () else Error (BadType_Err(s, t, info, p))
 
-let tc_type_list (_sl: g_type list) (_tl: g_type list) (p: l_pos): unit tc_res =
-	if List.length _sl <> List.length _tl then Error (MismatchedArgNum_Err(List.length _sl, List.length _tl, p))
-	else let rec tctl_rec _sl _tl = match (_sl, _tl) with
+let tc_type_list (sol: tvar_env) (info: tc_info_stub) (arg_l: (gen_exp * g_type) list) (_tl: g_type list) (p: l_pos): unit tc_res =
+	if List.length arg_l <> List.length _tl then
+		Error (MismatchedArgNum_Err(List.length arg_l, List.length _tl, index_stub info None, p))
+	else let rec tctl_rec _al _tl ix = match (_al, _tl) with
 		([], []) -> Valid ()
-		| (s :: st, t :: tt) ->
-			let* _ = tc_type s t p in tctl_rec st tt
+		| ((e, s) :: st, t :: tt) ->
+			let* _ = tc_type sol (index_stub info (Some ix)) s t p in
+			let* _ = (match (e, t) with
+				(SizeExpC s', KindTy a) -> (match Hashtbl.find_opt sol a with
+					None -> Hashtbl.add sol a s'; Valid ()
+					| Some t' -> tc_type sol (index_stub info (Some ix)) s' t' p 
+				)
+				| (_, KindTy _) -> failwith "BUG: tc_exp.ml - Bad value for kind value in type-checking."
+				| _ -> Valid ()
+			) in tctl_rec st tt (ix + 1)
 		| _ -> failwith "BUG: tc_exp.ml - Type-checking for mismatched arguments reached unexpected location."
-	in tctl_rec _sl _tl
+	in tctl_rec arg_l _tl 0
 
 	(* special type narrowing functions *)
 
@@ -137,30 +168,37 @@ let narrow_type (env: type_env) (x: string) (tau: g_type): g_type = match try_na
 	(* expression type-checking *)
 
 let tc_const (c: const): g_type = match c with
-	IConst _ -> intTy
+	IConst(_, u, s) -> IntTy(u, s)
 	| FConst _ -> floatTy
 	| SConst _ -> stringTy
 	| BConst _ -> boolTy
-	| U8Const _ -> uint8Ty
-	| LConst _ -> uint64Ty
 	| NullConst -> NullTy
-	| KConst _ -> failwith "BUG: tc_const.ml - Type lookup performed directly on key constant."
 
 let stub_cn (x: string): canon_name = CN(x, [x])
 
-let tc_var (env: type_env) (x: string): g_type = match StringMap.find_opt x env.localIds with
+let tc_simple_var (env: type_env) (x: string): g_type = match StringMap.find_opt x env.localIds with
 	Some tau -> tau
 	| _ -> (match Hashtbl.find_opt env.globalIds x with
-		Some (_, tau) -> tau
+		Some (_, tau, _) -> tau
 		| _ -> failwith "BUG: tc_exp.ml - Failed variable lookup during type-checking phase."
 	)
 
+let tc_var (env: type_env) (x: canon_name): string * g_type = match StringMap.find_opt (cr x) env.localIds with
+	Some tau -> (cr x, tau)
+	| _ -> (match Hashtbl.find_opt env.globalIds (cr x) with
+		Some (_, tau, _) -> (cr x, tau)
+		| _ -> (match lookup_fun_tenv_nodis env x with
+			Some (x', (_, (tau_pl, tau_r))) -> (cr x', FunTy(tau_pl, tau_r))
+			| _ -> failwith "UNIMPLEMENTED: tc_exp.ml - Error for ambiguous function deref"
+		)
+	)
+
 let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * g_type) tc_res = match e with
-	ConstExp(KConst k, _) -> Valid (ConstExpC(KConst k), keyTy)
-	| ConstExp(c, _) -> Valid (ConstExpC c, tc_const c)
+	ConstExp(c, _) -> Valid (ConstExpC c, tc_const c)
+	| TConstExp(t, _) -> Valid (SizeExpC t, KindTy "A")
 	| VarExp(x, _) ->
-		let tau = tc_var env (cr x) in
-		Valid (VarExpC (cr x), narrow_type env (cr x) tau) (*match StringMap.find_opt (cr x) env.localIds with
+		let (x', tau) = tc_var env x in
+		Valid (VarExpC x', narrow_type env x' tau) (*match StringMap.find_opt (cr x) env.localIds with
 		Some tau -> Valid (VarExpC (cr x), tau)
 		| _ -> (match Hashtbl.find_opt env.globalIds (cr x) with
 			Some (_, tau) -> Valid (VarExpC (cr x), tau)
@@ -193,24 +231,26 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * g_type) tc_res = match e w
 		let tau = (match tau_o with None -> snd (List.hd et_l') | Some tau -> tau) in
 		let dim_prod = List.fold_left (fun i p -> i * p) 1 dim_l in
 		if dim_prod <> List.length el then Error (MismatchedArrayDim_Err (dim_l, dim_prod, List.length el, p))
-		else Valid (NewArrayExpC(List.map (fun i -> ConstExpC (IConst i)) dim_l, List.map fst et_l', tau), ArrayTy(i, tau))
+		else let dim_v = List.map (fun i -> ConstExpC (i_const i)) dim_l in
+			Valid (NewArrayExpC(dim_v, List.map fst et_l', tau), ArrayTy(i, tau))
 	| FormatArrayExp(_, _, _, p) -> Error (NestedFormat_Err p)
 	| NewStructExp(cx, fl, p) ->
 		let* ftl' = map_try_res (fun (x, e) -> let* (e', t) = tc_exp env e in Valid (x, e', t)) fl in
 		let* el' = (match Hashtbl.find_opt env.globalTIds (cr cx) with
 			Some (_, TcTDef (StructTD pl)) ->
+				let sol = new_sol () in
 				map_try_res (fun (x, tau_p) ->
 					match List.find_opt (fun (y, _, _) -> x = y) ftl' with
-						None -> Error (MissingField_Err(cr cx, x, p))
+						None -> Error (MissingField_Err(cr cx, x, FieldTCInfo(cr cx, x, tau_p), p))
 						| Some (_, e', tau_a) ->
-							let* _ = tc_type tau_a tau_p p in Valid e' 
+							let* _ = tc_type sol (FieldTCInfo(cr cx, x, tau_p)) tau_a tau_p p in Valid e' 
 				) pl
 			| Some _ -> Error (BadCtorStruct_Err(cr cx, p))
 			| _ -> Error (NonCtor_Err(cr cx, p))
 		) in Valid (NewStructExpC(cr cx, el'), NamedTy cx)
 	| IsExp(e, None, p) ->
 		let* (ev, tau) = tc_exp env e in
-		if is_subtype NullTy tau then Valid (BinExpC("ptr_eq", ev, ConstExpC NullConst), boolTy)
+		if is_subtype (new_sol ()) NullTy tau then Valid (BinExpC("ptr_eq", ev, ConstExpC NullConst), boolTy)
 		else Error (BadNullCheck_Err(tau, p))
 	| IsExp(e, Some ctor, p) ->
 		let* (ex, tau) = tc_exp env e in
@@ -221,46 +261,52 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * g_type) tc_res = match e w
 		) in
 		let ev = if derefFlag then MemoryFieldExpC(rc_of_type env tau, ex, None) else ex in
 		Valid (BinExpC("tag_eq", ev, ec), boolTy)
+	(*match Hashtbl.find_opt env.globalIds f with
+		Some (_, tau, _) -> (
+		)
+		| _ -> failwith "BUG: tc_exp.ml - Failed function variable lookup during type-checking phase."
+	*)
 	| AppExp(ef, el, p) ->
 		let* et_l' = tc_exp_list env el in
 		let tau_al = List.map snd et_l' in
 		let el' = List.map fst et_l' in
-		let* (fRaw, d, (tau_pl, tau_rn)) = tc_fun_exp env ef (hd_opt tau_al) in
-		let* _ = tc_type_list tau_al tau_pl p in (match d with
-			UnaryGF fsm -> Valid (UnaryExpC(fsm, List.nth el' 0), tau_rn)
-			| BinaryGF fsm -> Valid (BinExpC(fsm, List.nth el' 0, List.nth el' 1), tau_rn)
-			| InternalGF fsm ->	let* c = calc_cfun env fsm el' p in Valid (c, tau_rn)
-			| TupleIndexGF i -> Valid (MemoryFieldExpC(rc_of_type env tau_rn, List.hd el', Some i), tau_rn)
+		let* (fRaw, d, (tau_pl, _tau_rn)) = tc_fun_exp env ef (hd_opt tau_al) in
+		try let sol = new_sol () in
+			let* _ = tc_type_list sol (CallTCInfoStub(fRaw, tau_pl, _tau_rn)) et_l' tau_pl p in
+			let tau_rf = apply_sol sol _tau_rn in (match d with
+			UnaryGF fsm -> Valid (UnaryExpC(fsm, List.nth el' 0), tau_rf)
+			| BinaryGF fsm -> Valid (BinExpC(fsm, List.nth el' 0, List.nth el' 1), tau_rf)
+			| InternalGF fsm ->	let* c = calc_cfun env fsm el' tau_rf p in Valid (c, tau_rf)
+			| TupleIndexGF i -> Valid (MemoryFieldExpC(rc_of_type env tau_rf, List.hd el', Some i), tau_rf)
 			| ArrayIndexGF rw ->
 				let (rw', tau_r', et') =
-					if rw = RR then (rc_of_type env tau_rn, tau_rn, List.tl el')
+					if rw = RR then (rc_of_type env tau_rf, tau_rf, List.tl el')
 					else (WC (List.nth el' 1), unitTy, List.tl (List.tl el')) in
 				Valid (ArrayIndexExpC(rw', List.hd el', FullIndexC et'), tau_r')
-			| ArrayLengthGF -> Valid (ArrayLengthExpC (List.hd el'), tau_rn)
-			| ArrayDimsGF i -> Valid (ArrayDimsExpC(i, List.hd el'), tau_rn)
-			| ArrayAddGF -> Valid (ArrayAddExpC(List.hd el', List.nth el' 1), tau_rn)
+			| ArrayLengthGF -> Valid (ArrayLengthExpC (List.hd el'), tau_rf)
+			| ArrayDimsGF i -> Valid (ArrayDimsExpC(i, List.hd el'), tau_rf)
+			| ArrayAddGF -> Valid (ArrayAddExpC(List.hd el', List.nth el' 1), tau_rf)
 			| StructFieldGF(rw, i) ->
-				let rw' = if rw = RR then rc_of_type env tau_rn else WC (List.nth el' 1) in
-				Valid (MemoryFieldExpC(rw', List.nth el' 0, Some i), tau_rn)
-			| CallGF _ ->
-				(*let elx = List.mapi (fun i (e', tau_a) -> if List.mem i vl then BoxExpC(get_box_id_tenv env, e', tau_a) else e') et_l' in
-				*)
+				let rw' = if rw = RR then rc_of_type env tau_rf else WC (List.nth el' 1) in
+				Valid (MemoryFieldExpC(rw', List.nth el' 0, Some i), tau_rf)
+			| CallGF ->
 				let elx = List.map (fun (e', _) -> e') et_l' in
-				let iOpt = if is_boxed_type env tau_rn then Some (get_box_id_tenv env) else None in
-				Valid (CallExpC(iOpt, VarExpC fRaw, elx, tau_rn), tau_rn)
-			| EnumRawGF -> Valid (EnumRawExpC (List.hd el'), tau_rn)
+				let iOpt = if is_boxed_type env tau_rf then Some (get_box_id_tenv env) else None in
+				Valid (CallExpC(iOpt, VarExpC fRaw, elx, tau_rf), tau_rf)
+			| EnumRawGF -> Valid (EnumRawExpC (List.hd el'), tau_rf)
 			| EnumAttrGF(tx, x) ->
-				let rc = rc_of_type env tau_rn in
-				Valid (ArrayIndexExpC(rc, VarExpC (attrConstName tx x), RawIndexC (List.hd el')), tau_rn)
+				let rc = rc_of_type env tau_rf in
+				Valid (ArrayIndexExpC(rc, VarExpC (attrConstName tx x), RawIndexC (List.hd el')), tau_rf)
 		)
+		with Invalid_argument _ -> failwith "BUG: tc_exp.ml - Unknown operator OOB exception." 
 and tc_fun_exp (env: type_env) (ef: r_exp) (tau_a: g_type option): (string * g_fun * canon_name fun_type) tc_res = match ef with
 	VarExp(f, p) -> (match lookup_fun_tenv env f tau_a with
 		Some (_f, (d, tau_f)) -> (match d with
 			UnaryASMSym fsm -> Valid (cr _f, UnaryGF fsm, tau_f)
 			| BinaryASMSym fsm -> Valid (cr _f, BinaryGF fsm, tau_f)
 			| InternalSym fsm -> Valid (cr _f, InternalGF fsm, tau_f)
-			| ExternalSym vl -> Valid (cr _f, CallGF vl, tau_f)
-			| _ -> Valid (cr _f, CallGF [], tau_f)
+			| ExternalSym -> Valid (cr _f, CallGF, tau_f)
+			| _ -> Valid (cr _f, CallGF, tau_f)
 		)
 		| None -> Error (NoOverload_Err(cr f, tau_a, p))
 	)
@@ -328,7 +374,7 @@ and tc_fun_exp (env: type_env) (ef: r_exp) (tau_a: g_type option): (string * g_f
 	| OpExp(ArrayRemoveOp, _) -> (match tau_a with
 		None -> failwith "BUG: tc_exp.ml - No argument for array removal operation."
 		| Some (ArrayTy(1, tau_v)) ->
-			Valid ("_a1_builtin_remove", CallGF [], ([ArrayTy(1, tau_v); intTy], unitTy))
+			Valid ("_a1_builtin_remove", CallGF, ([ArrayTy(1, tau_v); intTy], unitTy))
 		| Some _ -> failwith "UNIMPLEMENTED: tc_exp.ml - No default function name for array removal operation."
 	)
 	| OpExp(TupleTagOp, p) -> (match tau_a with
@@ -367,10 +413,10 @@ let tc_extra_exp (env: type_env) (e: r_exp) (x: string): (gen_exp * g_type * gen
 		let* dt_l' = tc_exp_list env dim_l in
 		let* (e', tau) = tc_exp env e in
 		let b = [
-			VarStmtC("__i", ConstExpC (IConst 0), intTy);
+			VarStmtC("__i", ConstExpC (i_const 0), intTy);
 			WhileStmtC(BinExpC("ilt", VarExpC "__i", ArrayLengthExpC (VarExpC x)), [
 				EvalStmtC (ArrayIndexExpC(WC e', VarExpC x, RawIndexC (VarExpC "__i")));
-				AssignStmtC("__i", BinExpC("iadd", VarExpC "__i", ConstExpC (IConst 1)))
+				AssignStmtC("__i", BinExpC("xadd", VarExpC "__i", ConstExpC (i_const 1)))
 			])
 		] in Valid (NewArrayExpC(List.map fst dt_l', [], tau), ArrayTy(i, tau), b)
 	| _ -> let* (e', tau) = tc_exp env e in Valid (e', tau, [])
@@ -387,7 +433,7 @@ let var_ctor_list (env: type_env) (x: string): string list =
 			| UnionTD ul -> List.map (fun (cx, _, _) -> cr cx) ul
 			| _ -> print_string tx; failwith "BUG: tc_exp.ml - Attempted to read constructor list for non-enum/union variable."
 		)
-	in match tc_var env x with
+	in match tc_simple_var env x with
 	NamedTy tx -> vcl_aux (cr tx)
 	| TagOfTy (NamedTy tx) -> vcl_aux (cr tx)
 	| _ -> failwith "BUG: tc_exp.ml - Attempted to read constructor list for non-enum/union variable."
@@ -411,19 +457,22 @@ let rec read_guard_exp (env: type_env) (e: gen_exp): guard_map = match e with
 
 let rec tc_stmt (cont: fun_cont) (env: type_env) (s: r_stmt) (tau_r: g_type): (type_env * gen_stmt list * bool) tc_res = match s with
 	EvalStmt(e, _) ->
-		let* (e', _) = tc_exp env e in Valid (env, [EvalStmtC e'], false)
+		let* (e', t) = tc_exp env e in
+		if t = BotTy then Valid (env, [EvalStmtC e'; UnreachableStmtC], true)
+		else Valid (env, [EvalStmtC e'], false)
 	| AssignStmt(x, e, p) ->
 		let* (e', tau) = tc_exp env e in
-		let* _ = tc_type tau (tc_var env (cr x)) p in 
+		let tau_x = tc_simple_var env (cr x) in
+		let* _ = tc_type (new_sol ()) (AssignTCInfo(cr x, tau_x)) tau tau_x p in 
 		let env' = { env with guardMap = StringMap.update (cr x) (fun _ -> None) env.guardMap } in
 		Valid (env', [AssignStmtC(cr x, e')], false)
 	| ReturnStmt(eo, p) -> (match eo with
 		None ->
-			if not (is_subtype unitTy tau_r) then Error (BadReturn_Err(unitTy, tau_r, p))
+			if not (is_subtype (new_sol ()) unitTy tau_r) then Error (BadReturn_Err(unitTy, tau_r, p))
 			else Valid (env, [ReturnStmtC None], true)
 		| Some e ->
 			let* (e', t) = tc_exp env e in
-			if not (is_subtype t tau_r) then Error (BadReturn_Err(t, tau_r, p))
+			if not (is_subtype (new_sol ()) t tau_r) then Error (BadReturn_Err(t, tau_r, p))
 			else Valid (env, [ReturnStmtC (Some e')], true)
 	)
 	| PatStmt(px, e, p) -> (match px with
@@ -454,10 +503,14 @@ let rec tc_stmt (cont: fun_cont) (env: type_env) (s: r_stmt) (tau_r: g_type): (t
 		let* (ec', _) = tc_exp env ec in
 		let gc = read_guard_exp env ec' in
 		let env1 = { env with guardMap = conj_guard_map gc env.guardMap } in
-		let* (_, b1', term1) = tc_body (nonLinCont cont) env1 b1 tau_r in
+		let* (env1', b1', term1) = tc_body (nonLinCont cont) env1 b1 tau_r in
 		let env2 = { env with guardMap = conj_guard_map (neg_guard_map gc) env.guardMap } in
-		let* (_, b2', term2) = tc_body (nonLinCont cont) env2 b2 tau_r in
-		Valid (env, [IfStmtC(ec', b1', term1, b2', term2)], term1 && term2)
+		let* (env2', b2', term2) = tc_body (nonLinCont cont) env2 b2 tau_r in
+			(* if either branch is terminating, we can use the other branch's guard *)
+		let envF =
+			if term1 && term2 then { env with guardMap = conj_guard_map env1'.guardMap env2.guardMap }
+			else if term1 then env2' else if term2 then env1' else env in  
+		Valid (envF, [IfStmtC(ec', b1', term1, b2', term2)], term1 && term2)
 	| WhileStmt(ec, b, _) ->
 		let* (ec', _) = tc_exp env ec in
 		let gc = read_guard_exp env ec' in
@@ -482,10 +535,10 @@ let rec tc_stmt (cont: fun_cont) (env: type_env) (s: r_stmt) (tau_r: g_type): (t
 		let cond' = BinExpC(cmp, x', end') in
 			(* for loop body: body; _iterator = _iterator + 1 *)
 		let* (_, b', _) = tc_body (nonLinCont cont) env' b tau_r in
-		let b'' = b' @ [AssignStmtC(i', BinExpC("iadd", x', ConstExpC (IConst 1)))] in
+		let b'' = b' @ [AssignStmtC(i', BinExpC("xadd", x', ConstExpC (i_const 1)))] in
 			(* for loop body: prefix with x = e[_iterator] for list case *)
 		(*let bf' = if list_flag then AssignStmtC(i', ArrayIndexExpC(e', [x'], tau_x)) :: b'' else b'' in*)
-		Valid (env, [VarStmtC(i', ConstExpC (IConst 0), intTy); WhileStmtC(cond', b'')], false)
+		Valid (env, [VarStmtC(i', ConstExpC (i_const 0), intTy); WhileStmtC(cond', b'')], false)
 	| GCCollectStmt _ -> Valid (env, [GCCollectStmtC], false)
 and tc_body (cont: fun_cont) (env: type_env) (b: r_stmt list) (tau_r: g_type): (type_env * gen_stmt list * bool) tc_res = match b with
 	[] -> Valid (env, [], false)
@@ -535,23 +588,23 @@ let tc_dec (env: type_env) (d: r_dec): ((string * gen_dec) list) tc_res = match 
 		map_try_resi (fun (fx, tau) ix ->
 			let* el' = map_try_res (fun (_, el) ->
 				let* (e', tau_e) = tc_exp env (List.nth el ix) in
-				let* _ = tc_type tau_e tau p in
-				calc_exp env e'
+				let* _ = tc_type (new_sol ()) (FieldTCInfo(cr tx, fx, tau)) tau_e tau p in
+				calc_exp env p e'
 			) cl in
 			let ea = ConstArrayExpC([List.length cl], el', tau) in
 			let f = attrConstName tx fx in
 			Valid (f, ConstDecC ea)
 		) fl
-	| ConstDec(x, e, _) ->
+	| ConstDec(x, e, p) ->
 		let* (e', tau) = tc_exp env e in
-		let* ef = calc_exp env e' in
-		Hashtbl.add env.globalIds (cr x) (x, tau);
+		let* ef = calc_exp env p e' in
+		Hashtbl.add env.globalIds (cr x) (x, tau, Some ef);
 		Valid [(cr x, ConstDecC ef)]
 	| GlobalsDec(x, c, fl, _) ->
 		let* fl' = map_try_res (fun (f, e) ->
 			let* (e', tau) = tc_exp env e in
 			(*let gName = x ^ "_" ^ f in*)
-			Hashtbl.add env.globalIds (cr f) (f, tau);
+			Hashtbl.add env.globalIds (cr f) (f, tau, None);
 			Valid (cr f, e', tau)
 		) fl in
 		let sl = List.map (fun (x, e', tau) ->

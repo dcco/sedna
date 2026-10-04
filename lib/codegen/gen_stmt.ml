@@ -41,6 +41,7 @@ let rec genStmt (cont: llvm_cont) (env: dusk_env) (b: blockInfo) (s: gen_stmt): 
 				| _ -> build_ret ve cont.builder
 			)
 	) in b
+	| UnreachableStmtC -> ignore (build_unreachable cont.builder); b
 	| IfStmtC(ec, body, term1, elseBody, term2) ->
 		let (vc, _) = genExp cont env ec in
 			(* create branch statement *)

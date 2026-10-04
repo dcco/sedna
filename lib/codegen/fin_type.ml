@@ -1,5 +1,5 @@
 open Parser.Dusk_type
-open Builtin
+open Builtin.Builtin_core
 
 	(*
 		types for generation

@@ -1,0 +1,72 @@
+
+	(* linking information *)
+
+_linker references
+	"glfw3dll"
+end
+
+	(* glfw types *)
+
+type Window
+type Monitor
+
+	(*
+		initialization
+	*)
+
+fn glfwInit() Int
+fn glfwTerminate()
+fn glfwGetVersion(Out Int major, Out Int minor, Out Int rev)
+fn glfwGetVersionString() CPtr[U8]
+fn glfwGetError(Out CPtr[U8] desc) Int
+
+	(*
+		window API
+	*)
+
+fn glfwWindowHint(Int hint, Int value)
+
+fn glfwCreateWindow(Int width, Int height, CPtr[U8] title, Monitor? monitor, Window? share) Window?
+fn glfwDestroyWindow(Window window)
+fn glfwWindowShouldClose(Window window) Int
+fn glfwSetWindowShouldClose(Window window, Int value)
+
+fn glfwGetWindowPos(Window window, Out Int x, Out Int y)
+fn glfwSetWindowPos(Window window, Int x, Int y)
+fn glfwGetWindowSize(Window window, Out Int width, Out Int height)
+fn glfwSetWindowSize(Window window, Int width, Int height)
+
+	-- framebuffer
+fn glfwGetFramebufferSize(Window window, Out Int width, Out Int height)
+
+	-- events
+fn glfwPollEvents()
+fn glfwWaitEvents()
+fn glfwSwapBuffers(Window window)
+
+	(*
+		open gl context
+	*)
+
+fn glfwMakeContextCurrent(Window? window)
+fn glfwSwapInterval(Int interval)
+fn glfwGetProcAddress(CPtr[U8] name) VPtr
+
+	(*
+		monitor
+	*)
+
+fn glfwGetPrimaryMonitor() Monitor?
+
+	(*
+		input
+	*)
+
+fn glfwGetKey(Window window, Int key)
+fn glfwGetMouseButton(Window window, Int button) Int
+fn glfwGetCursorPos(Window window, Out F64 x, Out F64 y)
+fn glfwSetCursorPos(Window window, F64 x, F64 y)
+
+	-- time
+fn glfwGetTime() F64
+fn glfwSetTime(F64 time)

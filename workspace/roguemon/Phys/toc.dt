@@ -1,8 +1,0 @@
-
-module Main
-	references Sys modules Sulfur, Rom
-	references Commons.Core
-	chapter MoveObj
-	chapter GameTile
-	chapter GameRoom
-end

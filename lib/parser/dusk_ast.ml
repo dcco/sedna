@@ -8,14 +8,13 @@ open Dusk_type
 	*)
 
 type const =
-	IConst of int
+	IConst of Int64.t * bool * bit_width
 	| FConst of float
 	| SConst of string
 	| BConst of bool
-	| U8Const of int
-	| LConst of Int64.t
 	| NullConst
-	| KConst of string
+
+let i_const i = IConst(Int64.of_int i, false, S32)
 
 type rw = RR | WW
 
@@ -30,9 +29,11 @@ type x_op =
 	| ArrayRemoveOp
 	| TupleTagOp
 	| EnumRawOp
+	| CBoxOp
 
 type ('m, 'ann) exp =
 	ConstExp of const * 'ann
+	| TConstExp of 'm raw_type * 'ann
 		(* selectors *)
 	| VarExp of 'm * 'ann
 	| OpExp of x_op * 'ann
@@ -80,6 +81,7 @@ type m_stmt = (qual_name, l_pos) stmt
 
 let ann_exp e = match e with
 	ConstExp(_, a) -> a
+	| TConstExp(_, a) -> a
 	| OpExp(_, a) -> a
 	| VarExp(_, a) -> a
 	| AtCtorExp(_, a) -> a
@@ -123,23 +125,30 @@ type ('m, 'ann) dec =
 	| GlobalsDec of 'm * 'm option * ('m * ('m, 'ann) exp) list * 'ann
 
 type 'ann req =
-	ShortRefReq of string list * 'ann
+	ShortRefReq of string list * string option * 'ann
 	| LongRefReq of string list * string list * 'ann
 
 type ('m, 'ann) section =
 	Section of 'ann req list * ('m, 'ann) dec list
 
 let ann_req r = match r with
-	ShortRefReq(_, a) -> a
+	ShortRefReq(_, _, a) -> a
 	| LongRefReq(_, _, a) -> a
 
 	(* table of contents *)
-	
-type 'ann _mod =
-	Module of string * 'ann req list * string list * 'ann
 
-type 'ann toc =
-	Toc of 'ann _mod list
+type ('m, 'ann) fun_header =
+	FunHeader of (string * 'm raw_type) list * 'm raw_type * 'ann
+
+type ('m, 'ann) mod_unit =
+	TypeDefMU of string * 'ann
+(*	| IfaceDefMU of string * (string * ('m, 'ann) fun_header) list * 'ann*)
+
+type ('m, 'ann) _mod =
+	Module of string * 'ann req list * ('m, 'ann) mod_unit list * 'ann
+
+type ('m, 'ann) toc =
+	Toc of ('m, 'ann) _mod list
 
 type m_met = (qual_name, l_pos) met
 type m_attr_case = (qual_name, l_pos) attr_case
@@ -147,5 +156,7 @@ type m_dec = (qual_name, l_pos) dec
 type m_req = l_pos req
 type m_section = (qual_name, l_pos) section
 
-type m_mod = l_pos _mod
-type m_toc = l_pos toc
+type m_fun_header = (qual_name, l_pos) fun_header
+type m_mod_unit = (qual_name, l_pos) mod_unit
+type m_mod = (qual_name, l_pos) _mod
+type m_toc = (qual_name, l_pos) toc

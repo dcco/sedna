@@ -14,9 +14,10 @@ let voidType = void_type context
 let i8Type = i8_type context
 let tagType = i16_type context
 let iType = i32_type context
-let kType = iType
+let i16Type = i16_type context
 let i64Type = i64_type context
 let fType = float_type context
+let f64Type = double_type context
 let bType = i1_type context
 let _ptrType = pointer_type context
 
@@ -72,6 +73,7 @@ let gcDimsType n = struct_type context (Array.of_list (List.init n (fun _ -> iTy
 let genType (tau: dusk_type): lltype = match tau with	
 	PrimDT t -> t
 	| FunDT(t, _) -> t
+	(*| FunDT(_, _) -> _ptrType*)
 	| StackPtrDT _ -> _ptrType
 	| HeapPtrDT _ -> _ptrType
 
@@ -106,32 +108,42 @@ let alignOfStoreType (tau: store_type): int option = match tau with
 
 let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = match tau with
 	PrimTy "Unit" -> PrimST voidType
-	| PrimTy "Int" -> PrimST iType
+	| IntTy(_, s) -> (match s with
+		S8 -> PrimST i8Type
+		| S16 -> PrimST i16Type
+		| S32 -> PrimST iType
+		| S64 -> PrimST i64Type
+	)
 	| PrimTy "Float" -> PrimST fType
+	| PrimTy "F64" -> PrimST f64Type
 	| PrimTy "Bool" -> PrimST bType
 	| PrimTy "String" -> PrimST _ptrType
-	| PrimTy "U8" -> PrimST i8Type
-	| PrimTy "U32" -> PrimST iType
-	| PrimTy "U64" -> PrimST i64Type
-	| PrimTy "Key" -> PrimST kType
+	| PrimTy "PRNG" -> PrimST _ptrType
+	| PrimTy "VPtr" -> PrimST _ptrType
 	| PrimTy x -> failwith ("BUG: gen_type.ml - Non-existent primitive type \"" ^ x ^ "\". " ^ debug)
-	| BuiltinTy _ -> PrimST _ptrType
 	| NamedTy t -> _namedStoreType debug env t
 	| TupleTy tau_l -> TupleST (Array.of_list (List.map (toStoreType debug env) tau_l))
+	| EmptyableTy tau -> toStoreType debug env tau
 	| TagTupleTy(t, _) -> _namedStoreType debug env t
 	| ArrayTy(_, tau) -> gcArrStoreType (toStoreType debug env tau)
-	| ArrayGenTy -> gcArrStoreType (PrimST iType)
 	| TagOfTy _ -> PrimST tagType
 	| FunTy _ -> PrimST _ptrType
+	| CPtrTy t -> StructPtrST [| ExplDST (toStoreType debug env t) |]
 	| NullableTy tau -> toStoreType debug env tau
 	| BotTy -> PrimST iType
 	| NullTy -> failwith ("BUG: gen_type.ml - Null-only type encountered while generating storage type.")
+		(* this case only comes up as a filler for array functions *)
+	| VarTy _ -> PrimST iType
+		(* the way a "kind" is actually passed in is as the size of the underlying datatype *)
+	| KindTy _ -> PrimST i64Type
+		(*failwith ("BUG: gen_type.ml - Variable type encountered while generating storage type.")*)
 and _namedStoreType (debug: string) (env: dusk_env) (t: canon_name): store_type =
 	match Hashtbl.find_opt env (DTName (cr t)) with
 	Some (DTDef td) -> (match td with
 		EnumTD_C -> PrimST tagType
 		| OpaqueTD_C(i, align) -> TagTupleST(array_type i8Type i, align)
 		| StructTD_C(tau_l, _) -> StructPtrST (Array.map (fun t -> ImplDST t) tau_l)
+		| UnknownTD_C -> PrimST _ptrType
 		(*| StructTD_C(tau_l, _) -> StructPtrST tau_l*)
 	) 
 	| Some v -> failwith ("BUG: gen_type.ml - Invalid type \"" ^ (cr t) ^
@@ -179,10 +191,11 @@ let toValType (debug: string) (env: dusk_env) (tau: g_type): dusk_type =
 		storeToBoxType: boxes a storage type into its "main" type
 	*)
 
-let storeToBoxType (debug: string) (tau: store_type): dusk_type = match tau with
+let storeToBoxType (_: string) (tau: store_type): dusk_type = match tau with
 	TupleST tau_a -> StackPtrDT (StructIDT tau_a)
 	| TagTupleST(t, align) -> StackPtrDT (OpaqueIDT(t, align))
-	| _ -> failwith ("BUG: gen_type.ml - Attempting to box type that should not be boxed. " ^ debug)
+	| _ -> StackPtrDT (StructIDT [| tau |])
+	(*| _ -> failwith ("BUG: gen_type.ml - Attempting to box type that should not be boxed. " ^ debug)*)
 	(*
 	PrimST t -> PrimDT t
 	| StructPtrST tau_a -> StackPtrDT (StructIDT (Array.map (toStoreType debug env) tau_a))

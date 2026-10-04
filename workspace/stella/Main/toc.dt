@@ -1,7 +1,0 @@
-
-module Space
-	references Sys modules Os, Sulfur
-	references Commons.Noise
-	chapter SpaceMap
-	chapter BackGen
-end

@@ -1,0 +1,28 @@
+
+module Material
+	references Sys.Os
+	references OpenGL.Main
+	type Vertex
+	type Mesh
+	type TexArray
+	type TexImage
+end
+
+module Shader
+	references Sys.Os
+	references OpenGL.Main
+	references Sulfur modules Material
+	type ShaderAttrDef
+	type Shader
+end
+
+module RenderData
+	references OpenGL.Main
+	type RenderData
+end
+
+module Main
+	references OpenGL.Main
+	references Sulfur modules Material, Shader, RenderData
+	type Sulfur
+end

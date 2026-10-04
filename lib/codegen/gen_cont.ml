@@ -36,7 +36,7 @@ type llvm_cont = {
 }
 
 let newLCont (): llvm_cont =
-	let m = create_module context "dusk" in
+	let m = create_module context "sedna" in
 	let ptrType = pointer_type context in {
 		llmod = m;
 		data_layout = DataLayout.of_string (data_layout m);
@@ -54,17 +54,6 @@ let newLCont (): llvm_cont =
 let genRef (cont: llvm_cont): int = cont.uid := !(cont.uid) + 1; !(cont.uid) - 1
 
 	(*
-	let m = create_module context "dusk"
-	in LCont(m, DataLayout.of_string (data_layout m), builder context, ref 0)
-
-let setLayoutCont (LCont(m, _, b, r): llvm_cont) (l': DataLayout.t): llvm_cont = LCont(m, l', b, r)
-
-let llmod (LCont(m, _, _, _): llvm_cont): llmodule = m
-let builder (LCont(_, _, b, _): llvm_cont): llbuilder = b
-let genRef (LCont(_, _, _, r): llvm_cont): int = r := !r + 1; !r - 1
-*)
-
-	(*
 		dusk compilation type definitions:
 			- enum: raw enum value
 			- opaque: opaque array of bytes used for unions
@@ -76,6 +65,7 @@ type dusk_tdef =
 	EnumTD_C
 	| OpaqueTD_C of int * int
 	| StructTD_C of g_type array * llvalue
+	| UnknownTD_C
 
 	(*
 		dusk type: type of an llvm value augmented w/ the "inner" structure of pointer values
@@ -110,6 +100,12 @@ and inner_type =
 	| StructIDT of store_type array
 	| ArrayIDT of store_type
 
+let string_of_dtype (t: dusk_type): string = match t with
+	PrimDT t -> string_of_lltype t
+	| FunDT(t, _) -> string_of_lltype t
+	| StackPtrDT _ -> "stack_ptr_type"
+	| HeapPtrDT _ -> "heap_ptr_type"
+
 	(* var type: wraps variables - ensures that a load is done to obtain the underlying type
 		a regular variable is always a pointer to a dusk_type, so we treat it accordingly
 		- fun: stores the LLVM function type + storage return type
@@ -119,6 +115,7 @@ type var_type =
 	VarVT of dusk_type
 	| LitVT
 	| FunVT of lltype * store_type
+	| FunPtrVT of lltype * store_type
 
 	(*
 		code generation environment
@@ -168,6 +165,7 @@ let string_of_dval (v: dusk_fval): string = match v with
 	DVal(_, VarVT _) -> "VAL"
 	| DVal(_, LitVT) -> "LIT"
 	| DVal(_, FunVT _) -> "FUNC"
+	| DVal(_, FunPtrVT _) -> "FPTR"
 	| DBoxVal _ -> "BOX"
 	(*| DGlobal _ -> "GLOBAL"
 	| DFunVal(_, _) -> "FUNC"*)

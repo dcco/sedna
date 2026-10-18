@@ -73,6 +73,7 @@ rule token = parse
 	| "--" { comment_line lexbuf }
 	| "Fn" { lexWrap lexbuf T_FN }
 	| "Out" { lexWrap lexbuf T_OUT }
+	| "TYPE" { lexWrap lexbuf T_TYPE }
 	| "_linker" { lexWrap lexbuf L_LINKER }
 	| "references" { lexWrap lexbuf REFERENCES }
 	| "module" { lexWrap lexbuf MODULE }
@@ -174,6 +175,7 @@ rule token = parse
 	| "}" { lexWrap lexbuf RBRACK }
 	| "," { lexWrap lexbuf COMMA }
 	| "~" { lexWrap lexbuf TILDE }
+	| "??" { lexWrap lexbuf QQ }
 	| "?" { lexWrap lexbuf QMARK }
 	| "@" { lexWrap lexbuf AT }
 	| eof { lexWrap lexbuf EOF }

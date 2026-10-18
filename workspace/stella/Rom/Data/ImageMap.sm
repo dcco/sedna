@@ -1,7 +1,11 @@
 
 struct ImageMap{
-	1d[String?] kList,
-	1d[TexImage?] vList
+	HashMap[String, TexImage] data
 }
 
+fn newImageMap() ImageMap
+	return new ImageMap{
+		data = newHashMap(~String, ~TexImage, 100)
+	}
+end
 

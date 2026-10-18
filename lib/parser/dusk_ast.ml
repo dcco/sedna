@@ -24,12 +24,11 @@ type x_op =
 	TupleIndexOp of int
 	| StructFieldOp of rw * string
 	| ArrayIndexOp of rw
-	| MeasureOp
-	| ArrayAddOp
-	| ArrayRemoveOp
 	| TupleTagOp
 	| EnumRawOp
-	| CBoxOp
+	| MeasureOp
+	| ArrayAddOp
+	(*| ArrayRemoveOp*)
 
 type ('m, 'ann) exp =
 	ConstExp of const * 'ann
@@ -44,9 +43,10 @@ type ('m, 'ann) exp =
 	| DataArrayExp of int * ('m raw_type) option * int list * ('m, 'ann) exp list * 'ann
 		(* - arity, dynamic dimensions, initializer *)
 	| FormatArrayExp of int * ('m, 'ann) exp list * ('m, 'ann) exp * 'ann
+	| ZeroArrayExp of int * ('m, 'ann) exp list * 'm raw_type * 'ann
 	| NewStructExp of 'm * ('m, 'ann) field_init * 'ann
 		(* selectors *)
-	| IsExp of ('m, 'ann) exp * 'm option * 'ann
+	(*| IsExp of ('m, 'ann) exp * 'm option * 'ann*)
 		(* function call *)
 	| AppExp of ('m, 'ann) exp * ('m, 'ann) exp list * 'ann
 and ('m, 'ann) field_init = (string * ('m, 'ann) exp) list
@@ -88,8 +88,9 @@ let ann_exp e = match e with
 	| TupleExp(_, _, a) -> a
 	| DataArrayExp(_, _, _, _, a) -> a
 	| FormatArrayExp(_, _, _, a) -> a
+	| ZeroArrayExp(_, _, _, a) -> a
 	| NewStructExp(_, _, a) -> a
-	| IsExp(_, _, a) -> a
+	(*| IsExp(_, _, a) -> a*)
 	| AppExp(_, _, a) -> a
 
 let ann_stmt s = match s with

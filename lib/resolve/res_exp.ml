@@ -25,14 +25,17 @@ let rec resolve_exp (env: res_env) (e: m_exp): r_exp rs_res = match e with
 	| FormatArrayExp(i, dim_l, e, p) ->
 		let* dim_l' = resolve_exp_list env dim_l in
 		let* e' = resolve_exp env e in Valid (FormatArrayExp(i, dim_l', e', p))
+	| ZeroArrayExp(i, dim_l, t, p) ->
+		let* dim_l' = resolve_exp_list env dim_l in
+		let* t' = resolve_type env p t in Valid (ZeroArrayExp(i, dim_l', t', p))
 	| NewStructExp(x, fl, p) ->
 		let* x' = resolve_name env p x in
 		let* fl' = map_try_res (fun (f, e) ->
 			let* e' = resolve_exp env e in Valid (f, e')
 		) fl in Valid (NewStructExp(x', fl', p))
-	| IsExp(e, y, p) ->
+	(*| IsExp(e, y, p) ->
 		let* e' = resolve_exp env e in
-		let* y' = opt_try_res (resolve_name env p) y in Valid (IsExp(e', y', p))
+		let* y' = opt_try_res (resolve_name env p) y in Valid (IsExp(e', y', p))*)
 	| AppExp(ef, el, p) ->
 		let* ef' = resolve_exp env ef in
 		let* el' = resolve_exp_list env el in Valid (AppExp(ef', el', p))

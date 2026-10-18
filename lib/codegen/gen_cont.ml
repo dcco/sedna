@@ -100,11 +100,27 @@ and inner_type =
 	| StructIDT of store_type array
 	| ArrayIDT of store_type
 
+let _stringify_arr (f: 'a -> string) (a: 'a array): string =
+	String.concat ", " (List.map f (Array.to_list a))
+
+let rec string_of_store_type (t: store_type): string = match t with
+	PrimST t -> string_of_lltype t
+	| TupleST a -> "(" ^ (_stringify_arr string_of_store_type a) ^ ")"
+	| TagTupleST(t, i) -> (string_of_lltype t) ^ " (" ^ (string_of_int i) ^ ")"
+	| ArrayPtrST t -> "[" ^ (string_of_store_type t) ^ "]"
+	| StructPtrST _ -> "_struct_ptr_type_"
+	| FunPtrST _ -> "_fun_ptr_type_"
+
+let string_of_inner_type (t: inner_type): string = match t with
+	OpaqueIDT(t, i) -> (string_of_lltype t) ^ " (" ^ (string_of_int i) ^ ")"
+	| StructIDT a -> "{" ^ (_stringify_arr string_of_store_type a) ^ "}"
+	| ArrayIDT t -> "[" ^ (string_of_store_type t) ^ "]"
+
 let string_of_dtype (t: dusk_type): string = match t with
 	PrimDT t -> string_of_lltype t
 	| FunDT(t, _) -> string_of_lltype t
-	| StackPtrDT _ -> "stack_ptr_type"
-	| HeapPtrDT _ -> "heap_ptr_type"
+	| StackPtrDT t -> "stack< " ^ (string_of_inner_type t) ^ " >"
+	| HeapPtrDT t -> "heap< " ^ string_of_inner_type t ^ " >"
 
 	(* var type: wraps variables - ensures that a load is done to obtain the underlying type
 		a regular variable is always a pointer to a dusk_type, so we treat it accordingly

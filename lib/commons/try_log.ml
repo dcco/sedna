@@ -29,6 +29,12 @@ let map_try_resi (f: 'a -> int -> ('b, 'c) try_res) (l: 'a list): ('b list, 'c) 
 			let* t' = mtri t (i + 1) in Valid (v' :: t')
 	in mtri l 0
 
+let rec fold_try_res (f: 'b -> 'a -> ('b, 'c) try_res) (z: 'b) (l: 'a list): ('b, 'c) try_res = match l with
+	[] -> Valid z
+	| v :: t -> let* z' = f z v in fold_try_res f z' t 
+
+type 'a opt_res = ('a, unit) try_res
+
 	(* type for (possible) error results + logging state *)
 
 type 'a try_log_res = LogRes of 'a option * string list

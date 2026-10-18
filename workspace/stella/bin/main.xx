@@ -970,7 +970,7 @@ _ptr_Sulfur_Shader_makeShaderSrc:
 	movq	72(%rsp), %rax
 	movl	(%rax), %edx
 	movl	$1, %ecx
-	callq	_type_builtin_cAlloc
+	callq	_any_builtin_cAlloc
 	movq	%rax, 64(%rsp)
 	movq	.refptr.glad_glGetShaderInfoLog(%rip), %rax
 	movq	(%rax), %rax
@@ -1005,24 +1005,24 @@ _ptr_Sulfur_Shader_initShader:
 .seh_proc _ptr_Sulfur_Shader_initShader
 	pushq	%rsi
 	.seh_pushreg %rsi
-	subq	$288, %rsp
-	.seh_stackalloc 288
+	subq	$256, %rsp
+	.seh_stackalloc 256
 	.seh_endprologue
-	movq	%rcx, 280(%rsp)
-	movq	%rdx, 272(%rsp)
-	movq	%r8, 264(%rsp)
-	movq	272(%rsp), %rcx
+	movq	%rcx, 248(%rsp)
+	movq	%rdx, 240(%rsp)
+	movq	%r8, 232(%rsp)
+	movq	240(%rsp), %rcx
 	movl	_OpenGL_Main__GL_FRAGMENT_SHADER(%rip), %edx
 	callq	_ptr_Sulfur_Shader_makeShaderSrc
-	movl	%eax, 260(%rsp)
-	movq	280(%rsp), %rcx
+	movl	%eax, 228(%rsp)
+	movq	248(%rsp), %rcx
 	movl	_OpenGL_Main__GL_VERTEX_SHADER(%rip), %edx
 	callq	_ptr_Sulfur_Shader_makeShaderSrc
-	movl	%eax, 256(%rsp)
+	movl	%eax, 224(%rsp)
 	movq	.refptr.glad_glCreateProgram(%rip), %rax
 	callq	*(%rax)
-	movl	%eax, 252(%rsp)
-	cmpl	$0, 252(%rsp)
+	movl	%eax, 220(%rsp)
+	cmpl	$0, 220(%rsp)
 	jne	.LBB9_2
 	leaq	_sz2(%rip), %rcx
 	callq	_String_builtin_panic
@@ -1031,53 +1031,53 @@ _ptr_Sulfur_Shader_initShader:
 .LBB9_3:
 	movq	.refptr.glad_glAttachShader(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
-	movl	256(%rsp), %edx
+	movl	220(%rsp), %ecx
+	movl	224(%rsp), %edx
 	callq	*%rax
 	movq	.refptr.glad_glAttachShader(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
-	movl	260(%rsp), %edx
+	movl	220(%rsp), %ecx
+	movl	228(%rsp), %edx
 	callq	*%rax
 	movq	.refptr.glad_glLinkProgram(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
+	movl	220(%rsp), %ecx
 	callq	*%rax
-	movl	$0, 136(%rsp)
-	leaq	136(%rsp), %rax
-	movq	%rax, 240(%rsp)
+	movl	$0, 104(%rsp)
+	leaq	104(%rsp), %rax
+	movq	%rax, 208(%rsp)
 	movq	.refptr.glad_glGetProgramiv(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
+	movl	220(%rsp), %ecx
 	movl	_OpenGL_Main__GL_LINK_STATUS(%rip), %edx
-	movq	240(%rsp), %r8
+	movq	208(%rsp), %r8
 	callq	*%rax
-	movq	240(%rsp), %rax
+	movq	208(%rsp), %rax
 	cmpl	$0, (%rax)
 	jne	.LBB9_5
-	movl	$0, 128(%rsp)
-	leaq	128(%rsp), %rax
-	movq	%rax, 232(%rsp)
+	movl	$0, 96(%rsp)
+	leaq	96(%rsp), %rax
+	movq	%rax, 200(%rsp)
 	movq	.refptr.glad_glGetProgramiv(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
+	movl	220(%rsp), %ecx
 	movl	_OpenGL_Main__GL_INFO_LOG_LENGTH(%rip), %edx
-	movq	232(%rsp), %r8
+	movq	200(%rsp), %r8
 	callq	*%rax
-	movq	232(%rsp), %rax
+	movq	200(%rsp), %rax
 	movl	(%rax), %edx
 	movl	$1, %ecx
-	callq	_type_builtin_cAlloc
-	movq	%rax, 224(%rsp)
+	callq	_any_builtin_cAlloc
+	movq	%rax, 192(%rsp)
 	movq	.refptr.glad_glGetProgramInfoLog(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
-	movq	232(%rsp), %rdx
+	movl	220(%rsp), %ecx
+	movq	200(%rsp), %rdx
 	movl	(%rdx), %edx
-	movq	232(%rsp), %r8
-	movq	224(%rsp), %r9
+	movq	200(%rsp), %r8
+	movq	192(%rsp), %r9
 	callq	*%rax
-	movq	224(%rsp), %rcx
+	movq	192(%rsp), %rcx
 	callq	_ptr_builtin_toString
 	movq	%rax, %rdx
 	leaq	_sz3(%rip), %rcx
@@ -1089,50 +1089,50 @@ _ptr_Sulfur_Shader_initShader:
 .LBB9_6:
 	movq	.refptr.glad_glUseProgram(%rip), %rax
 	movq	(%rax), %rax
-	movl	252(%rsp), %ecx
+	movl	220(%rsp), %ecx
 	callq	*%rax
 	movq	.refptr.glad_glDeleteShader(%rip), %rax
 	movq	(%rax), %rax
-	movl	256(%rsp), %ecx
+	movl	224(%rsp), %ecx
 	callq	*%rax
 	movq	.refptr.glad_glDeleteShader(%rip), %rax
 	movq	(%rax), %rax
-	movl	260(%rsp), %ecx
+	movl	228(%rsp), %ecx
 	callq	*%rax
-	movl	$0, 120(%rsp)
-	leaq	120(%rsp), %rax
-	movq	%rax, 216(%rsp)
-	movl	$0, 112(%rsp)
-	leaq	112(%rsp), %rax
-	movq	%rax, 208(%rsp)
-	movl	$0, 104(%rsp)
-	leaq	104(%rsp), %rax
-	movq	%rax, 200(%rsp)
+	movl	$0, 88(%rsp)
+	leaq	88(%rsp), %rax
+	movq	%rax, 184(%rsp)
+	movl	$0, 80(%rsp)
+	leaq	80(%rsp), %rax
+	movq	%rax, 176(%rsp)
+	movl	$0, 72(%rsp)
+	leaq	72(%rsp), %rax
+	movq	%rax, 168(%rsp)
 	movq	.refptr.glad_glGenVertexArrays(%rip), %rax
 	movq	(%rax), %rax
-	movq	216(%rsp), %rdx
+	movq	184(%rsp), %rdx
 	movl	$1, %ecx
 	callq	*%rax
 	movq	.refptr.glad_glGenVertexArrays(%rip), %rax
 	movq	(%rax), %rax
-	movq	208(%rsp), %rdx
+	movq	176(%rsp), %rdx
 	movl	$1, %ecx
 	callq	*%rax
 	movq	.refptr.glad_glGenVertexArrays(%rip), %rax
 	movq	(%rax), %rax
-	movq	200(%rsp), %rdx
+	movq	168(%rsp), %rdx
 	movl	$1, %ecx
 	callq	*%rax
 	movq	.refptr.glad_glBindVertexArray(%rip), %rax
 	movq	(%rax), %rax
-	movq	216(%rsp), %rcx
+	movq	184(%rsp), %rcx
 	movl	(%rcx), %ecx
 	callq	*%rax
-	movl	$2, 196(%rsp)
+	movl	$2, 164(%rsp)
 	movq	.refptr.glad_glBindBuffer(%rip), %rax
 	movq	(%rax), %rax
 	movl	_OpenGL_Main__GL_ARRAY_BUFFER(%rip), %ecx
-	movq	208(%rsp), %rdx
+	movq	176(%rsp), %rdx
 	movl	(%rdx), %edx
 	callq	*%rax
 	xorl	%ecx, %ecx
@@ -1163,12 +1163,12 @@ _ptr_Sulfur_Shader_initShader:
 	movl	$1, %ecx
 	movl	$2, %edx
 	callq	*%rax
-	movq	264(%rsp), %rax
+	movq	232(%rsp), %rax
 	testb	$1, (%rax)
 	jne	.LBB9_7
 	jmp	.LBB9_8
 .LBB9_7:
-	movl	$3, 196(%rsp)
+	movl	$3, 164(%rsp)
 	movl	$2, %ecx
 	movq	.refptr.glad_glEnableVertexAttribArray(%rip), %rax
 	callq	*(%rax)
@@ -1190,170 +1190,69 @@ _ptr_Sulfur_Shader_initShader:
 	movq	.refptr.glad_glBindBuffer(%rip), %rax
 	movq	(%rax), %rax
 	movl	_OpenGL_Main__GL_ARRAY_BUFFER(%rip), %ecx
-	movq	200(%rsp), %rdx
+	movq	168(%rsp), %rdx
 	movl	(%rdx), %edx
 	callq	*%rax
-	movl	$0, 192(%rsp)
+	movl	$0, 160(%rsp)
 .LBB9_10:
-	movl	192(%rsp), %eax
-	movq	264(%rsp), %rcx
+	movl	160(%rsp), %eax
+	movq	232(%rsp), %rcx
 	movq	32(%rcx), %rcx
 	cmpl	8(%rcx), %eax
 	jge	.LBB9_12
-	movq	264(%rsp), %rax
+	movq	232(%rsp), %rax
 	movq	32(%rax), %rax
-	movl	192(%rsp), %ecx
+	movl	160(%rsp), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rdx
 	movq	(%rax,%rdx,8), %rax
 	movslq	%ecx, %rcx
-	movq	%rax, 184(%rsp)
-	movl	196(%rsp), %eax
-	addl	192(%rsp), %eax
-	movl	%eax, 180(%rsp)
+	movq	%rax, 152(%rsp)
+	movl	164(%rsp), %eax
+	addl	160(%rsp), %eax
+	movl	%eax, 148(%rsp)
 	movq	.refptr.glad_glEnableVertexAttribArray(%rip), %rax
 	movq	(%rax), %rax
-	movl	180(%rsp), %ecx
+	movl	148(%rsp), %ecx
 	callq	*%rax
-	movq	184(%rsp), %rax
+	movq	152(%rsp), %rax
 	movl	4(%rax), %ecx
 	callq	_U32_Sulfur_Shader_isIntType
 	testb	$1, %al
 	jne	.LBB9_13
 	jmp	.LBB9_14
 .LBB9_12:
-	movq	264(%rsp), %rax
+	movq	232(%rsp), %rax
 	movq	8(%rax), %rax
-	movq	%rax, 168(%rsp)
-	movl	$-1, 164(%rsp)
-	cmpq	$0, 168(%rsp)
-	sete	%al
-	xorb	$-1, %al
-	testb	$1, %al
-	jne	.LBB9_16
-	jmp	.LBB9_17
-.LBB9_13:
-	movq	.refptr.glad_glVertexAttribIPointer(%rip), %rax
-	movq	(%rax), %rax
-	movl	180(%rsp), %ecx
-	movq	184(%rsp), %rdx
-	movl	(%rdx), %edx
-	movq	184(%rsp), %r8
-	movl	4(%r8), %r8d
-	movq	264(%rsp), %r9
-	movl	24(%r9), %r9d
-	movq	184(%rsp), %r10
-	movq	8(%r10), %r10
-	movq	%r10, 32(%rsp)
-	callq	*%rax
-	jmp	.LBB9_15
-.LBB9_14:
-	movq	.refptr.glad_glVertexAttribPointer(%rip), %rax
-	movq	(%rax), %rax
-	movl	180(%rsp), %ecx
-	movq	184(%rsp), %rdx
-	movl	(%rdx), %edx
-	movq	184(%rsp), %r8
-	movl	4(%r8), %r8d
-	movb	_OpenGL_Main__GL_FALSE(%rip), %r9b
-	movq	264(%rsp), %r10
-	movl	24(%r10), %r11d
-	movq	184(%rsp), %r10
-	movq	8(%r10), %r10
-	movl	%r11d, 32(%rsp)
-	movq	%r10, 40(%rsp)
-	callq	*%rax
-.LBB9_15:
-	movq	.refptr.glad_glVertexAttribDivisor(%rip), %rax
-	movq	(%rax), %rax
-	movl	180(%rsp), %ecx
-	movl	$1, %edx
-	callq	*%rax
-	movl	192(%rsp), %eax
-	addl	$1, %eax
-	movl	%eax, 192(%rsp)
-	jmp	.LBB9_10
-.LBB9_16:
-	movq	.refptr.glad_glGetUniformLocation(%rip), %rax
-	movq	(%rax), %rax
-	movq	%rax, 96(%rsp)
-	movl	252(%rsp), %eax
-	movl	%eax, 92(%rsp)
-	movq	168(%rsp), %rcx
-	callq	_String_builtin_cString
-	movl	92(%rsp), %ecx
-	movq	%rax, %rdx
-	movq	96(%rsp), %rax
-	callq	*%rax
-	movl	%eax, 164(%rsp)
-	cmpl	$0, 164(%rsp)
-	jl	.LBB9_19
-	jmp	.LBB9_20
-.LBB9_17:
-	jmp	.LBB9_18
-.LBB9_18:
-	movq	264(%rsp), %rax
+	movq	%rax, 136(%rsp)
+	movl	$-1, 132(%rsp)
+	movq	232(%rsp), %rax
 	movq	16(%rax), %rax
-	movq	%rax, 152(%rsp)
-	movl	$-1, 148(%rsp)
-	cmpq	$0, 152(%rsp)
-	sete	%al
-	xorb	$-1, %al
-	testb	$1, %al
-	jne	.LBB9_22
-	jmp	.LBB9_23
-.LBB9_19:
-	movq	168(%rsp), %rdx
-	leaq	_sz4(%rip), %rcx
-	callq	_String_builtin_add
-	movq	%rax, %rcx
-	callq	_String_builtin_panic
-.LBB9_20:
-	jmp	.LBB9_21
-.LBB9_21:
-	jmp	.LBB9_18
-.LBB9_22:
-	movq	.refptr.glad_glGetUniformLocation(%rip), %rax
-	movq	(%rax), %rax
-	movq	%rax, 80(%rsp)
-	movl	252(%rsp), %eax
-	movl	%eax, 76(%rsp)
-	movq	152(%rsp), %rcx
-	callq	_String_builtin_cString
-	movl	76(%rsp), %ecx
-	movq	%rax, %rdx
-	movq	80(%rsp), %rax
-	callq	*%rax
-	movl	%eax, 148(%rsp)
-	cmpl	$0, 148(%rsp)
-	jl	.LBB9_25
-	jmp	.LBB9_26
-.LBB9_23:
-	jmp	.LBB9_24
-.LBB9_24:
-	movl	252(%rsp), %eax
-	movl	%eax, 72(%rsp)
-	movq	216(%rsp), %rax
-	movl	(%rax), %eax
+	movq	%rax, 120(%rsp)
+	movl	$-1, 116(%rsp)
+	movl	220(%rsp), %eax
 	movl	%eax, 68(%rsp)
-	movq	208(%rsp), %rax
+	movq	184(%rsp), %rax
 	movl	(%rax), %eax
 	movl	%eax, 64(%rsp)
-	movq	200(%rsp), %rax
+	movq	176(%rsp), %rax
 	movl	(%rax), %eax
 	movl	%eax, 60(%rsp)
-	movl	164(%rsp), %eax
+	movq	168(%rsp), %rax
+	movl	(%rax), %eax
 	movl	%eax, 56(%rsp)
-	movl	148(%rsp), %esi
+	movl	132(%rsp), %eax
+	movl	%eax, 52(%rsp)
+	movl	116(%rsp), %esi
 	xorl	%eax, %eax
 	movl	%eax, %edx
 	movl	$28, %ecx
 	callq	gc_alloc
-	movl	56(%rsp), %r11d
-	movl	60(%rsp), %r10d
-	movl	64(%rsp), %r9d
-	movl	68(%rsp), %r8d
-	movl	72(%rsp), %edx
+	movl	52(%rsp), %r11d
+	movl	56(%rsp), %r10d
+	movl	60(%rsp), %r9d
+	movl	64(%rsp), %r8d
+	movl	68(%rsp), %edx
 	movq	%rax, %rcx
 	movq	%rcx, %rax
 	movl	%esi, 24(%rcx)
@@ -1363,19 +1262,50 @@ _ptr_Sulfur_Shader_initShader:
 	movl	%r8d, 4(%rcx)
 	movl	%edx, (%rcx)
 	movl	$0, 16(%rcx)
-	addq	$288, %rsp
+	addq	$256, %rsp
 	popq	%rsi
 	retq
-.LBB9_25:
+.LBB9_13:
+	movq	.refptr.glad_glVertexAttribIPointer(%rip), %rax
+	movq	(%rax), %rax
+	movl	148(%rsp), %ecx
 	movq	152(%rsp), %rdx
-	leaq	_sz4(%rip), %rcx
-	callq	_String_builtin_add
-	movq	%rax, %rcx
-	callq	_String_builtin_panic
-.LBB9_26:
-	jmp	.LBB9_27
-.LBB9_27:
-	jmp	.LBB9_24
+	movl	(%rdx), %edx
+	movq	152(%rsp), %r8
+	movl	4(%r8), %r8d
+	movq	232(%rsp), %r9
+	movl	24(%r9), %r9d
+	movq	152(%rsp), %r10
+	movq	8(%r10), %r10
+	movq	%r10, 32(%rsp)
+	callq	*%rax
+	jmp	.LBB9_15
+.LBB9_14:
+	movq	.refptr.glad_glVertexAttribPointer(%rip), %rax
+	movq	(%rax), %rax
+	movl	148(%rsp), %ecx
+	movq	152(%rsp), %rdx
+	movl	(%rdx), %edx
+	movq	152(%rsp), %r8
+	movl	4(%r8), %r8d
+	movb	_OpenGL_Main__GL_FALSE(%rip), %r9b
+	movq	232(%rsp), %r10
+	movl	24(%r10), %r11d
+	movq	152(%rsp), %r10
+	movq	8(%r10), %r10
+	movl	%r11d, 32(%rsp)
+	movq	%r10, 40(%rsp)
+	callq	*%rax
+.LBB9_15:
+	movq	.refptr.glad_glVertexAttribDivisor(%rip), %rax
+	movq	(%rax), %rax
+	movl	148(%rsp), %ecx
+	movl	$1, %edx
+	callq	*%rax
+	movl	160(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 160(%rsp)
+	jmp	.LBB9_10
 	.seh_endproc
 
 	.def	__Sulfur_Shader_Shader_Sulfur_Shader_drawData;
@@ -1838,9 +1768,9 @@ _Int_Sulfur_Main_initSulfur:
 	movq	$36, 8(%rcx)
 	movl	$2, (%rcx)
 	movq	%rcx, 40(%rax)
-	leaq	_sz5(%rip), %rax
+	leaq	_sz4(%rip), %rax
 	movq	%rax, 128(%rsp)
-	leaq	_sz6(%rip), %rax
+	leaq	_sz5(%rip), %rax
 	movq	%rax, 120(%rsp)
 	leaq	tc__Sulfur_Shader_ShaderDef(%rip), %rdx
 	movl	$40, %ecx
@@ -1854,10 +1784,10 @@ _Int_Sulfur_Main_initSulfur:
 	movl	$44, 24(%rax)
 	movb	$0, (%rax)
 	movq	%rax, 208(%rsp)
-	leaq	_sz7(%rip), %rcx
+	leaq	_sz6(%rip), %rcx
 	callq	_String_builtin_cString
 	movq	%rax, 136(%rsp)
-	leaq	_sz8(%rip), %rcx
+	leaq	_sz7(%rip), %rcx
 	callq	_String_builtin_cString
 	movq	136(%rsp), %rcx
 	movq	%rax, %rdx
@@ -1933,13 +1863,6 @@ __Sulfur_Main_Sulfur_Sulfur_Main_render:
 	movq	64(%rsp), %rax
 	movq	40(%rax), %rax
 	movq	%rax, 56(%rsp)
-	cmpq	$0, 56(%rsp)
-	jne	.LBB16_2
-	addq	$72, %rsp
-	retq
-.LBB16_2:
-	jmp	.LBB16_3
-.LBB16_3:
 	movq	.refptr.glad_glBindFramebuffer(%rip), %rax
 	movq	(%rax), %rax
 	movl	_OpenGL_Main__GL_FRAMEBUFFER(%rip), %ecx
@@ -1981,19 +1904,6 @@ __Sulfur_Main_Sulfur_Sulfur_Main_render:
 	movl	$1, %edx
 	xorl	%r8d, %r8d
 	callq	*%rax
-	movq	64(%rsp), %rax
-	movq	24(%rax), %rcx
-	movq	64(%rsp), %rax
-	movq	32(%rax), %rdx
-	movq	56(%rsp), %r8
-	movq	64(%rsp), %rax
-	movq	16(%rax), %rax
-	movq	8(%rax), %r9
-	movq	64(%rsp), %rax
-	movq	16(%rax), %rax
-	movl	(%rax), %eax
-	movl	%eax, 32(%rsp)
-	callq	__Sulfur_Shader_Shader_Sulfur_Shader_drawData
 	nop
 	addq	$72, %rsp
 	retq
@@ -2011,12 +1921,12 @@ _none_main:
 	.seh_stackalloc 88
 	.seh_endprologue
 	callq	init_globals
-	leaq	_sz9(%rip), %rcx
+	leaq	_sz8(%rip), %rcx
 	callq	_String_Sys_Os_print
 	callq	glfwInit
 	cmpl	$0, %eax
 	jne	.LBB17_2
-	leaq	_sz10(%rip), %rcx
+	leaq	_sz9(%rip), %rcx
 	callq	_String_builtin_panic
 .LBB17_2:
 	jmp	.LBB17_3
@@ -2039,7 +1949,7 @@ _none_main:
 	movl	_GLFW_Main__GLFW_DOUBLEBUFFER(%rip), %ecx
 	movl	_GLFW_Main__GLFW_TRUE(%rip), %edx
 	callq	glfwWindowHint
-	leaq	_sz11(%rip), %rcx
+	leaq	_sz10(%rip), %rcx
 	callq	_String_builtin_cString
 	movq	%rax, %r8
 	movl	$1024, %ecx
@@ -2049,14 +1959,6 @@ _none_main:
 	movq	$0, 32(%rsp)
 	callq	glfwCreateWindow
 	movq	%rax, 80(%rsp)
-	cmpq	$0, 80(%rsp)
-	jne	.LBB17_5
-	callq	glfwTerminate
-	leaq	_sz12(%rip), %rcx
-	callq	_String_builtin_panic
-.LBB17_5:
-	jmp	.LBB17_6
-.LBB17_6:
 	movq	80(%rsp), %rcx
 	callq	glfwMakeContextCurrent
 	movl	$1, %ecx
@@ -2064,30 +1966,16 @@ _none_main:
 	leaq	glfwGetProcAddress(%rip), %rcx
 	callq	_fn_OpenGL_Main_initOpenGL
 	cmpl	$0, %eax
-	jne	.LBB17_8
+	jne	.LBB17_5
 	callq	glfwTerminate
-	leaq	_sz13(%rip), %rcx
+	leaq	_sz11(%rip), %rcx
 	callq	_String_builtin_panic
-.LBB17_8:
-	jmp	.LBB17_9
-.LBB17_9:
+.LBB17_5:
+	jmp	.LBB17_6
+.LBB17_6:
 	movl	_OpenGL_Main__GL_VERSION(%rip), %ecx
 	callq	glGetString
 	movq	%rax, 72(%rsp)
-	cmpq	$0, 72(%rsp)
-	sete	%al
-	xorb	$-1, %al
-	testb	$1, %al
-	jne	.LBB17_10
-	jmp	.LBB17_11
-.LBB17_10:
-	movq	72(%rsp), %rcx
-	callq	_ptr_Sys_Os_print
-	jmp	.LBB17_12
-.LBB17_11:
-	leaq	_sz14(%rip), %rcx
-	callq	_String_builtin_panic
-.LBB17_12:
 	movl	$1024, %ecx
 	movl	$800, %edx
 	callq	_Int_Sulfur_Main_initSulfur
@@ -2105,33 +1993,6 @@ _none_main:
 	movq	%rax, %rcx
 	movq	56(%rsp), %rax
 	movq	%rcx, 40(%rax)
-.LBB17_13:
-	movq	80(%rsp), %rcx
-	callq	glfwWindowShouldClose
-	cmpl	$0, %eax
-	jne	.LBB17_15
-	movq	64(%rsp), %rax
-	movq	16(%rax), %rcx
-	callq	__Sulfur_RenderData_RenderData_builtin_clear
-	movq	64(%rsp), %rax
-	movq	16(%rax), %rcx
-	movl	$4292927728, %edx
-	movl	$8, %r9d
-	movl	%r9d, %r8d
-	movl	$16, 32(%rsp)
-	movl	$32, 40(%rsp)
-	callq	__Sulfur_RenderData_RenderData_Sulfur_RenderData_addBox
-	movq	64(%rsp), %rcx
-	callq	__Sulfur_Main_Sulfur_Sulfur_Main_render
-	callq	glfwPollEvents
-	movq	80(%rsp), %rcx
-	callq	glfwSwapBuffers
-	jmp	.LBB17_13
-.LBB17_15:
-	movq	80(%rsp), %rcx
-	callq	glfwDestroyWindow
-	callq	glfwTerminate
-	nop
 	addq	$88, %rsp
 	retq
 	.seh_endproc
@@ -16343,13 +16204,6 @@ _sz3:
 	.asciz	"Shader.sm - Could not link shaders.\n"
 	.zero	3
 
-	.globl	_sz4
-	.p2align	4, 0x0
-_sz4:
-	.long	42
-	.asciz	"Shader.sm - Could not load shader uniform "
-	.zero	1
-
 	.globl	tc_offs__Sulfur_RenderData_RenderData
 	.p2align	2, 0x0
 tc_offs__Sulfur_RenderData_RenderData:
@@ -16377,88 +16231,60 @@ tc__Sulfur_Main_Sulfur:
 	.zero	4
 	.quad	tc_offs__Sulfur_Main_Sulfur
 
-	.globl	_sz5
+	.globl	_sz4
 	.p2align	3, 0x0
-_sz5:
+_sz4:
 	.long	8
 	.asciz	"uSampler"
 	.zero	3
 
-	.globl	_sz6
+	.globl	_sz5
 	.p2align	3, 0x0
-_sz6:
+_sz5:
 	.long	5
 	.asciz	"uPMat"
 	.zero	2
 
-	.globl	_sz7
+	.globl	_sz6
 	.p2align	4, 0x0
-_sz7:
+_sz6:
 	.long	870
 	.asciz	"#version 330\r\nprecision highp float;\r\n\r\nlayout (location = 0) in vec3 aPos;\r\nlayout (location = 1) in vec2 aTex;\r\nlayout (location = 2) in vec3 iPos;\r\nlayout (location = 3) in vec2 iSize;\r\nlayout (location = 4) in uint iColor;\r\nlayout (location = 5) in float iTexId;\r\nlayout (location = 6) in vec2 iUVPos;\r\nlayout (location = 7) in vec2 iUVSize;\r\n\r\nuniform mat4 uPMat;\r\nuniform int uTotal;\r\nout vec2 vTex;\r\nout float vTexId;\r\nout vec3 vColor;\r\n\r\nvec3 unpackRGB(uint c)\r\n{\r\n\tfloat r = float((c >> 16) & 0xFFu) / 255.0;\r\n\tfloat g = float((c >> 8) & 0xFFu) / 255.0;\r\n\tfloat b = float(c & 0xFFu) / 255.0;\r\n\treturn vec3(r, g, b);\r\n}\r\n\r\nvoid main(void) {\r\n\tvec2 pos = (aPos.xy * iSize) + iPos.xy;\r\n\tgl_Position = uPMat * vec4(pos, 0.0, 1.0);\r\n\tgl_Position.z = iPos.z;// / float(uTotal);\r\n\tvTex = (aTex * iUVSize) + iUVPos;\r\n\tvTexId = iTexId;\r\n\tvColor = unpackRGB(iColor);\r\n}\r\n"
 	.zero	1
 
-	.globl	_sz8
+	.globl	_sz7
 	.p2align	4, 0x0
-_sz8:
+_sz7:
 	.long	380
 	.asciz	"#version 330\r\nprecision mediump float;\r\nprecision mediump sampler2DArray;\r\n\r\nin vec2 vTex;\r\nin float vTexId;\r\nin vec3 vColor;\r\n\r\nuniform sampler2DArray uSampler;\r\nout vec4 FragColor;\r\n\r\nvoid main(void) {\r\n\tvec4 texColor = texture(uSampler, vec3(vTex, vTexId));\r\n\tif (texColor.a == 0.0) discard;\r\n\tvec3 mColor = texColor.rgb * vColor.rgb;\r\n\tFragColor = vec4(mColor, texColor.a);\r\n}"
 	.zero	3
 
-	.bss
-	.globl	tc_offs__Commons_Data_HashMap
-	.p2align	2, 0x0
-tc_offs__Commons_Data_HashMap:
-	.zero	4
-
-	.data
-	.globl	tc__Commons_Data_HashMap
-	.p2align	3, 0x0
-tc__Commons_Data_HashMap:
-	.long	1
-	.zero	4
-	.quad	tc_offs__Commons_Data_HashMap
-
-	.globl	_sz9
+	.globl	_sz8
 	.p2align	4, 0x0
-_sz9:
+_sz8:
 	.long	12
 	.asciz	"HELLO WORLD!"
 	.zero	3
 
-	.globl	_sz10
+	.globl	_sz9
 	.p2align	4, 0x0
-_sz10:
+_sz9:
 	.long	26
 	.asciz	"Could not initialize GLFW."
 	.zero	1
 
-	.globl	_sz11
+	.globl	_sz10
 	.p2align	3, 0x0
-_sz11:
+_sz10:
 	.long	5
 	.asciz	"Sedna"
 	.zero	2
 
-	.globl	_sz12
+	.globl	_sz11
 	.p2align	4, 0x0
-_sz12:
-	.long	29
-	.asciz	"Could not create GLFW window."
-	.zero	2
-
-	.globl	_sz13
-	.p2align	4, 0x0
-_sz13:
+_sz11:
 	.long	31
 	.asciz	"Failed to load OpenGL bindings."
-
-	.globl	_sz14
-	.p2align	4, 0x0
-_sz14:
-	.long	32
-	.asciz	"Could not create OpenGL context."
-	.zero	3
 
 	.section	.rdata$.refptr.glad_glActiveTexture,"dr",discard,.refptr.glad_glActiveTexture
 	.p2align	3, 0x0
@@ -16580,11 +16406,6 @@ _sz14:
 	.globl	.refptr.glad_glGetShaderiv
 .refptr.glad_glGetShaderiv:
 	.quad	glad_glGetShaderiv
-	.section	.rdata$.refptr.glad_glGetUniformLocation,"dr",discard,.refptr.glad_glGetUniformLocation
-	.p2align	3, 0x0
-	.globl	.refptr.glad_glGetUniformLocation
-.refptr.glad_glGetUniformLocation:
-	.quad	glad_glGetUniformLocation
 	.section	.rdata$.refptr.glad_glLinkProgram,"dr",discard,.refptr.glad_glLinkProgram
 	.p2align	3, 0x0
 	.globl	.refptr.glad_glLinkProgram

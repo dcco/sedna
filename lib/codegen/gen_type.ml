@@ -121,21 +121,20 @@ let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = 
 	| PrimTy "PRNG" -> PrimST _ptrType
 	| PrimTy "VPtr" -> PrimST _ptrType
 	| PrimTy x -> failwith ("BUG: gen_type.ml - Non-existent primitive type \"" ^ x ^ "\". " ^ debug)
-	| NamedTy t -> _namedStoreType debug env t
-	| TupleTy tau_l -> TupleST (Array.of_list (List.map (toStoreType debug env) tau_l))
-	| EmptyableTy tau -> toStoreType debug env tau
-	| TagTupleTy(t, _) -> _namedStoreType debug env t
+	| NamedTy(t, _) -> _namedStoreType debug env t
+	| TupleTy(_, tau_l) -> TupleST (Array.of_list (List.map (toStoreType debug env) tau_l))
+	(*| TagTupleTy(t, _) -> _namedStoreType debug env t*)
 	| ArrayTy(_, tau) -> gcArrStoreType (toStoreType debug env tau)
 	| TagOfTy _ -> PrimST tagType
 	| FunTy _ -> PrimST _ptrType
 	| CPtrTy t -> StructPtrST [| ExplDST (toStoreType debug env t) |]
 	| NullableTy tau -> toStoreType debug env tau
 	| BotTy -> PrimST iType
-	| NullTy -> failwith ("BUG: gen_type.ml - Null-only type encountered while generating storage type.")
+	(*| NullTy -> failwith ("BUG: gen_type.ml - Null-only type encountered while generating storage type.")*)
 		(* this case only comes up as a filler for array functions *)
-	| VarTy _ -> PrimST iType
-		(* the way a "kind" is actually passed in is as the size of the underlying datatype *)
-	| KindTy _ -> PrimST i64Type
+	| VarTy _ -> PrimST _ptrType
+		(* the way a "type value" is actually passed in is as the size of the underlying datatype *)
+	| TValTy _ -> PrimST i64Type
 		(*failwith ("BUG: gen_type.ml - Variable type encountered while generating storage type.")*)
 and _namedStoreType (debug: string) (env: dusk_env) (t: canon_name): store_type =
 	match Hashtbl.find_opt env (DTName (cr t)) with
@@ -266,7 +265,7 @@ let offsetChildList (childList: gc_child list) (offset: int): gc_child list =
 	) childList
 
 let rec gcElemType (debug: string) (cont: llvm_cont) (env: dusk_env) (tau: g_type): gc_child list = match tau with
-	NamedTy t -> (match Hashtbl.find_opt env (DTName (cr t)) with
+	NamedTy(t, _) -> (match Hashtbl.find_opt env (DTName (cr t)) with
 		Some (DTDef td) -> (match td with
 			StructTD_C(_, _) -> [DirectChild]
 			| OpaqueTD_C(_, _) -> []
@@ -276,7 +275,7 @@ let rec gcElemType (debug: string) (cont: llvm_cont) (env: dusk_env) (tau: g_typ
 	)
 	| PrimTy "String" -> [DirectChild]
 	| ArrayTy(_, _) -> [DirectChild]
-	| TupleTy tau_l -> gcElemTypeList debug cont env 0 tau_l
+	| TupleTy(_, tau_l) -> gcElemTypeList debug cont env 0 tau_l
 	(*| ValArrayTy _ -> failwith ("BUG: gen_type.ml - Value-arrays cannot be stored in other data structures.")*)
 	| _ -> []
 and gcElemTypeList (debug: string) (cont: llvm_cont) (env: dusk_env) (fieldOffset: int) (tau_l: g_type list): gc_child list =

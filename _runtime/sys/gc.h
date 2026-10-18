@@ -122,7 +122,7 @@ extern void gc_init() {
 
 inline static void* _gc_alloc(int32_t size, gc_type_t* type, int8_t arrFlag) {
 	// initialize object
-	gc_obj_t* obj = (gc_obj_t*) malloc(GC_OBJ_SIZE + size);
+	gc_obj_t* obj = (gc_obj_t*) calloc(1, GC_OBJ_SIZE + size);
 	obj->type = type;
 	obj->color = GC_WHITE;
 	obj->next = gc_head;

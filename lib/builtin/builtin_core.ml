@@ -235,6 +235,7 @@ let builtinList =
 	("panic", ExternalSym, [stringTy], BotTy);
 
 		(* polymorphic functions *)
+	("insert", ExternalSym, [ArrayTy(1, varTy "A"); varTy "A"], unitTy);
 	("remove", ExternalSym, [ArrayTy(1, varTy "A"); intTy], unitTy);
 	("flush", ExternalSym, [ArrayTy(1, varTy "A")], unitTy);
 	("clear", ExternalSym, [ArrayTy(1, varTy "A")], unitTy);
@@ -251,7 +252,7 @@ let builtinList =
 		(* FFI polymorphic functions *)
 	("cBox", InternalSym "cBox", [varTy "A"], CPtrTy (varTy "A"));
 	("cRead", InternalSym "cRead", [CPtrTy (varTy "A")], varTy "A");
-	("cAlloc", ExternalSym, [KindTy "A"; intTy], CPtrTy (varTy "A"));
+	("cAlloc", ExternalSym, [TValTy (varTy "A"); intTy], CPtrTy (varTy "A"));
 
 	("toCPtr", ExternalSym, [ArrayTy(1, varTy "A")], CPtrTy (varTy "A"));
 	("toRawPtr", ExternalSym, [ArrayTy(1, varTy "A")], CPtrTy u8Ty);

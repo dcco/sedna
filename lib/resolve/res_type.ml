@@ -13,21 +13,20 @@ open Res_cont
 let rec resolve_type (env: res_env) (p: l_pos) (tau: m_type): g_type rs_res = match tau with
 	PrimTy x -> Valid (PrimTy x)
 	| IntTy(u, s) -> Valid (IntTy(u, s))
-	| NamedTy q -> let* x' = resolve_name env p q in Valid (NamedTy x')
-	| TupleTy tau_l -> let* tau_l' = map_try_res (resolve_type env p) tau_l in Valid (TupleTy tau_l')
+	| NamedTy(q, tau_l) ->
+		let* x' = resolve_name env p q in
+		let* tau_l' = map_try_res (resolve_type env p) tau_l in Valid (NamedTy(x', tau_l'))
+	| TupleTy(zFlag, tau_l) -> let* tau_l' = map_try_res (resolve_type env p) tau_l in Valid (TupleTy(zFlag, tau_l'))
 	| ArrayTy(i, tau) -> let* tau' = resolve_type env p tau in Valid (ArrayTy(i, tau'))
-	| TagOfTy tau -> let* tau' = resolve_type env p tau in Valid (TagOfTy tau')
+	| TagOfTy q -> let* x' = resolve_name env p q in Valid (TagOfTy x')
 	| FunTy(tau_pl, tau_r) ->
 		let* tau_pl' = map_try_res (resolve_type env p) tau_pl in
 		let* tau_r' = resolve_type env p tau_r in Valid (FunTy(tau_pl', tau_r'))
 	| NullableTy tau -> let* tau' = resolve_type env p tau in Valid (NullableTy tau')
-	| EmptyableTy tau -> let* tau' = resolve_type env p tau in Valid (EmptyableTy tau')
+	| TValTy tau -> let* tau' = resolve_type env p tau in Valid (TValTy tau')
 	| BotTy -> Valid BotTy
 	| VarTy i -> Valid (VarTy i)
-	| KindTy i -> Valid (KindTy i)
 	| CPtrTy tau -> let* tau' = resolve_type env p tau in Valid (CPtrTy tau')
-	| TagTupleTy _ -> failwith "BUG: resolve_type.ml - Tag tuple type found in resolution phase."
-	| NullTy -> Valid NullTy
 
 let rec resolve_type_def (env: res_env) (p: l_pos) (td: m_tdef): g_tdef rs_res = match td with
 	TFunTD(_, td') -> resolve_type_def env p td'

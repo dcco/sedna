@@ -1,4 +1,8 @@
 
 module Data
+	references STBImage.Main
+
 	references Commons.Data
+	references Sulfur modules Material
+	type ImageMap
 end

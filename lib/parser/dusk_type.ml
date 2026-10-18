@@ -34,22 +34,22 @@ type 'm raw_type =
 		(* first level types *)
 	PrimTy of string
 	| IntTy of bool * bit_width
-	| NamedTy of 'm
-	| TupleTy of 'm raw_type list
+	| NamedTy of 'm * 'm raw_type list
+		(* - zero-able flag *)
+	| TupleTy of bool * 'm raw_type list
 	| ArrayTy of int * 'm raw_type
-	| TagOfTy of 'm raw_type
+	| TagOfTy of 'm
 	| FunTy of 'm raw_type list * 'm raw_type
 	| NullableTy of 'm raw_type
-	| EmptyableTy of 'm raw_type 
+	| TValTy of 'm raw_type
 	| BotTy
 		(* polymorphism types *)
 	| VarTy of string
-	| KindTy of string
 		(* special types *)
 	| CPtrTy of 'm raw_type
-		(* instance types *)
+		(* instance types
 	| TagTupleTy of 'm * 'm raw_type list
-	| NullTy
+	| NullTy *)
 type 'm fun_type = 'm raw_type list * 'm raw_type
 
 type m_type = qual_name raw_type
@@ -68,22 +68,20 @@ let string_of_iType (u: bool) (s: bit_width): string =
 let rec string_of_type (f: 'm -> string) (tau: 'm raw_type): string = match tau with
 	| PrimTy x -> x
 	| IntTy(u, s) -> string_of_iType u s
-	| NamedTy x -> f x
-	| TupleTy tau_l -> "(" ^ String.concat ", " (List.map (string_of_type f) tau_l) ^ ")"
+	| NamedTy(x, []) -> f x
+	| NamedTy(x, tau_l) -> f x ^ "[" ^ String.concat ", " (List.map (string_of_type f) tau_l) ^ "]"
+	| TupleTy(false, tau_l) -> "(" ^ String.concat ", " (List.map (string_of_type f) tau_l) ^ ")"
+	| TupleTy(true, tau_l) -> "(" ^ String.concat " ?? " (List.map (string_of_type f) tau_l) ^ ")"
 	| ArrayTy(i, tau) -> (string_of_int i) ^ "d[" ^ (string_of_type f tau) ^ "]"
-	| TagOfTy tau -> (string_of_type f tau) ^ ".t"
+	| TagOfTy x -> f x ^ ".t"
 	| FunTy(tau_pl, tau_r) -> string_of_fun_type f (tau_pl, tau_r)
 	| NullableTy tau -> (string_of_type f tau) ^ "?"
-	| EmptyableTy tau -> (string_of_type f tau) ^ "?"
+	| TValTy tau -> "TYPE[" ^ (string_of_type f tau) ^ "]"
 	| BotTy -> "BOT"
 
 	| VarTy a -> a
-	| KindTy _ -> "TYPE"
 
 	| CPtrTy tau -> "CPtr[" ^ (string_of_type f tau) ^ "]"
-
-	| TagTupleTy(x, _) -> f x
-	| NullTy -> "NULL"
 	
 and string_of_fun_type (f: 'm -> string) ((tau_pl, tau_r): 'm fun_type): string =
 	"Fn(" ^ (String.concat ", " (List.map (string_of_type f) tau_pl)) ^ ") " ^ (string_of_type f tau_r)
@@ -97,7 +95,7 @@ let hd_opt (l: 'm list): 'm option = match l with
 	(* primitive types *)
 
 let primTy x = PrimTy x
-let namedTy x = NamedTy (QN(None, x))
+let namedTy x = NamedTy (QN(None, x), [])
 
 let unitTy = primTy "Unit"
 let floatTy = primTy "Float"

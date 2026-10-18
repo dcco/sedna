@@ -128,7 +128,7 @@ extern void _a1_builtin_addI32(gc_array_t* arr, int32_t n) {
 	*nPtr = n;
 }
 
-extern void* _type_builtin_cAlloc(int64_t size, int32_t i) {
+extern void* _any_builtin_cAlloc(int64_t size, int32_t i) {
 	return malloc(size * i);
 }
 

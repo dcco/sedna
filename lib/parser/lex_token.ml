@@ -4,14 +4,14 @@ open Dusk_type
 	(* int bool is TRUE when UNSIGNED *)
 type raw_token = INT of Int64.t * bool * bit_width | FLOAT of float | TRUE | FALSE | NULL
 	| STRLIT of string | KLIT of string | T_INT of bool * bit_width
-	| ID of string | TID of string | VID of string | CID of string | DIM of int | T_FN | T_OUT
+	| ID of string | TID of string | VID of string | CID of string | DIM of int | T_TYPE | T_FN | T_OUT
 	| REFERENCES | MODULE | MODULES | AS | IFACE | FTOR | REQUIRES | IMPL | IMPLEMENTS | WITH | END
 	| L_LINKER
 	| TYPE | STRUCT | ENUM | EXTENDS | ATTRS | UNION | CONST | GLOBALS
 	| FN | FNPTR | LIN | VAR | NEW | BY | IF | THEN | ELSIF | ELSE | IS | ISNT
 	| LOOP | WHILE | DO | FOR | IN | RETURN
 	| GC_COLLECT | UNDERSCORE
-	| EQ | DOT | ELLIP | LPAREN | RPAREN | COMMA | TILDE | QMARK | AT
+	| EQ | DOT | ELLIP | LPAREN | RPAREN | COMMA | TILDE | QMARK | QQ | AT
 	| LBRACE | RBRACE | BAR | LBRACK | RBRACK
 	| NEQ | LANGLE | RANGLE | LEQ | GEQ | AND | OR | EXCLAM
 	| PLUS | DASH | STAR | SLASH | FLDIV | PERC | EXPO
@@ -36,6 +36,7 @@ let string_of_raw_token tk = match tk with
 	| DIM i -> (string_of_int i) ^ "d"
 	(*| VDIM -> "1v"*)
 	| T_INT(u, s) -> string_of_iType u s
+	| T_TYPE -> "TYPE"
 	| T_FN -> "Fn"
 	| T_OUT -> "Out"
 	| L_LINKER -> "_linker"
@@ -93,6 +94,7 @@ let string_of_raw_token tk = match tk with
 	| COMMA -> ","
 	| TILDE -> "~"
 	| QMARK -> "?"
+	| QQ -> "??"
 	| AT -> "@"
 	| LBRACE -> "["
 	| RBRACE -> "]"

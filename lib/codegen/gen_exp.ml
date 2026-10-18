@@ -144,7 +144,9 @@ let genStructIndexGEP (debug: string) (cont: llvm_cont) ((v, t): dusk_val) (i: i
 	let t_a = innerValType debug t in
 	let tempName = "_slot" ^ (string_of_int i) ^ "PT" in
 	let t_s = struct_type context (Array.map genStoreType t_a) in
-	(build_gep t_s v [|const_int iType 0; const_int iType i|] tempName cont.builder, t_a.(i))
+	try
+		(build_gep t_s v [|const_int iType 0; const_int iType i|] tempName cont.builder, t_a.(i))
+	with e -> print_endline (string_of_dtype t); print_endline (string_of_int i); raise e
 
 let rawGenStructIndexGEP (name: string) (cont: llvm_cont) ((v, t): raw_dusk_val) (i: int): llvalue =
 	(build_gep t v [|const_int iType 0; const_int iType i|] name cont.builder)

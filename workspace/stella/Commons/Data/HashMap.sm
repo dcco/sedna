@@ -1,15 +1,15 @@
-
+(*)
 struct HashMap[K, V]{
-	1t[(K, V)] data
+	1d[(K ?? V)] data
 }
 
 fn newHashMap(TYPE K, TYPE V, Int total) HashMap
 	var size = ceil(toFloat(total) /. 0.7)
-	var data = new 1t(size)
+	var data = new 1d(size)[~(K ?? V)]
 	return new HashMap{
 		data = data
 	}
-end
+end*)
 
 (*)
 ctor HashMap(Int total)

@@ -2,33 +2,6 @@
 module StringMap = Map.Make(String)
 
 	(*
-		** guard index / guard symbol
-		symbolic representations of variables / constant indices into variables (array indices, tuple locations)
-		- used as keys to store identifying information about variables (null/non-null, tag test results, etc)
-	*)
-(*
-type guard_index = 
-	NoIndex
-	| ConstIndex of int
-		(* variable + multiplier >> dividend >> offset *)
-	| LinearIndex of string * int * int * int
-
-let gi_cmp i1 i2 = match (i1, i2) with
-	(NoIndex, NoIndex) -> 0
-	| (NoIndex, _) -> -1
-	| (ConstIndex i, ConstIndex j)
-
-type guard_symbol = string * guard_index
-
-module GuardSymbol = struct
-	type t = guard_symbol
-
-end
-
-module GIMap = Map.Make(Guard_symbol)
-*)
-
-	(*
 		** (null only) guard set
 		[is null, isnt null]
 	*)

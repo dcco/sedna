@@ -107,22 +107,6 @@ let parseTkMulti (f: raw_token -> 'a option) (x: string): ('a * l_pos) parser = 
 		| Some v -> Valid ((v, pos), tkRem)
 	)
 	| _ -> Error (EOF_Err x)
-(*
-let parseId (debug: string): string parser = fun tkList -> match tkList with
-	(ID x, _) :: tkRem -> Valid (x, tkRem)
-	| tk :: _ -> Error (BadToken_Err(tk, debug))
-	| _ -> Error (EOF_Err debug)
-
-let parseTId (debug: string): string parser = fun tkList -> match tkList with
-	(TID x, _) :: tkRem -> Valid (x, tkRem)
-	| tk :: _ -> Error (BadToken_Err(tk, debug))
-	| _ -> Error (EOF_Err debug)
-
-let parseCId (debug: string): string parser = fun tkList -> match tkList with
-	(CID x, _) :: tkRem -> Valid (x, tkRem)
-	| tk :: _ -> Error (BadToken_Err(tk, debug))
-	| _ -> Error (EOF_Err debug)
-*)
 
 let parseBaseId (debug: string): string parser = fun tkList -> match tkList with
 	(ID x, _) :: tkRem -> Valid (x, tkRem)

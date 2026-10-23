@@ -137,14 +137,6 @@ let genDec (cont: llvm_cont) (env: dusk_env) (initFun: llvalue) (f: string) (d: 
 		genPreAlloc cont env' b;
 		ignore (genBody cont env' (1, fVal) b)
 	| TDefDecC td -> genTDef cont env f td
-	(*| TDefDecC (TFunTD(_, td)) -> genDec cont env initFun f (TDefDecC td)
-	| TDefDecC (StructTD fl) -> genStructTD cont env f fl
-	| TDefDecC (EnumTD cl) ->
-		Hashtbl.add env (DTName f) (DTDef EnumTD_C);
-			(* - filler datatypes for data-less enums *)
-		genEnumTD cont env 0 (List.map (fun (x, ext) -> (x, [], ext)) cl)
-	| TDefDecC (UnionTD cl) -> genUnionTD cont env f cl
-	| TDefDecC ExternTD -> Hashtbl.add env (DTName f) (DTDef UnknownTD_C);*)
 	| ConstDecC e ->
 		let (v, t) = genConstExp cont env e in
 		let cVal = define_global f v cont.llmod in
@@ -232,13 +224,6 @@ let genExternals (cont: llvm_cont) (env: dusk_env) (symList: g_virt_bind list): 
 				Hashtbl.add env (DVar (cr f)) (DVal(v, FunVT(fType, tr)))
 		| SymVD _ -> ()
 		| TDefVD td -> genTDef cont env (cr f) td
-		(*| TDefVD (StructTD fl) -> genStructTD cont env (cr f) fl
-		| TDefVD (EnumTD cl) ->
-			Hashtbl.add env (DTName (cr f)) (DTDef EnumTD_C);
-			(* - filler datatypes for data-less enums *)
-			genEnumTD cont env 0 (List.map (fun (x, ext) -> (x, [], ext)) cl)
-		| TDefVD (UnionTD cl) -> genUnionTD cont env (cr f) cl
-		| TDefVD ExternTD -> Hashtbl.add env (DTName (cr f)) (DTDef UnknownTD_C)*)
 	) symList
 
 	(*

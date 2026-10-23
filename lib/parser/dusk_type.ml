@@ -15,10 +15,6 @@ let cn (QN(xo, x)) x' = match xo with
  
 let cr (CN(x, _)) = x
 
-(*
-type qual_tag = QT of string option
-type canon_tag = CT*)
-
 	(*
 		dusk types:
 		> 'm: used to determine the type of "identifier used" (raw names vs canonical names) 

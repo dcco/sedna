@@ -49,23 +49,6 @@ let gcDimsValType n = HeapPtrDT (StructIDT (Array.of_list
 		(List.init n (fun _ -> PrimST iType))
 	))
 
-(*
-let gcArrType tau = HeapPtrDT (StructIDT [|
-		PrimST iType; PrimST iType; PrimST iType;
-		ArrayPtrST tau
-	|])*)
-
-(*let gcArrType = struct_type context (Array.of_list [iType; iType; iType; ptrType]);;
-
-let gcDimsType n = struct_type context (Array.of_list (List.init n (fun _ -> iType)));;
-*)
-
-	(*
-		// SCRAP
-		genType: gives the "main" type for a datatype
-			(the one handled in expressions / used in arguments)
-	*)
-
 	(*
 		genType: gives the final llvm type for a datatype
 	*)
@@ -207,11 +190,6 @@ let storeToBoxType (_: string) (tau: store_type): dusk_type = match tau with
 	TupleST tau_a -> StackPtrDT (StructIDT tau_a)
 	| TagTupleST(t, align) -> StackPtrDT (OpaqueIDT(t, align))
 	| _ -> StackPtrDT (StructIDT [| tau |])
-	(*| _ -> failwith ("BUG: gen_type.ml - Attempting to box type that should not be boxed. " ^ debug)*)
-	(*
-	PrimST t -> PrimDT t
-	| StructPtrST tau_a -> StackPtrDT (StructIDT (Array.map (toStoreType debug env) tau_a))
-	| GCArrayPtrST tau -> StackPtrDT (ArrayIDT (toStoreType debug env tau))*)
 
 	(*
 		auxiliary type reading functions
@@ -225,17 +203,6 @@ let innerValType (debug: string) (tau: dusk_type): store_type array =
 		StackPtrDT tau_inner -> ivt_aux tau_inner
 		| HeapPtrDT tau_inner -> ivt_aux tau_inner
 		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^ debug)
-
-(*let indexOfValType (debug: string) (tau: dusk_type) (i: int): store_type =
-	let iovt_aux tau_inner = match tau_inner with
-		StructIDT tau_a ->
-			if i >= Array.length tau_a then failwith ("BUG: gen_type.ml - OOB indexed memory access. " ^ debug)
-			else tau_a.(i)
-		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^ debug)
-	in match tau with
-		StackPtrDT tau_inner -> iovt_aux tau_inner
-		| HeapPtrDT tau_inner -> iovt_aux tau_inner
-		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^ debug)*)
 
 let elemOfValType (debug: string) (tau: dusk_type): store_type =
 	let eovt_aux tau_inner = match tau_inner with

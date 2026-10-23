@@ -28,6 +28,8 @@ let chkStmtEnd (tk: raw_token): bool = match tk with
 	END -> true
 	| ELSIF -> true
 	| ELSE -> true
+	| CASE -> true
+	| OWISE -> true
 	| RBRACK -> true
 	| _ -> false
 
@@ -36,6 +38,11 @@ let chkAppEnd (tk: raw_token): bool = match tk with
 	| LBRACE -> false
 	| DOT -> false
 	| _ -> true
+
+let chkMatchEnd (tk: raw_token): bool = match tk with
+	OWISE -> true
+	| END -> true
+	| _ -> false
 
 let chkReqEnd (tk: raw_token): bool = match tk with
 	REFERENCES -> false
@@ -54,6 +61,7 @@ let chkBrackR (tk: raw_token): bool = match tk with
 
 let rec chkTypeStart (tkList: token list): bool = match tkList with
 	(TID _, _) :: _ -> true
+	| (VID _, _) :: _ -> true
 	| (DIM _, _) :: _ -> true
 	| (T_INT _, _) :: _ -> true
 	| (LPAREN, _) :: tkRem -> chkTypeStart tkRem
@@ -360,20 +368,22 @@ and parseAppExp: m_exp parser = fun tkList ->
 	let* (e, tkRem) = parseAtomExp tkList in
 	let* (appList, tkRem2) = parseList parseAppObj chkAppEnd tkRem in
 	Valid (foldAppList e appList, tkRem2)
-(*
-and parseIsExp: m_exp parser = fun tkList ->
+
+and parseIsNullExp: m_exp parser = fun tkList ->
 	let* (eo, tkRem) = parseAppExp tkList in (match tkRem with
 		(IS, p) :: tkRem2 ->
-			let* (y, tkRem3) = parseTagOrNull "`is` Expression" tkRem2 in Valid (IsExp(eo, y, p), tkRem3)
+			let* (_, tkRem3) = parseTk NULL "`is null` Expression" tkRem2 in Valid (IsNullExp(eo, true, p), tkRem3)
+			(*let* (y, tkRem3) = parseTagOrNull "`is` Expression" tkRem2 in Valid (IsExp(eo, y, p), tkRem3)*)
 		| (ISNT, p) :: tkRem2 ->
-			let* (y, tkRem3) = parseTagOrNull "`isnt` Expression" tkRem2 in
-			Valid (AppExp(VarExp(qn "not", p), [IsExp(eo, y, p)], p), tkRem3)
+			let* (_, tkRem3) = parseTk NULL "`isnt null` Expression" tkRem2 in Valid (IsNullExp(eo, false, p), tkRem3)
+			(*let* (y, tkRem3) = parseTagOrNull "`isnt` Expression" tkRem2 in
+			Valid (AppExp(VarExp(qn "not", p), [IsExp(eo, y, p)], p), tkRem3)*)
 		| _ -> Valid (eo, tkRem)
-	)*)
+	)
 
 and parseUniExp: m_exp parser = fun tkList ->
 	let* (eOpList, tkRem) = parseList (parseTkMulti readUniOp "Unary Operator") chkUniEnd tkList in
-	let* (e, tkRem2) = parseAppExp tkRem in
+	let* (e, tkRem2) = parseIsNullExp tkRem in
 	Valid (foldOpListU e eOpList, tkRem2)
 
 and parseMulExp: m_exp parser = fun tkList ->
@@ -411,18 +421,35 @@ and parseExp tkList = parseRelExp tkList
 
 	(* statement parsing *)
 
-let parsePat: string option parser = fun tkList -> match tkList with
+let parseSimpPat: string option parser = fun tkList -> match tkList with
 	(UNDERSCORE, _) :: tkRem -> Valid (None, tkRem)
 	| (ID x, _) :: tkRem -> Valid (Some x, tkRem)
 	| tk :: _ -> Error (BadToken_Err(tk, "Pattern"))
 	| _ -> Error (EOF_Err "Pattern")
 
+let parsePat: pat parser = fun tkList -> match tkList with
+	(LPAREN, _) :: tkRem -> (match tkRem with
+		(NULL, _) :: tkRem2 ->
+			let* (_, tkRem3) = parseTk RPAREN "Empty Tuple Pattern" tkRem2 in
+			Valid (NullListPat, tkRem3)
+		| _ ->
+			let* (xl, tkRem) = parseParenWrap (parseSepList parseSimpPat chkComma) "Tuple Pattern" tkList in
+			Valid (ListPat(None, xl), tkRem)
+	)
+	| (TID x, _) :: tkRem -> (match tkRem with
+		(LPAREN, _) :: _ ->
+			let* (xl, tkRem2) = parseParenWrap (parseSepList parseSimpPat chkComma) "Tag Tuple Pattern" tkRem in
+			Valid (ListPat(Some x, xl), tkRem2)
+		| _ -> Valid (ListPat(Some x, []), tkRem)
+	)
+	| _ -> let* (x, tkRem) = parseDeclId "Var Stmt" tkList in Valid (VarPat x, tkRem)
+
 let rec parseStmt: m_stmt parser = fun tkList -> match tkList with
 	(VAR, p) :: tkRem ->
 		let* (px, tkRem2) = (match tkRem with
 			(LPAREN, _) :: _ ->
-				let* (xl, tkRem2) = parseParenWrap (parseSepList parsePat chkComma) "Var Pattern" tkRem in
-				Valid (ListPat xl, tkRem2)
+				let* (xl, tkRem2) = parseParenWrap (parseSepList parseSimpPat chkComma) "Var Pattern" tkRem in
+				Valid (ListPat(None, xl), tkRem2)
 			| _ -> let* (x, tkRem2) = parseDeclId "Var Stmt" tkRem in Valid (VarPat x, tkRem2)
 		) in
 		let* (_, tkRem3) = parseTk EQ "Var Stmt" tkRem2 in
@@ -446,6 +473,12 @@ let rec parseStmt: m_stmt parser = fun tkList -> match tkList with
 		let* (body, tkRem4) = parseList parseStmt chkStmtEnd tkRem3 in
 		let* (_, tkRem5) = parseTk END "For Loop (End)" tkRem4 in
 		Valid (foldRangeList rl body, tkRem5)
+	| (MATCH, p) :: tkRem ->
+		let* (e, tkRem2) = parseExp tkRem in
+		let* (cl, tkRem3) = parseList parseMatchCase chkMatchEnd tkRem2 in
+		let* (co, tkRem4) = parseOwise tkRem3 in
+		let* (_, tkRem5) = parseTk END "Match (End)" tkRem4 in
+		Valid (MatchStmt(e, cl @ co, p), tkRem5)
 	| (RETURN, p) :: tkRem -> (match tkRem with
 		(END, _) :: _ -> Valid (ReturnStmt(None, p), tkRem)
 		| [] -> Valid (ReturnStmt(None, p), [])
@@ -496,19 +529,29 @@ and parseRange: (string * range_type * m_exp) parser = fun tkList ->
 	let* (e, tkRem3) = parseExp tkRem2 in
 	Valid ((x, rt, e), tkRem3)
 
+and parseMatchCase: mm_case parser = fun tkList -> match tkList with
+	(CASE, p) :: tkRem ->
+		let* (px, tkRem2) = parsePat tkRem in
+		let* (_, tkRem3) = parseTk DO "Match Case" tkRem2 in
+		let* (body, tkRem4) = parseList parseStmt chkStmtEnd tkRem3 in
+		Valid (MCase(px, body, p), tkRem4)
+	| tk :: _ -> Error (BadToken_Err(tk, "Match Case"))
+	| _ -> Error (EOF_Err "Match Case")
+
+and parseOwise: (mm_case list) parser = fun tkList -> match tkList with
+	(OWISE, p) :: tkRem ->
+		let* (body, tkRem2) = parseList parseStmt chkStmtEnd tkRem in
+		Valid ([MCase(EmptyPat, body, p)], tkRem2)
+	| _ -> Valid ([], tkList)
+
 	(* method parsing *)
 
 let parseParam: (string * m_type) parser = fun tkList ->
-	let* (t, tkRem) = parseType tkList in
-	let* (x, tkRem2) = parseDeclId "Parameter List" tkRem
-	in Valid ((x, t), tkRem2)
-	(*let* (t, tkRem) = parseType tkList in match t with
-	KindTy _ ->
-		let* (x, tkRem2) = parseVId "Kind Parameter Id" tkRem
-		in Valid ((x, KindTy x), tkRem2) 
-	| _ ->
-		let* (x, tkRem2) = parseDeclId "Parameter List" tkRem
-		in Valid ((x, t), tkRem2)*)
+	let* (t, tkRem) = parseType tkList in match t with
+		TValTy(VarTy x) -> Valid ((x, t), tkRem) 
+		| _ ->
+			let* (x, tkRem2) = parseDeclId "Parameter List" tkRem
+			in Valid ((x, t), tkRem2)
 
 let parseParamList: (string * m_type) list parser = fun tkList -> match tkList with
 	(RPAREN, _) :: _ -> Valid ([], tkList)
@@ -617,19 +660,19 @@ let parseAttrInit: m_exp list parser = fun tkList -> match tkList with
 		parseBrackWrap (parseSepList parseExp chkComma) "Enum Case Attribute" tkList
 	| _ -> Valid ([], tkList)
 
-let parseEnumCase: (qual_name * m_exp list) parser = fun tkList ->
+let parseEnumCase: (string * qual_name * m_exp list) parser = fun tkList ->
 	let* (ctor, tkRem) = parseDeclTId "Enum Case Definition" tkList in
-	let* (al, tkRem2) = parseAttrInit tkRem in Valid ((qn ctor, al), tkRem2)
+	let* (al, tkRem2) = parseAttrInit tkRem in Valid ((ctor, qn ctor, al), tkRem2)
 
 let parseEnumDefFull (p: l_pos): m_dec list parser = fun tkList ->
 	let* (x, tkRem) = parseDeclTId "Enum Definition" tkList in
 	let* (fl, tkRem2) = parseAttrs tkRem in
 	let* (_, tkRem3) = parseTk EQ "Enum Definition" tkRem2 in
 	let* (cl, tkRem4) = parseSepList parseEnumCase chkBar tkRem3 in
-	let cl_e = List.map (fun (ctor, _) -> (ctor, NoEB)) cl in
+	let cl_e = List.map (fun (cx, ctor, _) -> (cx, ctor, NoEB)) cl in
 	let* attrsOpt = (
 		if List.length fl > 0 then Valid [AttrsDec(qn x, fl, cl, p)]
-		else if List.exists (fun (_, el) -> List.length el > 0) cl then Error (BadAttrs_Err p)
+		else if List.exists (fun (_, _, el) -> List.length el > 0) cl then Error (BadAttrs_Err p)
 		else Valid []
 	) in Valid ((TDefDec(qn x, EnumTD cl_e, p)) :: attrsOpt, tkRem4)
 
@@ -645,9 +688,9 @@ let parseTArgs: (string list) parser = fun tkList -> match tkList with
 		parseBraceWrap (parseSepList (parseVId "Type Argument") chkComma) "Type Argument List" tkList
 	| _ -> Valid ([], tkList)
 
-let td_with_args (td: m_tdef) (arg_l: string list): m_tdef = match arg_l with
+(*let td_with_args (td: m_tdef) (arg_l: string list): m_tdef = match arg_l with
 	[] -> td
-	| _ -> TFunTD(arg_l, td)
+	| _ -> TFunTD(arg_l, td)*)
 
 let parseDec: (m_dec list) parser = fun tkList -> match tkList with
 		(* - function declarations *)
@@ -663,7 +706,7 @@ let parseDec: (m_dec list) parser = fun tkList -> match tkList with
 		let* (arg_l, tkRem3) = parseTArgs tkRem2 in
 		let* (fl, tkRem4) = parseBrackWrap (parseSepList (parseFieldDef "Struct Definition") chkComma)
 			"Struct Definition" tkRem3 in
-		Valid ([TDefDec(qn x, td_with_args (StructTD fl) arg_l, p)], tkRem4)
+		Valid ([TDefDec(qn x, StructTD(arg_l, fl), p)], tkRem4)
 	| (ENUM, p) :: tkRem ->	parseEnumDefFull p tkRem
 	(*| (EXTENDS, p) :: tkRem ->
 		let* (_, tkRem2) = parseTk ENUM "Enum Extension" tkRem in

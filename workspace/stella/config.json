@@ -3,5 +3,6 @@
 		"GLFW",
 		"OpenGL",
 		"STBImage"
-	]
+	],
+	"scrap": []
 }

@@ -123,14 +123,13 @@ type enum_back = NoEB | IntEB of int | GlobalEB of string
 
 type 'm field_list = (string * 'm raw_type) list
 
-type 'm enum_case = 'm * enum_back
-type 'm union_case = 'm * 'm raw_type list * enum_back
+type 'm enum_case = string * 'm * enum_back
+type 'm union_case = string * 'm * 'm raw_type list * enum_back
 
 type 'm raw_tdef =
-	StructTD of 'm field_list
+	StructTD of string list * 'm field_list
 	| EnumTD of 'm enum_case list
 	| UnionTD of ('m union_case) list
-	| TFunTD of string list * 'm raw_tdef 
 	| ExternTD
 
 type m_field_list = qual_name field_list

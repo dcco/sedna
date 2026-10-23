@@ -143,7 +143,7 @@ extern void* gc_alloc_array(int32_t elemSize, int32_t arrSize, int32_t exSize, i
 	// allocate raw data
 	int32_t arrCap = 16;
 	if (arrSize > arrCap) arrCap = arrSize;
-	array->data = malloc(elemSize * arrCap);
+	array->data = calloc(arrCap, elemSize);
 	// initialize size information
 	array->elemSize = elemSize;
 	array->capacity = arrCap;

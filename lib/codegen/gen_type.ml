@@ -72,10 +72,13 @@ let gcDimsType n = struct_type context (Array.of_list (List.init n (fun _ -> iTy
 
 let genType (tau: dusk_type): lltype = match tau with	
 	PrimDT t -> t
-	| FunDT(t, _) -> t
-	(*| FunDT(_, _) -> _ptrType*)
+	| FunDT _ -> _ptrType
 	| StackPtrDT _ -> _ptrType
 	| HeapPtrDT _ -> _ptrType
+
+let genCallType (tau: dusk_type): lltype = match tau with
+	FunDT(t, _) -> t
+	| _ -> failwith "BUG: Attempted to extract function type from non-function value."
 
 let alignOfBoxType (tau: dusk_type): int option = match tau with
 	StackPtrDT (OpaqueIDT(_, i)) -> Some i
@@ -126,7 +129,11 @@ let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = 
 	(*| TagTupleTy(t, _) -> _namedStoreType debug env t*)
 	| ArrayTy(_, tau) -> gcArrStoreType (toStoreType debug env tau)
 	| TagOfTy _ -> PrimST tagType
-	| FunTy _ -> PrimST _ptrType
+	| FunTy(tau_pl, tau_r) ->
+		let tau_f = genFunType debug env tau_pl tau_r in
+		(*failwith ("generated fun type: " ^ debug ^ "_" ^ (string_of_lltype tau_f))*)
+		FunPtrST(tau_f, toStoreType debug env tau_r)
+	(*| FunTy(_, _) -> PrimST _ptrType*)
 	| CPtrTy t -> StructPtrST [| ExplDST (toStoreType debug env t) |]
 	| NullableTy tau -> toStoreType debug env tau
 	| BotTy -> PrimST iType
@@ -149,6 +156,33 @@ and _namedStoreType (debug: string) (env: dusk_env) (t: canon_name): store_type 
 		"\" mapped to unexpected value " ^ (string_of_dval v) ^ " while generating storage type. " ^ debug)
 	| None -> failwith ("BUG: gen_type.ml - Invalid type \"" ^ (cr t) ^ "\" encountered while generating storage type." ^ debug)
 	
+	(*
+		storeToValType: converts storage type into its "main" type
+			(the one handled in expressions / used in arguments)
+			- notably, this involves "boxing" tuple/tag tuple types
+			> mutually recursive to support fun type generation
+	*)
+
+and storeToValType (debug: string) (env: dusk_env) (tau: store_type): dusk_type = match tau with
+	PrimST t -> PrimDT t
+	| TupleST tau_a -> StackPtrDT (StructIDT tau_a)
+	| TagTupleST(t, align) -> StackPtrDT (OpaqueIDT(t, align))
+	| StructPtrST tau_a ->
+		let tau_a' = Array.map (fun tau -> match tau with
+			ExplDST t -> t | ImplDST t -> toStoreType debug env t
+		) tau_a in
+		HeapPtrDT (StructIDT tau_a')
+	| ArrayPtrST tau -> HeapPtrDT (ArrayIDT tau)
+	| FunPtrST(tf, tau_r) -> FunDT(tf, tau_r)
+
+and toValType (debug: string) (env: dusk_env) (tau: g_type): dusk_type =
+	storeToValType debug env (toStoreType debug env tau)
+
+and genFunType (debug: string) (env: dusk_env) (tau_pl: g_type list) (tau_r: g_type): lltype =
+	let tau_pl' = List.map (fun tau -> genType (toValType debug env tau)) tau_pl in
+	match toValType debug env tau_r with
+		StackPtrDT _ -> function_type voidType (Array.of_list (_ptrType :: tau_pl'))
+		| tau_r' -> function_type (genType tau_r') (Array.of_list tau_pl')
 
 	(*
 		valToStoreType: converts a value type into its corresponding storage type
@@ -164,27 +198,6 @@ let valToStoreType (debug: string) (tau: dusk_type): store_type = match tau with
 	| StackPtrDT (StructIDT tau_l) -> TupleST tau_l
 	| StackPtrDT (ArrayIDT _ ) ->
 		failwith ("BUG: gen_type.ml - Encountered direct usage of array stored in stack pointer type. " ^ debug)
-
-	(*
-		storeToValType: converts storage type into its "main" type
-			(the one handled in expressions / used in arguments)
-			- notably, this involves "boxing" tuple/tag tuple types
-	*)
-
-let storeToValType (debug: string) (env: dusk_env) (tau: store_type): dusk_type = match tau with
-	PrimST t -> PrimDT t
-	| TupleST tau_a -> StackPtrDT (StructIDT tau_a)
-	| TagTupleST(t, align) -> StackPtrDT (OpaqueIDT(t, align))
-	| StructPtrST tau_a ->
-		let tau_a' = Array.map (fun tau -> match tau with
-			ExplDST t -> t | ImplDST t -> toStoreType debug env t
-		) tau_a in
-		HeapPtrDT (StructIDT tau_a')
-	| ArrayPtrST tau -> HeapPtrDT (ArrayIDT tau)
-	| FunPtrST(tf, tau_r) -> FunDT(tf, tau_r)
-
-let toValType (debug: string) (env: dusk_env) (tau: g_type): dusk_type =
-	storeToValType debug env (toStoreType debug env tau)
 
 	(*
 		storeToBoxType: boxes a storage type into its "main" type
@@ -241,12 +254,6 @@ let genTagCaseType (env: dusk_env) (tau_l: g_type list): lltype =
 	let tau_l' = List.map (toStoreType "(Tag Tuple)" env) tau_l in
 	let tlf = List.map genStoreType tau_l' in
 	struct_type context (Array.of_list (tagType :: tlf))
-
-let genFunType (debug: string) (env: dusk_env) (tau_pl: g_type list) (tau_r: g_type): lltype =
-	let tau_pl' = List.map (fun tau -> genType (toValType debug env tau)) tau_pl in
-	match toValType debug env tau_r with
-		StackPtrDT _ -> function_type voidType (Array.of_list (_ptrType :: tau_pl'))
-		| tau_r' -> function_type (genType tau_r') (Array.of_list tau_pl')
 
 	(*
 		garbage collection layout type

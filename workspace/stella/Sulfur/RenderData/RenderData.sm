@@ -28,7 +28,29 @@ fn addBox(RenderData rd, U32 c, Int x, Int y, Int w, Int h)
 	-- COLOR
 	rd.data.addU32(c)
 	-- TEXID
-	rd.data.addU32(_0)
+	rd.data.addFloat(0.0)
+	-- TEX POS
+	rd.data.addFloat(0.0)
+	rd.data.addFloat(0.0)
+	-- TEX SIZE
+	rd.data.addFloat(1.0)
+	rd.data.addFloat(1.0)
+	rd.total = rd.total + 1
+end
+
+fn addImage(RenderData rd, TexImage image, Int x, Int y)
+	-- POS
+	rd.data.addFloat(toFloat(x))
+	rd.data.addFloat(toFloat(y))
+	-- * z-sorted by draw order
+	rd.data.addFloat(toFloat(-rd.total))
+	-- SIZE
+	rd.data.addFloat(toFloat(image.width))
+	rd.data.addFloat(toFloat(image.height))
+	-- COLOR
+	rd.data.addU32(0xFFFFFFFF)
+	-- TEXID
+	rd.data.addFloat(toFloat(image.layer))
 	-- TEX POS
 	rd.data.addFloat(0.0)
 	rd.data.addFloat(0.0)

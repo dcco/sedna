@@ -111,6 +111,9 @@ rule token = parse
 	| "do" { lexWrap lexbuf DO }
 	| "for" { lexWrap lexbuf FOR }
 	| "in" { lexWrap lexbuf IN }
+	| "match" { lexWrap lexbuf MATCH }
+	| "case" { lexWrap lexbuf CASE }
+	| "owise" { lexWrap lexbuf OWISE }
 	| "return" { lexWrap lexbuf RETURN }
 	| "false" { lexWrap lexbuf FALSE }
 	| "true" { lexWrap lexbuf TRUE }

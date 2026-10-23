@@ -14,6 +14,7 @@ module StringMap = Map.Make(String)
 
 type r_exp = (canon_name, l_pos) exp
 type r_stmt = (canon_name, l_pos) stmt
+type rm_case = (canon_name, l_pos) m_case
 type r_met = (canon_name, l_pos) met
 type r_dec = (canon_name, l_pos) dec
 

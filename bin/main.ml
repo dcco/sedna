@@ -272,6 +272,7 @@ let read_config (path: string): dusk_config =
 let program _ =
 		(* parse arguments from command line *)
 	(*let binDir = Array.get Sys.argv 0 in*)
+	Printexc.record_backtrace true;
 	Arg.parse [
 		("-o", Arg.Set_string out_arg,
 			"Name of the output executable.");

@@ -207,10 +207,12 @@ let builtinList =
 	("or", BinaryASMSym "bor", [boolTy; boolTy], boolTy);
 
 		(* string ops *)
+	("lookup", ExternalSym, [stringTy; intTy], u8Ty);
 	("add", ExternalSym, [stringTy; stringTy], stringTy);
 	("toString", ExternalSym, [intTy], stringTy);
 	("toString", ExternalSym, [floatTy], stringTy);
 	("measure", ExternalSym, [stringTy], intTy);
+	("eq", ExternalSym, [stringTy; stringTy], boolTy);
 
 		(* math ops *)
 	("floor", ExternalSym, [floatTy], intTy);
@@ -287,7 +289,7 @@ let builtinTreeMap (): (m_virt_bind list) tree_map =
 
 let extractSymbols (symList: (raw_bind, qual_name) virt_bind list): raw_bind list =
 	List.concat (List.map (fun (f, vd, _) -> match vd with
-		TDefVD (EnumTD cl) -> f :: (List.map (fun (QN(_, c), _) -> RawBind c) cl)
-		| TDefVD (UnionTD cl) -> f :: (List.map (fun (QN(_, c), _, _) -> RawBind c) cl)
+		TDefVD (EnumTD cl) -> f :: (List.map (fun (c, _, _) -> RawBind c) cl)
+		| TDefVD (UnionTD cl) -> f :: (List.map (fun (c, _, _, _) -> RawBind c) cl)
 		| _ -> [f]
 	) symList)

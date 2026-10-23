@@ -10,6 +10,7 @@ type raw_token = INT of Int64.t * bool * bit_width | FLOAT of float | TRUE | FAL
 	| TYPE | STRUCT | ENUM | EXTENDS | ATTRS | UNION | CONST | GLOBALS
 	| FN | FNPTR | LIN | VAR | NEW | BY | IF | THEN | ELSIF | ELSE | IS | ISNT
 	| LOOP | WHILE | DO | FOR | IN | RETURN
+	| MATCH | CASE | OWISE
 	| GC_COLLECT | UNDERSCORE
 	| EQ | DOT | ELLIP | LPAREN | RPAREN | COMMA | TILDE | QMARK | QQ | AT
 	| LBRACE | RBRACE | BAR | LBRACK | RBRACK
@@ -83,6 +84,9 @@ let string_of_raw_token tk = match tk with
 	| DO -> "do"
 	| FOR -> "for"
 	| IN -> "in"
+	| MATCH -> "match"
+	| CASE -> "case"
+	| OWISE -> "owise"
 	| RETURN -> "return"
 	| GC_COLLECT -> "gc_collect"
 	| UNDERSCORE -> "_"

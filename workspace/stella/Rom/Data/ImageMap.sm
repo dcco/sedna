@@ -1,11 +1,35 @@
 
 struct ImageMap{
-	HashMap[String, TexImage] data
+	HashMap[String, TexImage] data,
+	Int iSlot,
+	TexArray iData
 }
 
-fn newImageMap() ImageMap
+fn newImageMap(TexArray arr, Int total, Int w, Int h) ImageMap
 	return new ImageMap{
-		data = newHashMap(~String, ~TexImage, 100)
+		data = newHashMap(~String, ~TexImage, total, stringHash, stringEquals),
+		iSlot = 0,
+		iData = arr
 	}
 end
 
+fn load(ImageMap map, String fName) TexImage
+	-- load image from external
+	var cName = cString(fName + ".png")
+	var cw = cBox(0)
+	var ch = cBox(0)
+	var cc = cBox(0)
+	var cData = stbiLoad(cName, cw, ch, cc, 4)
+	if cData is null then
+		var fail = stbiFailureReason()
+		panic("Failed to load image: " + toString(fail))
+	end
+	-- load image into tex array
+	var image = newTexImage(map.iData, map.iSlot, cData)
+	insert(map.data, fName, image)
+	-- advance meta-data
+	map.iSlot = map.iSlot + 1
+	-- free stbi data
+	stbiImageFree(cData)
+	return image
+end

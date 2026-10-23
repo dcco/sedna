@@ -28,21 +28,20 @@ let rec resolve_type (env: res_env) (p: l_pos) (tau: m_type): g_type rs_res = ma
 	| VarTy i -> Valid (VarTy i)
 	| CPtrTy tau -> let* tau' = resolve_type env p tau in Valid (CPtrTy tau')
 
-let rec resolve_type_def (env: res_env) (p: l_pos) (td: m_tdef): g_tdef rs_res = match td with
-	TFunTD(_, td') -> resolve_type_def env p td'
-	| StructTD fl ->
+let resolve_type_def (env: res_env) (p: l_pos) (td: m_tdef): g_tdef rs_res = match td with
+	StructTD(xl, fl) ->
 		let* fl' = map_try_res (fun (x, tau) ->
 			let* tau' = resolve_type env p tau in Valid (x, tau')
-		) fl in Valid (StructTD fl')
+		) fl in Valid (StructTD(xl, fl'))
 	| EnumTD cl ->
-		let* cl' = map_try_res (fun (x, ext) ->
-			let* x' = add_dec_renv env p LocalOr x in Valid (x', ext)
+		let* cl' = map_try_res (fun (cx, x, ext) ->
+			let* x' = add_dec_renv env p LocalOr x in Valid (cx, x', ext)
 		) cl in Valid (EnumTD cl')
 	| UnionTD cl ->
-		let* cl' = map_try_res (fun (x, tau_l, ext) ->
+		let* cl' = map_try_res (fun (cx, x, tau_l, ext) ->
 			let* x' = add_dec_renv env p LocalOr x in
 			let* tau_l' = map_try_res (resolve_type env p) tau_l in
-			Valid (x', tau_l', ext)
+			Valid (cx, x', tau_l', ext)
 		) cl in Valid (UnionTD cl')
 	| ExternTD -> Valid ExternTD
 

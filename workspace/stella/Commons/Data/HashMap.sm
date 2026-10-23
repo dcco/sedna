@@ -1,15 +1,55 @@
-(*)
+
 struct HashMap[K, V]{
-	1d[(K ?? V)] data
+	1d[(K ?? V)] data,
+	Fn(K) U64 hashFun,
+	Fn(K, K) Bool eqFun
 }
 
-fn newHashMap(TYPE K, TYPE V, Int total) HashMap
+fn newHashMap(TYPE[K], TYPE[V], Int total, Fn(K) U64 hashFun, Fn(K, K) Bool eqFun) HashMap[K, V]
 	var size = ceil(toFloat(total) /. 0.7)
 	var data = new 1d(size)[~(K ?? V)]
 	return new HashMap{
-		data = data
+		data = data,
+		hashFun = hashFun,
+		eqFun = eqFun
 	}
-end*)
+end
+
+fn lookup(HashMap[K, V] map, K k) V?
+	var ix = toInt((map.hashFun)(k) % toU64(toI64(|map.data|)))
+	loop
+		match map.data[ix]
+		case (_k, v) do
+			if (map.eqFun)(k, _k) then
+				return v
+			else
+				ix = (ix + 1) % |map.data|
+			end
+		owise
+			return null
+		end
+	end
+	return null
+end
+
+fn insert(HashMap[K, V] map, K k, V v)
+	var ix = toInt((map.hashFun)(k) % toU64(toI64(|map.data|)))
+	var oix = ix
+	var done = false
+	while !done do
+		match map.data[ix]
+		case (_k, _) do
+			if (map.eqFun)(k, _k) then
+				done = true
+			else
+				ix = (ix + 1) % |map.data|
+			end
+		owise
+			done = true
+		end
+	end
+	map.data[ix] = (k, v)
+end
 
 (*)
 ctor HashMap(Int total)
@@ -20,3 +60,20 @@ ctor HashMap(Int total)
 	}
 end*)
 
+	(*
+		default hash/equality functions
+	*)
+
+
+fn stringHash(String bytes) U64
+	var hash = 0xcbf29ce484222325_L
+	for i < |bytes| do
+		hash = hash ^ toU64(bytes[0])
+		hash = hash * 0x100000001b3_L
+	end
+	return hash
+end
+
+fn stringEquals(String e1, String e2) Bool
+	return e1 = e2
+end

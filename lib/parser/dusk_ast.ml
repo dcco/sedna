@@ -46,14 +46,16 @@ type ('m, 'ann) exp =
 	| ZeroArrayExp of int * ('m, 'ann) exp list * 'm raw_type * 'ann
 	| NewStructExp of 'm * ('m, 'ann) field_init * 'ann
 		(* selectors *)
-	(*| IsExp of ('m, 'ann) exp * 'm option * 'ann*)
+	| IsNullExp of ('m, 'ann) exp * bool * 'ann
 		(* function call *)
 	| AppExp of ('m, 'ann) exp * ('m, 'ann) exp list * 'ann
 and ('m, 'ann) field_init = (string * ('m, 'ann) exp) list
 
 type pat =
-	VarPat of string
-	| ListPat of (string option) list 
+	EmptyPat
+	| VarPat of string
+	| ListPat of string option * (string option) list
+	| NullListPat
 
 type range_type = LtRange | LeqRange | ListRange
 
@@ -65,7 +67,10 @@ type ('m, 'ann) stmt =
 	| IfStmt of ('m, 'ann) exp * ('m, 'ann) stmt list * ('m, 'ann) stmt list * 'ann
 	| WhileStmt of ('m, 'ann) exp * ('m, 'ann) stmt list * 'ann
 	| ForStmt of string * range_type * ('m, 'ann) exp * ('m, 'ann) stmt list * 'ann
+	| MatchStmt of ('m, 'ann) exp * ('m, 'ann) m_case list * 'ann
 	| GCCollectStmt of 'ann
+and ('m, 'ann) m_case =
+	MCase of pat * ('m, 'ann) stmt list * 'ann
 
 	(*
 		######################
@@ -76,6 +81,7 @@ type ('m, 'ann) stmt =
 type m_field_init = (qual_name, l_pos) field_init
 type m_exp = (qual_name, l_pos) exp
 type m_stmt = (qual_name, l_pos) stmt
+type mm_case = (qual_name, l_pos) m_case
 
 	(* annotation reader *)
 
@@ -90,7 +96,7 @@ let ann_exp e = match e with
 	| FormatArrayExp(_, _, _, a) -> a
 	| ZeroArrayExp(_, _, _, a) -> a
 	| NewStructExp(_, _, a) -> a
-	(*| IsExp(_, _, a) -> a*)
+	| IsNullExp(_, _, a) -> a
 	| AppExp(_, _, a) -> a
 
 let ann_stmt s = match s with
@@ -101,6 +107,7 @@ let ann_stmt s = match s with
 	| IfStmt(_, _, _, a) -> a
 	| WhileStmt(_, _, a) -> a
 	| ForStmt(_, _, _, _, a) -> a
+	| MatchStmt(_, _, a) -> a
 	| GCCollectStmt a -> a
 
 	(*
@@ -115,7 +122,7 @@ type ('m, 'ann) met =
 	Method of lin_flag * 'm * (string * 'm raw_type) list * 'm raw_type * ('m, 'ann) stmt list
 
 (*type ('m, 'ann) attr_case = 'm enum_case * ('m, 'ann) field_init*)
-type ('m, 'ann) attr_case = 'm * (('m, 'ann) exp list)
+type ('m, 'ann) attr_case = string * 'm * (('m, 'ann) exp list)
 
 type ('m, 'ann) dec =
 	FunDec of ('m, 'ann) met * 'ann

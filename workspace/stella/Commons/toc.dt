@@ -1,4 +1,5 @@
 
 module Data
+	references Sys.Os
 	type HashMap
 end

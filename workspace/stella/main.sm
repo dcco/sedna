@@ -3,7 +3,7 @@ references GLFW.Main
 references OpenGL.Main as GL
 references Sulfur.Main as Sulfur
 references Sulfur modules Material, RenderData
-(*references Rom.Data*)
+references Rom.Data
 
 lin main()
 	print("HELLO WORLD!")
@@ -23,10 +23,10 @@ lin main()
 	glfwWindowHint(_GLFW_DOUBLEBUFFER, _GLFW_TRUE)
 
 	var window = glfwCreateWindow(1024, 800, cString("Sedna"), null, null)
-	(*if window is null then
+	if window is null then
 		glfwTerminate()
 		panic("Could not create GLFW window.")
-	end*)
+	end
 
 	-- initialize open gl context
 	glfwMakeContextCurrent(window)
@@ -39,18 +39,24 @@ lin main()
 
 	-- check open gl version
 	var vs = glGetString(_GL_VERSION)
-	(*if vs isnt null then print(vs)
+	if vs isnt null then print(vs)
 	else panic("Could not create OpenGL context.")
-	end*)
+	end
 
 	-- initialize shaders, etc
 	var sulfur = initSulfur(1024, 800)
-	sulfur.texArr = newTexArray(1, 512, 512)
+	var texArr = newTexArray(8, 1024, 1024)
+	sulfur.texArr = texArr
+
+	-- load images
+	var iMap = newImageMap(texArr, 100, 1024, 1024)
+	var layer0 = iMap.load("sori")
 
 	-- main loop
-	(*while glfwWindowShouldClose(window) = 0 do
+	while glfwWindowShouldClose(window) = 0 do
 		sulfur.frontBuffer.clear()
 		sulfur.frontBuffer.addBox(0xFFE0E0F0, 8, 8, 16, 32)
+		sulfur.frontBuffer.addImage(layer0, 20, 50)
 		sulfur.render()
 		glfwPollEvents()
 		glfwSwapBuffers(window)
@@ -58,5 +64,5 @@ lin main()
 
 	-- cleanup
 	glfwDestroyWindow(window)
-	glfwTerminate()*)
+	glfwTerminate()
 end

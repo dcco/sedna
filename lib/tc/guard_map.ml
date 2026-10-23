@@ -1,4 +1,6 @@
 
+module StringMap = Map.Make(String)
+
 	(*
 		** guard index / guard symbol
 		symbolic representations of variables / constant indices into variables (array indices, tuple locations)
@@ -24,26 +26,22 @@ module GuardSymbol = struct
 end
 
 module GIMap = Map.Make(Guard_symbol)
+*)
 
 	(*
-		** guard set
-		tracks [possible tags / all possible tags]
+		** (null only) guard set
+		[is null, isnt null]
 	*)
 
-type guard_set = GuardSet of string list * string list
+type guard_set = GuardSet of bool * bool
 
-let null_guard_set: guard_set = GuardSet(["null"], ["valid"; "null"])
+let null_guard_set (b: bool): guard_set = if b then GuardSet(true, false) else GuardSet(false, true)
 
-let new_guard_set (x: string) (all: string list): guard_set = GuardSet([x], all)
+let neg_guard_set (GuardSet(a, b): guard_set): guard_set = GuardSet(not a, not b)
 
-let neg_guard_set (GuardSet(g, all): guard_set): guard_set =
-	GuardSet(List.filter (fun x -> not (List.mem x g)) all, all)
+let conj_guard_set (GuardSet(a1, b1): guard_set) (GuardSet(a2, b2): guard_set): guard_set = GuardSet(a1 && a2, b1 && b2)
 
-let conj_guard_set (GuardSet(g, all): guard_set) (GuardSet(h, _): guard_set): guard_set =
-	GuardSet(List.filter (fun x -> List.mem x h) g, all)
-
-let disj_guard_set (GuardSet(g, all): guard_set) (GuardSet(h, _): guard_set): guard_set =
-	GuardSet(g @ (List.filter (fun x -> not (List.mem x g)) h), all) 
+let disj_guard_set (GuardSet(a1, b1): guard_set) (GuardSet(a2, b2): guard_set): guard_set = GuardSet(a1 || a2, b1 || b2) 
 
 let disj_guard_set_opt (g: guard_set option) (h: guard_set option): guard_set option = match (g, h) with
 	(Some g, Some h) -> Some (disj_guard_set g h)
@@ -51,7 +49,6 @@ let disj_guard_set_opt (g: guard_set option) (h: guard_set option): guard_set op
 
 	(*
 		** guard map
-
 	*)
 
 type guard_map = guard_set StringMap.t
@@ -66,6 +63,7 @@ let conj_guard_map (g: guard_map) (h: guard_map): guard_map =
 let disj_guard_map (g: guard_map) (h: guard_map): guard_map = 
 	StringMap.merge (fun _ g h -> disj_guard_set_opt g h) g h
 
-let try_narrow_guard_map (g: guard_map) (x: string): string option = match StringMap.find_opt x g with
-	Some (GuardSet([x], _)) -> Some x
-	| _ -> None*)
+let try_narrow_guard_map (g: guard_map) (x: string): bool option = match StringMap.find_opt x g with
+	Some (GuardSet(true, false)) -> Some true
+	| Some (GuardSet(false, true)) -> Some false
+	| _ -> None

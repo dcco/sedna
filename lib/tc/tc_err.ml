@@ -63,6 +63,8 @@ type tc_err =
 	| NonCtorU_Err of string * l_pos
 	| NonTagType_Err of lhs_type * l_pos
 	| NonEnum_Err of lhs_type * l_pos
+	| NonTagTuple_Err of g_type * l_pos
+	| BadTag_Err of g_type * string * l_pos
 	| BadAttr_Err of string * string * l_pos
 	| MismatchedAttrNum_Err of string * int * int * l_pos
 		(* arrays *)
@@ -74,9 +76,11 @@ type tc_err =
 	| MissingField_Err of string * string * tc_info * l_pos
 	| BadField_Err of string * string * l_pos
 		(* nullable *)
-	| BadNullCheck_Err of g_type * l_pos
+	| BadNullCheck_Err of lhs_type * l_pos
 		(* functions *)
 	| NonFunction_Err of lhs_type * l_pos
+		(* matches *)
+	| EarlyEndMatch_Err of l_pos
 		(* returns *)
 	| EarlyReturn_Err of string * l_pos
 	| NoReturn_Err of string * l_pos
@@ -117,6 +121,9 @@ let string_of_tc_err (e: tc_err) = match e with
 	| NonCtorU_Err(t, p) -> "Type name \"" ^ t ^ "\" did not resolve to a union constructor at " ^ (string_of_pos p) ^ "."
 	| NonTagType_Err(t, p) -> "Tag requested for untagged type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonEnum_Err(t, p) -> "Enum operation called on non-enum type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	| NonTagTuple_Err(t, p) -> "Tag matching performed on non union type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	| BadTag_Err(t, x, p) -> "Attempted to match type \"" ^ (string_of_type cr t) ^ "\" with non-existent constructor \"" ^ x ^ "\" at " ^ (string_of_pos p) ^ "."
+	
 	| BadAttr_Err(t, x, p) -> "Attempted to read non-existent attribute \"" ^ x ^
 		"\" from enum \"" ^ t ^ "\" at " ^ (string_of_pos p) ^ "."
 	| MismatchedAttrNum_Err(tx, s, t, p) -> "Enum constructor \"" ^ tx ^ "\" expected " ^ (string_of_int t) ^ " attributes and received " ^
@@ -134,8 +141,10 @@ let string_of_tc_err (e: tc_err) = match e with
 	| BadField_Err(t, x, p) -> "Attempted to read non-existent field \"" ^ x ^
 		"\" from struct \"" ^ t ^ "\" at " ^ (string_of_pos p) ^ "."
 	| BadNullCheck_Err(t, p) -> "Attempted to perform null check on non-nullable type \"" ^
-		(string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
+		(string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonFunction_Err(t, p) -> "Function call on non-function type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	| EarlyEndMatch_Err p ->
+		"Early wildcard in match statement producing unreachable cases at " ^ (string_of_pos p) ^ "."
 	| EarlyReturn_Err(f, p) ->
 		"Early return from function \"" ^ f ^ "\" producing unreachable code at " ^ (string_of_pos p) ^ "."
 	| NoReturn_Err(f, p) ->

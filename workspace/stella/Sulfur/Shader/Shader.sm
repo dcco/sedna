@@ -114,22 +114,22 @@ fn initShader(CPtr[U8] vs, CPtr[U8] fs, ShaderDef sDef) Shader
 	-- initialize texture sampler
 	var _usName = sDef.uSampler
 	var uSampler = -1
-	(*if _usName isnt null then
+	if _usName isnt null then
 		uSampler = glGetUniformLocation(prog, cString(_usName))
 		if uSampler < 0 then
 			panic("Shader.sm - Could not load shader uniform " + _usName)
 		end
-	end*)
+	end
 	
 	-- initialize perspective matrix
 	var _upName = sDef.uPers
 	var uPers = -1
-	(*if _upName isnt null then
+	if _upName isnt null then
 		uPers = glGetUniformLocation(prog, cString(_upName))
 		if uPers < 0 then
 			panic("Shader.sm - Could not load shader uniform " + _upName)
 		end
-	end*)
+	end
 
 	return new Shader{
 		prog = prog,

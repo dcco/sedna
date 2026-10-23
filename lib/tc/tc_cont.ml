@@ -3,9 +3,8 @@ open Parser.Dusk_type
 open Parser.Dusk_ast
 open Codegen.Fin_type
 open Codegen.Fin_ast
+open Guard_map
 open Tc_type
-
-module StringMap = Map.Make(String)
 
 	(*
 		tags of types (for overloading)
@@ -84,6 +83,7 @@ type type_env = {
 	globalIds: (string, canon_name * g_type * gen_exp option) Hashtbl.t;
 	globalAttrs: (string, tc_attrs) Hashtbl.t;
 	localIds: g_type StringMap.t;
+	guardMap: guard_map;
 	boxCount: int ref
 }
 
@@ -102,9 +102,8 @@ let dump_tenv (env: type_env): unit =
 	print_string "} {\n";
 	Hashtbl.iter (fun x (_, td) ->
 		print_string (" " ^ x ^ ": "); (
-		let rec print_tc_item td = match td with
-			TcTDef (TFunTD(_, td')) -> print_tc_item (TcTDef td'); print_string "[_]"
-			| TcTDef (StructTD _) -> print_string "struct"
+		let print_tc_item td = match td with
+			TcTDef (StructTD(_, _)) -> print_string "struct"
 			| TcTDef (EnumTD _) -> print_string "enum"
 			| TcTDef (UnionTD _) -> print_string "union"
 			| TcTDef ExternTD -> print_string "extern"
@@ -125,12 +124,11 @@ let add_fun_tenv (env: type_env) (f: canon_name) (v: sym_fun_type): unit =
 
 let add_tdef_tenv (env: type_env) (f: canon_name) (td: g_tdef): unit =
 	Hashtbl.add env.globalTIds (cr f) (f, TcTDef td);
-	let rec att_aux td = match td with
-		TFunTD(_, td') -> att_aux td'
-		| EnumTD cl ->
-			List.iter (fun (c, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorE f)) cl
+	let att_aux td = match td with
+		EnumTD cl ->
+			List.iter (fun (_, c, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorE f)) cl
 		| UnionTD cl ->
-			List.iter (fun (c, _, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorU f)) cl
+			List.iter (fun (_, c, _, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorU f)) cl
 		| StructTD _ | ExternTD -> ()
 	in att_aux td
 
@@ -142,6 +140,7 @@ let builtin_tenv (dl: g_virt_bind list): type_env =
 		globalIds = Hashtbl.create 50;
 		globalAttrs = Hashtbl.create 10;
 		localIds = StringMap.empty;
+		guardMap = StringMap.empty;
 		boxCount = ref 0
 	} in List.iter (fun (f, vd, _) -> match vd with
 		SymVD(s, tau_f) -> add_fun_tenv env f (s, tau_f)

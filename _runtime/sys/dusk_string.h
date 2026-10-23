@@ -24,6 +24,11 @@ static dusk_string_t* _newString(int32_t len) {
 	return s;
 }
 
+extern int8_t _String_builtin_lookup(void* _s, int32_t i) {
+	dusk_string_t* s = (dusk_string_t*) _s;
+	return (&s->start)[i];
+}
+
 extern void* _String_builtin_add(void* _s1, void* _s2) {
 	dusk_string_t* s1 = (dusk_string_t*) _s1;
 	dusk_string_t* s2 = (dusk_string_t*) _s2;
@@ -38,6 +43,12 @@ extern void* _String_builtin_add(void* _s1, void* _s2) {
 
 extern int32_t _String_builtin_measure(void* s) {
 	return ((dusk_string_t*) s)->len;
+}
+
+extern int8_t _String_builtin_eq(void* _s1, void* _s2) {
+	dusk_string_t* s1 = (dusk_string_t*) _s1;
+	dusk_string_t* s2 = (dusk_string_t*) _s2;
+	return strcmp(&s1->start, &s2->start) == 0;
 }
 
 	/*

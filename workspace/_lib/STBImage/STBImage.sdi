@@ -3,6 +3,6 @@ _linker references
 	"stb_image.c"
 end
 
-fn stbiLoad(CPtr[U8] filename, CPtr[Int] x, CPtr[Int] y, CPtr[Int] channels_in_file, Int desired_channels) CPtr[U8]
-fn stbiImageFree(CPtr[U8] retval_from_stbi_load)
-fn stbiFailureReason() CPtr[U8]
+fn stbiLoad(CPtr[U8] filename, CPtr[Int] w, CPtr[Int] h, CPtr[Int] channels_in_file, Int desired_channels) CPtr[U8] as stbi_load
+fn stbiImageFree(CPtr[U8] retval_from_stbi_load) as stbi_image_free
+fn stbiFailureReason() CPtr[U8] as stbi_failure_reason

@@ -33,9 +33,10 @@ let rec resolve_exp (env: res_env) (e: m_exp): r_exp rs_res = match e with
 		let* fl' = map_try_res (fun (f, e) ->
 			let* e' = resolve_exp env e in Valid (f, e')
 		) fl in Valid (NewStructExp(x', fl', p))
-	(*| IsExp(e, y, p) ->
+	| IsNullExp(e, y, p) ->
 		let* e' = resolve_exp env e in
-		let* y' = opt_try_res (resolve_name env p) y in Valid (IsExp(e', y', p))*)
+		(*let* y' = opt_try_res (resolve_name env p) y in *)
+		Valid (IsNullExp(e', y, p))
 	| AppExp(ef, el, p) ->
 		let* ef' = resolve_exp env ef in
 		let* el' = resolve_exp_list env el in Valid (AppExp(ef', el', p))
@@ -46,6 +47,14 @@ and resolve_exp_list (env: res_env) (el: m_exp list): (r_exp list) rs_res = matc
 		let* et' = resolve_exp_list env et in Valid (e' :: et')
 
 	(* statement resolution *)
+
+let resolve_pat (env: res_env) (px: pat): res_env = match px with
+	EmptyPat -> env
+	| VarPat x -> { env with localIds = StringMap.add x () env.localIds }
+	| ListPat(_, xol) -> List.fold_left (fun env' xo -> match xo with
+		None -> env' | Some x -> { env' with localIds = StringMap.add x () env'.localIds }
+	) env xol
+	| NullListPat -> env
 
 let rec resolve_stmt (env: res_env) (s: m_stmt): (res_env * r_stmt) rs_res = match s with
 	EvalStmt(e, p) -> let* e' = resolve_exp env e in Valid (env, EvalStmt(e', p))
@@ -59,12 +68,7 @@ let rec resolve_stmt (env: res_env) (s: m_stmt): (res_env * r_stmt) rs_res = mat
 	)
 	| PatStmt(px, e, p) ->
 		let* e' = resolve_exp env e in
-		let env' = (match px with
-			VarPat x -> { env with localIds = StringMap.add x () env.localIds }
-			| ListPat xol -> List.fold_left (fun env' xo -> match xo with
-				None -> env' | Some x -> { env' with localIds = StringMap.add x () env'.localIds }
-			) env xol
-		) in Valid (env', PatStmt(px, e', p))
+		let env' = resolve_pat env px in Valid (env', PatStmt(px, e', p))
 	| IfStmt(e, b1, b2, p) ->
 		let* e' = resolve_exp env e in
 		let* (_, b1') = resolve_body env b1 in
@@ -76,12 +80,20 @@ let rec resolve_stmt (env: res_env) (s: m_stmt): (res_env * r_stmt) rs_res = mat
 		let* e' = resolve_exp env e in
 		let env' = { env with localIds = StringMap.add x () env.localIds } in
 		let* (_, b') = resolve_body env' b in Valid (env, ForStmt(x, rt, e', b', p))
+	| MatchStmt(e, cl, p) ->
+		let* e' = resolve_exp env e in
+		let* cl' = map_try_res (resolve_match_case env) cl in
+		Valid (env, MatchStmt(e', cl', p))
 	| GCCollectStmt p -> Valid (env, GCCollectStmt p)
 and resolve_body (env: res_env) (b: m_stmt list): (res_env * r_stmt list) rs_res = match b with
 	[] -> Valid (env, [])
 	| s :: st ->
 		let* (env2, s') = resolve_stmt env s in
 		let* (env3, st') = resolve_body env2 st in Valid (env3, s' :: st')
+and resolve_match_case (env: res_env) (MCase(px, b, p): mm_case): rm_case rs_res =
+	let env' = resolve_pat env px in
+	let* (_, b') = resolve_body env' b in
+	Valid (MCase(px, b', p))
 
 	(* declaration resolution *)
 
@@ -122,10 +134,10 @@ let resolve_dec (env: res_env) (d: m_dec): r_dec rs_res = match d with
 		let* fl' = map_try_res (fun (x, tau) ->
 			let* t' = resolve_type env p tau in Valid (x, t')
 		) fl in
-		let* cl' = map_try_res (fun (ctor, el) ->
+		let* cl' = map_try_res (fun (cx, ctor, el) ->
 			let* el' = map_try_res (resolve_exp env) el in
 			let* ctor' = resolve_name env p ctor in
-			Valid (ctor', el')
+			Valid (cx, ctor', el')
 		) cl in Valid (AttrsDec(tName', fl', cl', p))
 	(*| ExtendsDec _ -> ExtendsDec(x, al, cl, p) ->*)
 			(* resolve attributes *)

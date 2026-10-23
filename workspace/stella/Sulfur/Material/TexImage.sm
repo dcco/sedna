@@ -1,5 +1,23 @@
 
 struct TexImage{
-	Int layer,
-	2d[U32] data
+	U32 layer,
+	Int width,
+	Int height
+	--,2d[U32] data
 }
+
+fn newTexImage(TexArray arr, Int ix, CPtr[U8] data) TexImage
+	glBindTexture(_GL_TEXTURE_2D_ARRAY, arr.id)
+	glTexSubImage3D(
+		_GL_TEXTURE_2D_ARRAY, 0,
+		0, 0, ix + 1,
+		arr.width, arr.height, 1,
+		_GL_RGBA, _GL_UNSIGNED_BYTE, data
+	)
+
+	return new TexImage{
+		layer = toU32(ix + 1),
+		width = arr.width,
+		height = arr.height
+	}
+end

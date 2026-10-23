@@ -118,7 +118,7 @@ let string_of_inner_type (t: inner_type): string = match t with
 
 let string_of_dtype (t: dusk_type): string = match t with
 	PrimDT t -> string_of_lltype t
-	| FunDT(t, _) -> string_of_lltype t
+	| FunDT(t, _) -> "fun< " ^ string_of_lltype t ^ " >"
 	| StackPtrDT t -> "stack< " ^ (string_of_inner_type t) ^ " >"
 	| HeapPtrDT t -> "heap< " ^ string_of_inner_type t ^ " >"
 

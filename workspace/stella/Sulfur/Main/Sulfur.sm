@@ -64,7 +64,7 @@ end
 
 fn render(Sulfur sulfur)
 	var texArr = sulfur.texArr
-	(*if texArr is null then return end*)
+	if texArr is null then return end
 
 	-- clear main frame buffer
 	glBindFramebuffer(_GL_FRAMEBUFFER, _0)
@@ -74,5 +74,5 @@ fn render(Sulfur sulfur)
 	glUniformMatrix4fv(sulfur.shaderMain.uPers, 1, _0b, toCPtr(sulfur.pMat))
 
 	-- 
-	--sulfur.shaderMain.drawData(sulfur.defQuad, texArr, sulfur.frontBuffer.data, sulfur.frontBuffer.total)
+	sulfur.shaderMain.drawData(sulfur.defQuad, texArr, sulfur.frontBuffer.data, sulfur.frontBuffer.total)
 end

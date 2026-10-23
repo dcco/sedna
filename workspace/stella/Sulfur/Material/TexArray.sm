@@ -1,6 +1,7 @@
 
 struct TexArray{
 	U32 id,
+	Int layerTotal,
 	Int width,
 	Int height
 }
@@ -29,6 +30,7 @@ fn resizeTexArray(TexArray arr, Int total, Int w, Int h)
 		_GL_RGBA, _GL_UNSIGNED_BYTE, toRawPtr(defData)
 	)
 
+	arr.layerTotal = total
 	arr.width = w
 	arr.height = h
 end
@@ -42,6 +44,7 @@ fn newTexArray(Int total, Int w, Int h) TexArray
 
 	var array = new TexArray{
 		id = cRead(arrayId),
+		layerTotal = total,
 		width = w,
 		height = h
 	}

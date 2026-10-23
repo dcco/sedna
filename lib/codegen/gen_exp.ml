@@ -333,6 +333,7 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 				(* enum/ptr ops *)
 			| "tag_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
 			| "ptr_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
+			| "ptr_neq" -> (build_icmp Icmp.Ne v1 v2 "_isntT" bx, bType)
 				(* bitwise ops *)
 			| "bit_and" -> (build_and v1 v2 "_bitAndT" bx, tv)
 			| "bit_or" -> (build_or v1 v2 "_bitOrT" bx, tv)
@@ -345,15 +346,16 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 		let vl = List.map (fun e -> fst (genExp cont env e)) el in
 		let tr = (match tf with
 			FunDT(_, tr) -> storeToValType "(Function Call)" env tr
-			| _ -> failwith ("BUG: gen_exp.ml - Attempted to perform function call on non-function value in generation phase.")
+			| _ -> failwith ("BUG: gen_exp.ml - Attempted to perform function call on non-function value of type " ^
+					(string_of_dtype tf) ^ " in generation phase.")
 			(* prepare "box" if return type is stack ptr type *)
 		) in (match (tr, boxOpt) with
 			(StackPtrDT _, Some boxId) -> 
 				let (vb, tb) = genGetBox "(Function Call)" env boxId in
-				ignore (build_call (genType tf) vf (Array.of_list (vb :: vl)) "" cont.builder); (vb, tb)
+				ignore (build_call (genCallType tf) vf (Array.of_list (vb :: vl)) "" cont.builder); (vb, tb)
 			| (StackPtrDT _, None) ->
 				failwith ("BUG: gen_exp.ml - Ungenerated box for boxed function return value.")
-			| _ -> (build_call (genType tf) vf (Array.of_list vl) "" cont.builder, tr)
+			| _ -> (build_call (genCallType tf) vf (Array.of_list vl) "" cont.builder, tr)
 		)
 	| BoxExpC(boxId, e, _) ->
 		let (v, _) = genExp cont env e in

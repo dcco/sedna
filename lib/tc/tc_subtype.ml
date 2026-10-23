@@ -80,9 +80,7 @@ let rec cmp_type (c: cmp_type) (t: g_type): (t_crn list) opt_res = match (c, t) 
 	(_, VarTy a) -> Valid [Crn(c, a)]
 	| (EqCmp s, _) -> cmp_type_raw c s t
 	| (LeqCmp (LT s), _) -> cmp_type_raw c s t
-	| (LeqCmp NullLT, CPtrTy _) -> Valid []
-	| (LeqCmp NullLT, NullableTy _) -> Valid []
-	| (LeqCmp NullLT, _) -> Error ()	
+	| (LeqCmp NullLT, t) -> if nullable_type (LT t) then Valid [] else Error ()
 	| (LeqCmp (RawTupleLT _sl), TupleTy(_, _tl)) ->
 		if List.length _sl <> List.length _tl then Error ()
 		else fold_try_res (fun crnz (s, t) ->
@@ -190,8 +188,15 @@ type tvar_env = (string, t_crn) Hashtbl.t
 
 let new_sol (): tvar_env = Hashtbl.create 10
 
+let gen_sol (xl: string list) (tau_l: g_type list): tvar_env =
+	let sol = new_sol () in
+	List.fold_left (fun _ (a, tau) ->
+		Hashtbl.add sol a (Crn(EqCmp tau, a))
+	) () (List.combine xl tau_l); sol
+
 let rec apply_sol (sol: tvar_env) (t: g_type): g_type = match t with
-	TupleTy(zFlag, _tl) -> TupleTy(zFlag, List.map (apply_sol sol) _tl)
+	NamedTy(x, _tl) -> NamedTy(x, List.map (apply_sol sol) _tl)
+	| TupleTy(zFlag, _tl) -> TupleTy(zFlag, List.map (apply_sol sol) _tl)
 	| ArrayTy(i, t) -> ArrayTy(i, apply_sol sol t)
 	| NullableTy t -> NullableTy (apply_sol sol t)
 	| FunTy(t_pl, t_r) -> FunTy(List.map (apply_sol sol) t_pl, apply_sol sol t_r)
@@ -199,10 +204,10 @@ let rec apply_sol (sol: tvar_env) (t: g_type): g_type = match t with
 	| TValTy t -> TValTy (apply_sol sol t)
 	| VarTy a -> (match Hashtbl.find_opt sol a with
 		Some (Crn(EqCmp t, _)) -> t
-		| Some (Crn _) ->  failwith "BUG: tc_exp.ml - Indefinite type variable in solution application."
-		| _ -> failwith "BUG: tc_exp.ml - Failed lookup of type variable in solution application."
+		| Some (Crn _) ->  failwith "BUG: tc_subtype.ml - Indefinite type variable in solution application."
+		| _ -> failwith "BUG: tc_subtype.ml - Failed lookup of type variable in solution application."
 	)
-	| BotTy | PrimTy _ | IntTy _ | NamedTy _ | TagOfTy _ -> t
+	| BotTy | PrimTy _ | IntTy _ | TagOfTy _ -> t
 
 	(*
 		** standard constraint solving
@@ -311,6 +316,13 @@ let complete_sol (sol: tvar_env) (p: l_pos): unit tc_res =
 			let* t' = complete_type t p in
 			Hashtbl.replace sol a (Crn(EqCmp t', a)); Valid ()
 	) kl in Valid ()
+
+let extract_sol (sol: tvar_env) (xl: string list): g_type list =
+	try	List.map (fun x -> match Hashtbl.find sol x with
+		Crn(EqCmp t, _) -> t
+		| Crn(LeqCmp _, _) -> failwith "BUG: tc_subtype.ml - Attempted to extract from incomplete type solution."
+	) xl
+	with _ -> failwith "BUG: tc_subtype.ml - Could not find assignment for type argument while inferring type."
 
 	(*
 		** constraint conjunction

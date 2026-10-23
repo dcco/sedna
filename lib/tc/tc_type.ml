@@ -16,7 +16,15 @@ type lhs_type =
 	LT of g_type
 	| NullLT
 	| RawTupleLT of lhs_type list
-	
+
+let nullable_type (t: lhs_type): bool = match t with
+	LT (NullableTy _) -> true
+	| LT (CPtrTy _) -> true
+	| LT BotTy -> true
+	| LT _ -> false
+	| NullLT -> true
+	| RawTupleLT _ -> false
+
 let rec string_of_ltype (tau: lhs_type): string = match tau with
 	LT t -> string_of_type cr t
 	| NullLT -> "_Null"

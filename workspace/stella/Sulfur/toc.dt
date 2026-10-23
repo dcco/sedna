@@ -18,6 +18,7 @@ end
 
 module RenderData
 	references OpenGL.Main
+	references Sulfur modules Material
 	type RenderData
 end
 

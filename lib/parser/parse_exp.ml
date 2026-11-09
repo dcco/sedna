@@ -165,7 +165,7 @@ let rec parseAtomType: m_type parser = fun tkList -> match tkList with
 		else if x = "VPtr" then Valid (CPtrTy u8Ty, tkRem)
 		else if x = "XPtr" then Valid (XPtrTy, tkRem)
 		else if x = "Int" then Valid (IntTy(false, S32), tkRem)
-		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64"; "PRNG"] then Valid (primTy x, tkRem)
+		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64"; "PRNG"; "FileChannel"] then Valid (primTy x, tkRem)
 		else if x = "BOT" then Valid (BotTy, tkRem)
 		else (match tkRem with
 			(LBRACE, _) :: _ ->

@@ -103,6 +103,12 @@ fn newMapPane(Int w, Int h) Elem[EState]
 	}
 end*)
 
+	(* save/load hooks *)
+
+fn saveAct(EState cont, ElemState state, Int x, Int y)
+
+end
+
 	(* tool bar *)
 
 fn toolbar(Int canvasWidth) Layout[EState]
@@ -114,6 +120,9 @@ fn toolbar(Int canvasWidth) Layout[EState]
 	var tilesetPane = vertElems(new 1d[
 		newTilePal(8, 4),
 		newTileSel()
+	], 4)
+	var savePane = vertElems(new 1d[
+		newButton("SAVE", tilePixel(2), tilePixel(2), saveAct)
 	], 4)
 	var layout = horizGroup(new 1d[toolsetPane, tilesetPane], 6)
 	layout.backFlag = true

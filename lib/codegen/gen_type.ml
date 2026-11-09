@@ -108,6 +108,7 @@ let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = 
 	| PrimTy "Bool" -> PrimST bType
 	| PrimTy "String" -> PrimST _ptrType
 	| PrimTy "PRNG" -> PrimST _ptrType
+	| PrimTy "FileChannel" -> PrimST _ptrType
 	| PrimTy x -> failwith ("BUG: gen_type.ml - Non-existent primitive type \"" ^ x ^ "\". " ^ debug)
 	| NamedTy(t, _) -> _namedStoreType debug env t
 	| TupleTy(_, tau_l) -> TupleST (Array.of_list (List.map (toStoreType debug env) tau_l))

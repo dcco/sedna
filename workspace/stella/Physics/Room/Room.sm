@@ -133,6 +133,12 @@ fn update(Room room)
 	end
 end
 
+	(* - io functions *)
+
+fn save(Room room)
+	
+end
+
 	(* - display functions *)
 
 fn draw(Room room, Camera cam)

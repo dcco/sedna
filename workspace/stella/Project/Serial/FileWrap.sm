@@ -1,0 +1,5 @@
+
+fn writeInt(FileChannel fc, Int i)
+	var ci = cBox(i)
+	fc.writeRaw(coerce(~U8, ci), 4)
+end

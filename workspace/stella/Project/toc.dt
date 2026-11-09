@@ -21,3 +21,10 @@ module Globals
 	type CaptureCard
 	type Globals
 end
+
+module Serial
+	references Sys.Os
+
+	type FileWrap
+	type SerialObj
+end

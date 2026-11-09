@@ -1,0 +1,27 @@
+
+struct SerialObj{
+	1d[Int] binData,
+	1d[SerialObj]? childList 
+}
+
+fn writeSerial(FileChannel fc, SerialObj obj)
+	-- write personal binary data
+	fc.writeInt(|obj.binData|)
+	for i < |obj.binData| do
+		fc.writeRaw(toRawPtr(obj.binData), |obj.binData| * 4)
+	end
+	-- write children objects
+	var childList = obj.childList
+	if childList is null then
+		fc.writeInt(0)
+		return
+	end
+	fc.writeInt(1)
+	fc.writeInt(|childList|)
+	for i < |childList| do
+		fc.writeSerial(childList[i])
+	end
+end
+(*
+fn readSerial(FileChannel fc) SerialObj
+end*)

@@ -275,6 +275,7 @@ let builtinList =
 ]
 
 let prngTy = primTy "PRNG"
+let fcTy = primTy "FileChannel"
 
 let osList = [
 	("print", ExternalSym, [stringTy], unitTy);
@@ -289,6 +290,15 @@ let osList = [
 	
 	("time", ExternalSym, [], u64Ty);
 	("timeNS", ExternalSym, [], u64Ty);
+
+	("fileOpen", ExternalSym, [stringTy; stringTy], NullableTy fcTy);
+	("close", ExternalSym, [fcTy], unitTy);
+	("read", ExternalSym, [fcTy; ArrayTy(1, u8Ty); intTy], intTy);
+	("write", ExternalSym, [fcTy; ArrayTy(1, u8Ty); intTy], intTy);
+	("writeRaw", ExternalSym, [fcTy; CPtrTy u8Ty; intTy], intTy);
+	("fileExists", ExternalSym, [stringTy], boolTy);
+	("fileDelete", ExternalSym, [stringTy], boolTy);
+	("fileRename", ExternalSym, [stringTy; stringTy], boolTy)
 ]
 
 	(*

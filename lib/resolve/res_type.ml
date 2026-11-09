@@ -27,6 +27,7 @@ let rec resolve_type (env: res_env) (p: l_pos) (tau: m_type): g_type rs_res = ma
 	| BotTy -> Valid BotTy
 	| VarTy i -> Valid (VarTy i)
 	| CPtrTy tau -> let* tau' = resolve_type env p tau in Valid (CPtrTy tau')
+	| XPtrTy -> Valid XPtrTy
 
 let resolve_type_def (env: res_env) (p: l_pos) (td: m_tdef): g_tdef rs_res = match td with
 	StructTD(xl, fl) ->

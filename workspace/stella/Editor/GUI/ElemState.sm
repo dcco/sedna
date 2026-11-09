@@ -1,0 +1,18 @@
+
+struct ElemState{
+	Int width,
+	Int height,
+	1d[XPtr] params,
+	Bool hoverFlag,
+	Bool heldFlag
+}
+
+fn newElemState(1d[XPtr] params) ElemState
+	return new ElemState{
+		width = 0,
+		height = 0,
+		params = params,
+		hoverFlag = false,
+		heldFlag = false
+	}
+end

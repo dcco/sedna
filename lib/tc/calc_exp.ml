@@ -51,6 +51,8 @@ let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match
 			| "xmul" -> IConst(Int64.mul (as_int v1) (as_int v2), u, s)
 			| "idiv" -> IConst(Int64.div (as_int v1) (as_int v2), u, s)
 			| "imod" -> IConst(Int64.rem (as_int v1) (as_int v2), u, s)
+			| "udiv" -> IConst(Int64.unsigned_div (as_int v1) (as_int v2), u, s)
+			| "umod" -> IConst(Int64.unsigned_rem (as_int v1) (as_int v2), u, s)
 			| "fadd" -> FConst((as_float v1) +. (as_float v2))
 			| "fsub" -> FConst((as_float v1) -. (as_float v2))
 			| "fmul" -> FConst((as_float v1) *. (as_float v2))
@@ -89,6 +91,9 @@ let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match
 		let dims = List.map (fun v -> Int64.to_int (as_int v)) dim_l' in
 		let* el' = map_try_res (calc_exp env p) el in
 		Valid (ConstArrayExpC(dims, el', tau))
+	| TupleExpC(_, tau, el) ->
+		let* el' = map_try_res (calc_exp env p) el in
+		Valid (ConstStructExpC(el', tau))
 	| _ -> failwith "UNIMPLEMENTED: calc_exp.ml - Constant expression."
 
 let calc_cfun (env: type_env) (f: string) (el: gen_exp list) (tau: g_type) (p: l_pos): gen_exp tc_res = match (f, el) with
@@ -105,6 +110,8 @@ let calc_cfun (env: type_env) (f: string) (el: gen_exp list) (tau: g_type) (p: l
 			)
 		| _ -> failwith "BUG: calc_exp.ml - Constant expression cLoad with unspecified directory."
 	)
+	| ("coerce", [_; e]) -> Valid e
 	| ("cBox", [e]) -> Valid (BoxExpC(get_box_id_tenv env, e, tau))
-	| ("cRead", [e]) -> Valid (MemoryFieldExpC(RC(None, tau), e, Some 0))
-	| _ -> failwith "UNIMPLEMENTED: calc_exp.ml - Constant expression cfun failure."
+	| ("cRead", [e]) -> Valid (RawIndexExpC(RC(None, tau), e, ConstExpC (i_const 0)))
+	| ("cLookup", [ea; ei]) -> Valid (RawIndexExpC(RC(None, tau), ea, ei))
+	| _ -> failwith ("UNIMPLEMENTED: calc_exp.ml - Constant expression cfun \"" ^ f ^ "\" failure.")

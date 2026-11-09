@@ -1,0 +1,18 @@
+
+enum ToolMode = StartTM | PencilTM | FillTM
+
+struct ToolModeRef{
+	ToolMode mode
+}
+
+struct EState{
+	ToolMode mode,
+	TType selTT
+}
+
+fn newEState() EState
+	return new EState{
+		mode = PencilTM,
+		selTT = GrassTT
+	}
+end

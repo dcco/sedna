@@ -1,0 +1,24 @@
+
+enum RType = NoRe | TopRe | FullRe
+
+enum TType attrs { U32 canonId, Int baseId, Int dispId, RType rt } =
+	NullTT{ _0, 0, 0, NoRe }
+	| GrassTT{ 0x100, 1, 2, TopRe }
+	| RedBrickTT{ 0x101, 8, 9, FullRe }
+
+struct BaseTile{
+	TType fore,
+	Int rFrame
+}
+
+fn newBaseTile() BaseTile
+	return new BaseTile{
+		fore = GrassTT,
+		rFrame = 0
+	}
+end
+
+fn draw(BaseTile tile, Sprite tset, Int px, Int py)
+	drawSprite(px, py, tset, tile.fore.baseId + tile.rFrame, false)
+end
+

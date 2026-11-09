@@ -46,6 +46,7 @@ let rec cmp_type_raw (c: cmp_type) (s: g_type) (t: g_type): (t_crn list) opt_res
 	| (ArrayTy(i, s'), ArrayTy(j, t')) -> if i <> j then Error () else cmp_type_raw (EqCmp t') s' t'
 	| (TagOfTy s, TagOfTy t) -> cmp_valid (s = t)
 	| (CPtrTy s, CPtrTy t) -> cmp_type_raw (EqCmp t) s t
+	| (XPtrTy, XPtrTy) -> Valid []
 	| (TValTy s, TValTy t) -> cmp_type_raw (EqCmp t) s t
 		(* - tuples preserve subtyping *)
 	| (TupleTy(zf1, _sl), TupleTy(zf2, _tl)) ->
@@ -63,7 +64,8 @@ let rec cmp_type_raw (c: cmp_type) (s: g_type) (t: g_type): (t_crn list) opt_res
 			- fn return type preserves subtyping
 		*)
 	| (FunTy(s_pl, s_r), FunTy(t_pl, t_r)) ->
-		let* crn_pl = fold_try_res (fun crnz (s, t) ->
+		if List.length s_pl <> List.length t_pl then Error ()
+		else let* crn_pl = fold_try_res (fun crnz (s, t) ->
 			let* crnt = cmp_type_raw (EqCmp t) s t in Valid (crnz @ crnt)
 		) [] (List.combine s_pl t_pl) in
 		let* crn_r = cmp_type_raw c s_r t_r in Valid (crn_pl @ crn_r)
@@ -73,7 +75,7 @@ let rec cmp_type_raw (c: cmp_type) (s: g_type) (t: g_type): (t_crn list) opt_res
 		| LeqCmp _ -> Valid [Crn(LeqCmp (LT s), a)]
 	)
 	| (_, BotTy) | (_, PrimTy _) | (_, IntTy _) | (_, NamedTy _)
-	| (_, ArrayTy _) | (_, TagOfTy _) | (_, CPtrTy _) | (_, TValTy _)
+	| (_, ArrayTy _) | (_, TagOfTy _) | (_, CPtrTy _) | (_, XPtrTy) | (_, TValTy _)
 	| (_, TupleTy _) | (_, FunTy _) -> Error ()
 
 let rec cmp_type (c: cmp_type) (t: g_type): (t_crn list) opt_res = match (c, t) with
@@ -152,12 +154,16 @@ let rec _join_type_l (s: lhs_type) (t: g_type): g_type opt_res = match (s, t) wi
 			Valid (TupleTy(zf, _ul))
 	| (RawTupleLT _, _) -> Error ()
 
-let join_type (s: lhs_type) (t: lhs_type): lhs_type opt_res = match (s, t) with
+let rec join_type (s: lhs_type) (t: lhs_type): lhs_type opt_res = match (s, t) with
 	(_, LT BotTy) -> Valid s
 	| (LT BotTy, _) -> Valid t
 	| (LT s', _) -> let* u = _join_type_l t s' in Valid (LT u)
 	| (_, LT t') -> let* u = _join_type_l t t' in Valid (LT u)
 	| (NullLT, NullLT) -> Valid NullLT
+	| (RawTupleLT _sl, RawTupleLT _tl) ->
+		if List.length _sl <> List.length _tl then Error ()
+		else let* _ul = map_try_res (fun (s, t) -> join_type s t) (List.combine _sl _tl) in
+			Valid (RawTupleLT _ul)
 	| _ -> Error () 
 
 	(*
@@ -207,7 +213,7 @@ let rec apply_sol (sol: tvar_env) (t: g_type): g_type = match t with
 		| Some (Crn _) ->  failwith "BUG: tc_subtype.ml - Indefinite type variable in solution application."
 		| _ -> failwith "BUG: tc_subtype.ml - Failed lookup of type variable in solution application."
 	)
-	| BotTy | PrimTy _ | IntTy _ | TagOfTy _ -> t
+	| BotTy | PrimTy _ | IntTy _ | TagOfTy _ | XPtrTy -> t
 
 	(*
 		** standard constraint solving
@@ -317,9 +323,10 @@ let complete_sol (sol: tvar_env) (p: l_pos): unit tc_res =
 			Hashtbl.replace sol a (Crn(EqCmp t', a)); Valid ()
 	) kl in Valid ()
 
-let extract_sol (sol: tvar_env) (xl: string list): g_type list =
-	try	List.map (fun x -> match Hashtbl.find sol x with
-		Crn(EqCmp t, _) -> t
-		| Crn(LeqCmp _, _) -> failwith "BUG: tc_subtype.ml - Attempted to extract from incomplete type solution."
+let extract_sol (sol: tvar_env) (xl: string list) (p: l_pos): (g_type list) tc_res =
+	map_try_res (fun x -> match Hashtbl.find_opt sol x with
+		Some (Crn(EqCmp t, _)) -> Valid t
+		| Some (Crn(LeqCmp _, _)) -> failwith "BUG: tc_subtype.ml - Attempted to extract from incomplete type solution."
+		| None -> Error (UnknownTArg_Err p)
 	) xl
-	with _ -> failwith "BUG: tc_subtype.ml - Could not find assignment for type argument while inferring type."
+	(*failwith "BUG: tc_subtype.ml - Could not find assignment for type argument while inferring type."*)

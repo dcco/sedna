@@ -1,0 +1,5 @@
+
+const _STBI_GREY = 1
+const _STBI_GREY_ALPHA = 2
+const _STBI_RGB = 3
+const _STBI_RGB_ALPHA = 4

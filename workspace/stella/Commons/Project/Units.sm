@@ -1,0 +1,26 @@
+
+const _TPX = 8
+
+fn toTile(Int x) Int
+	return x >> 12
+end
+
+fn fromTile(Int x) Int
+	return x << 12
+end
+
+fn toPixel(Int x) Int
+	return x >> 9
+end
+
+fn fromPixel(Int x) Int
+	return x << 9
+end
+
+fn pixelTile(Int px) Int
+	return px >> 3
+end
+
+fn tilePixel(Int t) Int
+	return t << 3
+end

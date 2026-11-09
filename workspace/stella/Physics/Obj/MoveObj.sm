@@ -1,0 +1,75 @@
+
+const _GRAV_CONST = +0x78
+const _TERMINAL_SPD = +0x800
+
+enum MType = MAcc
+
+struct MoveObj{
+	MType mType,
+	Bool facing,
+	Rect hitBox,
+	Int xspd,
+	Int yspd,
+	-- used for accelerating objects (only the player atm)
+	Int tarXspd,
+	Int xacc,
+	Int yacc
+}
+
+fn newMoveObj(MType mType) MoveObj
+	return new MoveObj{
+		mType = mType,
+		facing = false,
+		hitBox = new Rect{
+			x = 0,
+			y = 0,
+			width = 0,
+			height = 0
+		},
+		xspd = 0,
+		yspd = 0,
+		tarXspd = 0,
+		xacc = 0,
+		yacc = _GRAV_CONST
+	}
+end
+
+	(* - simple speed incrementers *)
+
+fn _decSpd(Int spd, Int acc) Int
+	if spd - acc > 0 then return spd - acc
+	elsif spd + acc < 0 then return spd + acc end
+	return 0
+end
+
+fn _incSpd(Int tarSpd, Int spd, Int acc) Int
+	if tarSpd > 0 && tarSpd > spd + acc then return spd + acc
+	elsif tarSpd < 0 && tarSpd < spd - acc then return spd - acc
+	elsif (tarSpd > 0) = (tarSpd > spd) then return tarSpd end
+	return spd
+end
+
+	(* - gravity behavior *)
+
+(*fn _grav() Int
+	return _GRAV_CONST
+end*)
+
+	(* - speed update *)
+
+fn _accSpd(MoveObj obj)
+	-- accelerate to desired xspd
+	if obj.tarXspd = 0 then
+		obj.xspd = _decSpd(obj.xspd, obj.xacc)
+	else
+		obj.xspd = _incSpd(obj.tarXspd, obj.xspd, obj.xacc)
+	end
+	-- apply gravity
+	obj.yspd = min(obj.yspd + obj.yacc, _TERMINAL_SPD)
+end
+
+fn updateSpd(MoveObj obj)
+	match obj.mType case MAcc do
+		obj._accSpd()
+	end
+end

@@ -1,0 +1,56 @@
+
+const _KEY_TOTAL = _GLFW_KEY_LAST + 1
+const _MB_TOTAL = _GLFW_MOUSE_BUTTON_LAST + 1
+
+struct Input{
+	Window? window,
+	1d[Bool] keyDown,
+	1d[Bool] keyPress,
+	1d[Bool] mbDown,
+	1d[Bool] mbPress
+}
+
+fn nullInput() Input
+	return new Input{
+		window = null,
+		keyDown = new 1d[~Bool],
+		keyPress = new 1d[~Bool],
+		mbDown = new 1d[~Bool],
+		mbPress = new 1d[~Bool]
+	}
+end
+
+fn newInput(Window window) Input
+	return new Input{
+		window = window,
+		keyDown = new 1d(_KEY_TOTAL)[~Bool],
+		keyPress = new 1d(_KEY_TOTAL)[~Bool],
+		mbDown = new 1d(_MB_TOTAL)[~Bool],
+		mbPress = new 1d(_MB_TOTAL)[~Bool]
+	}
+end
+
+fn update(Input input)
+	var window = input.window
+	if window is null then return end
+	for i < _KEY_TOTAL do
+		var cur = (glfwGetKey(window, i) = _GLFW_PRESS)
+		input.keyPress[i] = (cur && !input.keyDown[i])
+		input.keyDown[i] = cur
+	end
+	for i < _MB_TOTAL do
+		var cur = (glfwGetMouseButton(window, i) = _GLFW_PRESS)
+		input.mbPress[i] = (cur && !input.keyDown[i])
+		input.mbDown[i] = cur
+	end
+end
+
+fn mousePos(Input input) (Int, Int)
+	var window = input.window
+	if window is null then return (0, 0) end
+
+	var bx = cBox(0.0l)
+	var by = cBox(0.0l)
+	glfwGetCursorPos(window, bx, by)
+	return (toInt(cRead(bx)), toInt(cRead(by)))
+end

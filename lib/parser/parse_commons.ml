@@ -10,6 +10,7 @@ type parse_err =
 	| BadLValue_Err of token
 	| NonIntExp_Err of l_pos
 	| BadAttrs_Err of l_pos
+	| BadForInit_Err of string * string * l_pos
 
 type 'a parse_res = ('a, parse_err) try_res
 
@@ -23,6 +24,8 @@ let string_of_parse_err e = match e with
 		"Expected integer constant for static array initializer dimensions while parsing at " ^ (string_of_pos pos) ^ "."
 	| BadAttrs_Err pos ->
 		"Unexpected attributes defined for enum without attribute definitions at " ^ (string_of_pos pos) ^ "."
+	| BadForInit_Err(x, y, pos) ->
+		"For loop range variable " ^ y ^ " does not agree with initializer variable " ^ x ^ " at " ^ (string_of_pos pos) ^ "."
 
 let string_of_parse_res sf r = match r with
 	Valid v -> sf v
@@ -149,7 +152,9 @@ let parseDerefXId (debug: string): any_id parser = fun tkList -> match tkList wi
 	| (CID x, p) :: tkRem -> Valid (ParseId(qn x, p), tkRem)
 	| (TID q, p) :: tkRem -> (match tkRem with
 		(DOT, _) :: tkRem2 -> (match tkRem2 with
-			(ID y, _) :: tkRem3 -> Valid (ParseId(QN(Some q, y), p), tkRem3)
+			(ID y, _) :: tkRem3 ->
+				if y = "i" || y = "t" then Valid (ParseTId(QN(None, q), p), tkRem)
+				else Valid (ParseId(QN(Some q, y), p), tkRem3)
 			| (TID y, _) :: tkRem3 -> Valid (ParseTId(QN(Some q, y), p), tkRem3)
 			| tk :: _ -> Error (BadToken_Err(tk, debug))
 			| _ -> Error (EOF_Err debug)

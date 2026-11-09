@@ -1,0 +1,44 @@
+
+struct CaptureCard{
+	TexArray arr,
+	Int zoom,
+	Int screenWidth,
+	Int screenHeight,
+	Int focusHeight,
+	Int fullWidth,
+	Int fullHeight,
+	RenderData rd
+}
+
+fn newCaptureCard(Int sw, Int sh, Int _zoom) CaptureCard
+	var fw = nextPow2(sw / _zoom)
+	-- division that "rounds up"
+	-- necessary because the vertical capture will be upside-down
+	var focusHeight = ((sh - 1) / _zoom) + 1
+	var fh = nextPow2(focusHeight)
+	var arr = newTexArray(1, fw, fh)
+	-- render data
+	var rd = newRenderData()
+	rd.addBox(0xFFFFFFFF, 0, focusHeight * _zoom, fw * _zoom, -fh * _zoom)
+	-- final capture card
+	return new CaptureCard{
+		arr = arr,
+		zoom = _zoom,
+		screenWidth = sw,
+		screenHeight = sh,
+		focusHeight = focusHeight,
+		fullWidth = fw,
+		fullHeight = fh,
+		rd = rd
+	}
+end
+
+fn copy(CaptureCard cc)
+	glBindTexture(_GL_TEXTURE_2D_ARRAY, cc.arr.id)
+	glCopyTexSubImage3D(
+		_GL_TEXTURE_2D_ARRAY, 0,
+		0, 0, 0,
+		0, cc.screenHeight - cc.focusHeight,
+		cc.fullWidth, cc.fullHeight
+	)
+end

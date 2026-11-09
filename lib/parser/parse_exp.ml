@@ -16,10 +16,6 @@ let chkBar (tk: raw_token): bool = match tk with
 	BAR -> true
 	| _ -> false
 
-let chkBy (tk: raw_token): bool = match tk with
-	BY -> true
-	| _ -> false
-
 let chkPureEnd (tk: raw_token): bool = match tk with
 	END -> true
 	| _ -> false
@@ -37,6 +33,7 @@ let chkAppEnd (tk: raw_token): bool = match tk with
 	LPAREN -> false
 	| LBRACE -> false
 	| DOT -> false
+	| ELLIP -> false
 	| _ -> true
 
 let chkMatchEnd (tk: raw_token): bool = match tk with
@@ -95,15 +92,40 @@ let readCompOp (tk: raw_token): string option = match tk with
 	| GEQ -> Some "geq" 
 	| _ -> None
 
-let readRelOp (tk: raw_token): string option = match tk with
+(*let readRelOp (tk: raw_token): string option = match tk with
 	AND -> Some "and"
 	| OR -> Some "or"
+	| _ -> None*)
+
+let readAndOp (tk: raw_token): string option = match tk with
+	AND -> Some "and"
 	| _ -> None
 
-let readBitRelOp (tk: raw_token): string option = match tk with
+let readOrOp (tk: raw_token): string option = match tk with
+	OR -> Some "or"
+	| _ -> None
+
+let readBitShiftOp (tk: raw_token): string option = match tk with
+	LSHIFT -> Some "bitShiftLeft"
+	| RSHIFT -> Some "bitShiftRight"
+	| _ -> None
+
+(*let readBitRelOp (tk: raw_token): string option = match tk with
 	AMPERSAND -> Some "bitAnd"
 	| BAR -> Some "bitOr"
 	| CARET -> Some "bitXor"
+	| _ -> None*)
+
+let readBitAndOp (tk: raw_token): string option = match tk with
+	AMPERSAND -> Some "bitAnd"
+	| _ -> None
+
+let readBitOrOp (tk: raw_token): string option = match tk with
+	BAR -> Some "bitOr"
+	| _ -> None
+
+let readBitXorOp (tk: raw_token): string option = match tk with
+	CARET -> Some "bitXor"
 	| _ -> None
 
 	(* type parsing *)
@@ -141,6 +163,7 @@ let rec parseAtomType: m_type parser = fun tkList -> match tkList with
 			let* (tau, tkRem2) = parseBraceWrap parseType "C Pointer Type" tkRem in
 			Valid (CPtrTy tau, tkRem2)
 		else if x = "VPtr" then Valid (CPtrTy u8Ty, tkRem)
+		else if x = "XPtr" then Valid (XPtrTy, tkRem)
 		else if x = "Int" then Valid (IntTy(false, S32), tkRem)
 		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64"; "PRNG"] then Valid (primTy x, tkRem)
 		else if x = "BOT" then Valid (BotTy, tkRem)
@@ -223,10 +246,10 @@ let rec foldOpListL (e: m_exp) (eOpList: (m_exp * string * l_pos) list): m_exp =
 			(to mirror how array indexing is performed)
 	 *)
 
-let rec foldRangeList (rl: (string * range_type * m_exp) list) (body: m_stmt list): m_stmt = match rl with
+let rec foldRangeList (rl: (string * m_exp option * range_type * m_exp) list) (body: m_stmt list): m_stmt = match rl with
 	[] -> failwith "BUG: Parsed for loop with no ranges"
-	| [(x, r, e)] -> ForStmt(x, r, e, body, ann_exp e)
-	| (x, r, e) :: rt -> foldRangeList rt [ForStmt(x, r, e, body, ann_exp e)]
+	| [(x, eo, r, e)] -> ForStmt(x, eo, r, e, body, ann_exp e)
+	| (x, eo, r, e) :: rt -> foldRangeList rt [ForStmt(x, eo, r, e, body, ann_exp e)]
 
 	(* main expression parsing *)
 
@@ -242,6 +265,7 @@ let parseTagOrNull (debug: string): (qual_name option) parser = fun tkList -> ma
 let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
 	(INT(i, u, bw), p) :: tkRem -> Valid (ConstExp(IConst(i, u, bw), p), tkRem)
 	| (FLOAT f, p) :: tkRem -> Valid (ConstExp(FConst f, p), tkRem)
+	| (F64 f, p) :: tkRem -> Valid (ConstExp(F64Const f, p), tkRem)
 	| (FALSE, p) :: tkRem -> Valid (ConstExp(BConst false, p), tkRem)
 	| (TRUE, p) :: tkRem -> Valid (ConstExp(BConst true, p), tkRem)
 	| (NULL, p) :: tkRem -> Valid (ConstExp(NullConst, p), tkRem)
@@ -260,17 +284,14 @@ let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
 	| (AT, p) :: tkRem ->
 		let* (x, tkRem2) = parseDerefTId "@ (Inferred Enum) Constructor" tkRem in
 		Valid (AtCtorExp(x, p), tkRem2)
-		(*let* (xx, tkRem2) = parseDerefXId "@ Reference" tkRem in (match xx with
-			ParseId(x, _) -> Valid (FunPtrExp(x, p), tkRem2)
-			| ParseTId(x, _) -> Valid (AtCtorExp(x, p), tkRem2)
-		)*)
 	| (NEW, p) :: tkRem -> (match tkRem with
 		(DIM i, _) :: tkRem2 -> parseArrayInit i p tkRem2
 		| _ ->
 			let* (x, tkRem2) = parseDerefTId "Struct Initializer" tkRem in
-			let* (fl, tkRem3) = parseBrackWrap
-				(parseOrEmpty (parseSepList parseStructInit chkComma) chkBrackR) "Struct Initializer" tkRem2 in
-			Valid (NewStructExp(x, fl, p), tkRem3)
+			let* (t_ann, tkRem3) = parseStructTypeAnn tkRem2 in
+			let* (fl, tkRem4) = parseBrackWrap
+				(parseOrEmpty (parseSepList parseStructInit chkComma) chkBrackR) "Struct Initializer" tkRem3 in
+			Valid (NewStructExp(x, t_ann, fl, p), tkRem4)
 	)
 	| (LPAREN, p) :: _ ->
 		let* (el, tkRem) = parseParenWrap (parseSepList parseExp chkComma) "Tag Value" tkList in
@@ -281,8 +302,6 @@ let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
 		let* (e, tkRem2) = parseArrOpExp tkRem in
 		let* (_, tkRem3) = parseTk BAR "Measure Operator" tkRem2 in
 		Valid (AppExp(OpExp(MeasureOp, p), [e], p), tkRem3)
-		(*Valid (AppExp(OpExp(MeasureOp, p), [e], p), tkRem3)*)
-
 	| _ -> let* (xx, tkRem) = parseDerefXId "Exp" tkList in (match xx with
 		ParseId(x, p) -> Valid (VarExp(x, p), tkRem)
 		| ParseTId(x, p) -> (match tkRem with
@@ -336,6 +355,12 @@ and parseArrayEnd: (m_exp list * bool) parser = fun tkList ->
 	let* (ellip, tkRem2) = parseOpt (parseTk ELLIP "Array Initializer (Ellip)") chkBrackR tkRem in
 	Valid ((el, ellip <> None), tkRem2)
 
+and parseStructTypeAnn: (m_type list option) parser = fun tkList -> match tkList with
+	(LBRACE, _) :: _ ->
+		let* (t_ann, tkRem) = parseBraceWrap (parseSepList parseType chkComma) "Struct Type Annotation" tkList in
+		Valid (Some t_ann, tkRem)
+	| _ -> Valid (None, tkList) 
+
 and parseStructInit: (string * m_exp) parser = fun tkList ->
 	let* (x, tkRem) = parseDeclId "Struct Initializer" tkList in
 	let* (_, tkRem2) = parseTk EQ "Struct Initializer" tkRem in
@@ -359,8 +384,13 @@ and parseAppObj: appObj parser = fun tkList -> match tkList with
 		)
 		| (INT(i, _, _), _) :: tkRem2 ->
 			Valid (TupleIndexApp(Int64.to_int i, p), tkRem2)
-		| tk :: _ ->  Error (BadToken_Err(tk, "Property / Function Call"))
+		| tk :: _ -> Error (BadToken_Err(tk, "Property / Function Call"))
 		| _ -> Error (EOF_Err "Property / Function Call")
+	)
+	| (ELLIP, p) :: tkRem -> (match tkRem with
+		(ID f, _) :: tkRem2 -> Valid (StructFieldApp(f, p), tkRem2)
+		| tk :: _ -> Error (BadToken_Err(tk, "Property"))
+		| _ -> Error (EOF_Err "Property")
 	)
 	| _ -> failwith "BUG: Unexpected case while parsing application object."
 
@@ -397,27 +427,43 @@ and parseAddExp: m_exp parser = fun tkList ->
 and parseArrOpExp: m_exp parser = fun tkList ->
 	let* (e1, tkRem) = parseAddExp tkList in (match tkRem with
 		(PLUS_EQ, p) :: tkRem2 ->
-			let* (e2, tkRem3) = parseRelExp tkRem2 in
+			let* (e2, tkRem3) = parseExp tkRem2 in
 			Valid (AppExp(OpExp(ArrayAddOp, p), [e1; e2], p), tkRem3)
 		| (SLASH_EQ, p) :: tkRem2 ->
-			let* (e2, tkRem3) = parseRelExp tkRem2 in
-			Valid (AppExp(VarExp(qn "_builtin_remove", p), [e1; e2], p), tkRem3)
+			let* (e2, tkRem3) = parseExp tkRem2 in
+			Valid (AppExp(VarExp(qn "remove", p), [e1; e2], p), tkRem3)
 		| _ -> Valid (e1, tkRem)
 	)
 
-and parseBitRelExp: m_exp parser = fun tkList ->
-	let* ((e0, eOpList), tkRem) = parseSepListFull parseArrOpExp readBitRelOp tkList in
+and parseBitShiftExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseArrOpExp readBitShiftOp tkList in
+	Valid (foldOpListL e0 eOpList, tkRem)
+
+and parseBitXorExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseBitShiftExp readBitXorOp tkList in
+	Valid (foldOpListL e0 eOpList, tkRem)
+
+and parseBitAndExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseBitXorExp readBitAndOp tkList in
+	Valid (foldOpListL e0 eOpList, tkRem)
+
+and parseBitOrExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseBitAndExp readBitOrOp tkList in
 	Valid (foldOpListL e0 eOpList, tkRem)
 
 and parseCompExp: m_exp parser = fun tkList ->
-	let* ((e0, eOpList), tkRem) = parseSepListFull parseBitRelExp readCompOp tkList in
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseBitOrExp readCompOp tkList in
 	Valid (foldOpListL e0 eOpList, tkRem)
 
-and parseRelExp: m_exp parser = fun tkList ->
-	let* ((e0, eOpList), tkRem) = parseSepListFull parseCompExp readRelOp tkList in
+and parseAndExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseCompExp readAndOp tkList in
 	Valid (foldOpListL e0 eOpList, tkRem)
 
-and parseExp tkList = parseRelExp tkList
+and parseOrExp: m_exp parser = fun tkList ->
+	let* ((e0, eOpList), tkRem) = parseSepListFull parseAndExp readOrOp tkList in
+	Valid (foldOpListL e0 eOpList, tkRem)
+
+and parseExp tkList = parseOrExp tkList
 
 	(* statement parsing *)
 
@@ -473,6 +519,12 @@ let rec parseStmt: m_stmt parser = fun tkList -> match tkList with
 		let* (body, tkRem4) = parseList parseStmt chkStmtEnd tkRem3 in
 		let* (_, tkRem5) = parseTk END "For Loop (End)" tkRem4 in
 		Valid (foldRangeList rl body, tkRem5)
+	| (FROM, _) :: tkRem ->
+		let* (rl, tkRem2) = parseSepList parseInitRange chkComma tkRem in
+		let* (_, tkRem3) = parseTk DO "For Loop (Body)" tkRem2 in
+		let* (body, tkRem4) = parseList parseStmt chkStmtEnd tkRem3 in
+		let* (_, tkRem5) = parseTk END "For Loop (End)" tkRem4 in
+		Valid (foldRangeList rl body, tkRem5)
 	| (MATCH, p) :: tkRem ->
 		let* (e, tkRem2) = parseExp tkRem in
 		let* (cl, tkRem3) = parseList parseMatchCase chkMatchEnd tkRem2 in
@@ -523,11 +575,22 @@ and parseRangeType: range_type parser = fun tkList -> match tkList with
 	| tk :: _ -> Error (BadToken_Err(tk, "For Loop Range Type"))
 	| _ -> Error (EOF_Err "For Loop Range Type")
 
-and parseRange: (string * range_type * m_exp) parser = fun tkList ->
+and parseRange: (string * m_exp option * range_type * m_exp) parser = fun tkList ->
 	let* (x, tkRem) = parseDeclId "For Loop Range" tkList in
 	let* (rt, tkRem2) = parseRangeType tkRem in
 	let* (e, tkRem3) = parseExp tkRem2 in
-	Valid ((x, rt, e), tkRem3)
+	Valid ((x, None, rt, e), tkRem3)
+
+and parseInitRange: (string * m_exp option * range_type * m_exp) parser = fun tkList ->
+	let* (x, tkRem) = parseDeclId "For Loop Range" tkList in
+	let* (_, tkRem2) = parseTk EQ "For Loop Range" tkRem in
+	let* (e_init, tkRem3) = parseExp tkRem2 in
+	let* (_, tkRem4) = parseTk WHILE "For Loop Range" tkRem3 in
+	let* ((y, _, rt, e), tkRem5) = parseRange tkRem4 in
+	if x <> y then (match tkRem4 with
+		(_, p) :: _ -> Error (BadForInit_Err(x, y, p))
+		| _ -> failwith "BUG: parse_exp.ml - Impossible case reached during bad for-loop initialization."
+	) else Valid ((x, Some e_init, rt, e), tkRem5)
 
 and parseMatchCase: mm_case parser = fun tkList -> match tkList with
 	(CASE, p) :: tkRem ->

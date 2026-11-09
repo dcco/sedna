@@ -43,6 +43,7 @@ type 'm raw_type =
 	| VarTy of string
 		(* special types *)
 	| CPtrTy of 'm raw_type
+	| XPtrTy
 		(* instance types
 	| TagTupleTy of 'm * 'm raw_type list
 	| NullTy *)
@@ -78,6 +79,7 @@ let rec string_of_type (f: 'm -> string) (tau: 'm raw_type): string = match tau 
 	| VarTy a -> a
 
 	| CPtrTy tau -> "CPtr[" ^ (string_of_type f tau) ^ "]"
+	| XPtrTy -> "XPtr"
 	
 and string_of_fun_type (f: 'm -> string) ((tau_pl, tau_r): 'm fun_type): string =
 	"Fn(" ^ (String.concat ", " (List.map (string_of_type f) tau_pl)) ^ ") " ^ (string_of_type f tau_r)
@@ -95,6 +97,7 @@ let namedTy x = NamedTy (QN(None, x), [])
 
 let unitTy = primTy "Unit"
 let floatTy = primTy "Float"
+let f64Ty = primTy "F64"
 let stringTy = primTy "String"
 let boolTy = primTy "Bool"
 

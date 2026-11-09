@@ -1,0 +1,159 @@
+
+struct Room{
+	(Int, Int) startPos,
+	EndlessGrid[BaseTile] data,
+	1d[MoveObj] _objList
+}
+
+fn newRoom() Room
+	return new Room{
+		startPos = (1, 1),
+		data = newEndlessGrid(~BaseTile),
+		_objList = new 1d[~MoveObj]
+	}
+end
+
+	(* - lookup functions *)
+
+fn solid(Room room, Int x, Int y) Bool
+	var tile = room.data[x, y]
+	if tile isnt null then return true end
+	return false
+end
+
+	(* - update functions *)
+
+fn clear(Room room)
+	room._objList.clear()
+end
+
+fn addObj(Room room, MoveObj obj)
+	room._objList += obj
+end
+
+	(* - edit functions *)
+
+fn _sameMat(Room room, TType tt, Int x, Int y) Bool
+	var tile = room.data[x, y]
+	if tile is null then return false end
+	return true
+	--return tile.fore.i = tt.i
+end
+
+fn _reifyTile(Room room, Int x, Int y)
+	-- check if tile exists
+	var tile = room.data[x, y]
+	if tile is null then return end
+	-- check neighboring tiles
+	var x1b = room._sameMat(tile.fore, x - 1, y)
+	var x2b = room._sameMat(tile.fore, x + 1, y)
+	var y1b = room._sameMat(tile.fore, x, y - 1)
+	var y2b = room._sameMat(tile.fore, x, y + 1)
+	-- apply rframes based on neighbors
+	match tile.fore.rt
+	case NoRe do
+		tile.rFrame = 0
+	case TopRe do
+		if !x1b && !x2b || !y1b && !y2b then tile.rFrame = 0 return end
+		var xf = 0
+		var yf = 0
+		if x1b && x2b then xf = 1 elsif x1b then xf = 2 end
+		if y1b then yf = 1 end
+		tile.rFrame = 1 + xf + (yf * 3)
+	case FullRe do
+		if !x1b && !x2b || !y1b && !y2b then tile.rFrame = 0 return end
+		var xf = 0
+		var yf = 0
+		if x1b && x2b then xf = 1 elsif x1b then xf = 2 end
+		if y1b && y2b then yf = 1 elsif y1b then yf = 2 end
+		tile.rFrame = 1 + xf + (yf * 3)
+	end
+end
+
+fn reify(Room room, Int x, Int y)
+	room._reifyTile(x, y)
+	room._reifyTile(x - 1, y)
+	room._reifyTile(x + 1, y)
+	room._reifyTile(x, y - 1)
+	room._reifyTile(x, y + 1)
+end
+
+	(* - movement functions *)
+
+fn _diffTile((Int, Int) moveRange, Axis axis, Int delta, Int tx, Int ty) (Int, Int)
+	match axis case XA do
+		return moveRange.diff((fromTile(tx), fromTile(tx + 1)), delta)
+	case YA do
+		return moveRange.diff((fromTile(ty), fromTile(ty + 1)), delta)
+	end
+end
+
+fn calcPush(Room room, MoveObj obj, Axis axis, Int delta) Int
+	var hitBox = obj.hitBox
+	var moveRange = hitBox.rangeI(axis).extend(delta)
+	var moveBox = hitBox.copy().setRange(axis, moveRange)
+	-- reduce movement based on tiles
+	from i = toTile(moveBox.x) while i <= toTile(moveBox.right() - 1),
+		j = toTile(moveBox.y) while j <= toTile(moveBox.bottom() - 1) do
+		if room.solid(i, j) then
+			moveRange = moveRange._diffTile(axis, delta, i, j)
+		end
+	end
+	-- return final delta
+	if delta > 0 then return moveRange.size() end
+	return -moveRange.size()
+end
+
+fn push(Room room, MoveObj obj, Axis axis, Int delta)
+	var hitBox = obj.hitBox
+	match axis case XA do
+		hitBox.x = hitBox.x + delta
+	case YA do
+		hitBox.y = hitBox.y + delta
+	end
+end
+
+fn moveObj(Room room, MoveObj obj, Axis axis, Int delta) Int
+	var pushDelta = room.calcPush(obj, axis, delta)
+	room.push(obj, axis, pushDelta)
+	return pushDelta
+end
+
+fn updateObj(Room room, MoveObj obj)
+	obj.xspd = room.moveObj(obj, XA, obj.xspd)
+	obj.yspd = room.moveObj(obj, YA, obj.yspd)
+end
+
+fn update(Room room)
+	var curList = room._objList
+	for i < |curList| do
+		var obj = curList[i]
+		obj.updateSpd()
+		room.updateObj(obj)
+	end
+end
+
+	(* - display functions *)
+
+fn draw(Room room, Camera cam)
+	-- get start pos
+	var (sx, sy) = room.startPos
+	-- draw dimensions
+	var tx = pixelTile(cam.x)
+	var ty = pixelTile(cam.y)
+	var cw = pixelTile(cam.canvasWidth) + 1
+	var ch = pixelTile(cam.canvasHeight) + 1
+	-- get image data
+	var tset = lookupSprite(Tset)
+	if tset is null then return end
+	-- iterate through tile
+	for i < cw, j < ch do
+		var cx = tx + i
+		var cy = ty + j
+		var tile = room.data[cx, cy]
+		if tile isnt null then
+			tile.draw(tset, tilePixel(cx), tilePixel(cy))
+		end
+	end
+	drawSprite(tilePixel(sx), tilePixel(sy), tset, 0, false)
+end

@@ -28,11 +28,12 @@ let rec resolve_exp (env: res_env) (e: m_exp): r_exp rs_res = match e with
 	| ZeroArrayExp(i, dim_l, t, p) ->
 		let* dim_l' = resolve_exp_list env dim_l in
 		let* t' = resolve_type env p t in Valid (ZeroArrayExp(i, dim_l', t', p))
-	| NewStructExp(x, fl, p) ->
+	| NewStructExp(x, t_ann, fl, p) ->
 		let* x' = resolve_name env p x in
+		let* t_ann' = opt_try_res (map_try_res (resolve_type env p)) t_ann in
 		let* fl' = map_try_res (fun (f, e) ->
 			let* e' = resolve_exp env e in Valid (f, e')
-		) fl in Valid (NewStructExp(x', fl', p))
+		) fl in Valid (NewStructExp(x', t_ann', fl', p))
 	| IsNullExp(e, y, p) ->
 		let* e' = resolve_exp env e in
 		(*let* y' = opt_try_res (resolve_name env p) y in *)
@@ -76,10 +77,11 @@ let rec resolve_stmt (env: res_env) (s: m_stmt): (res_env * r_stmt) rs_res = mat
 	| WhileStmt(e, b, p) ->
 		let* e' = resolve_exp env e in
 		let* (_, b') = resolve_body env b in Valid (env, WhileStmt(e', b', p))
-	| ForStmt(x, rt, e, b, p) ->
+	| ForStmt(x, eo, rt, e, b, p) ->
+		let* eo' = opt_try_res (resolve_exp env) eo in
 		let* e' = resolve_exp env e in
 		let env' = { env with localIds = StringMap.add x () env.localIds } in
-		let* (_, b') = resolve_body env' b in Valid (env, ForStmt(x, rt, e', b', p))
+		let* (_, b') = resolve_body env' b in Valid (env, ForStmt(x, eo', rt, e', b', p))
 	| MatchStmt(e, cl, p) ->
 		let* e' = resolve_exp env e in
 		let* cl' = map_try_res (resolve_match_case env) cl in

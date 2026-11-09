@@ -1,0 +1,23 @@
+
+module Rom
+	references STBImage.Main
+
+	references Commons modules Core, Project
+	references Sulfur modules Material
+	
+	type SpriteIndex
+	type ImageMap
+end
+
+module Globals
+	references OpenGL.Main
+	references GLFW.Main as GLFW
+
+	references Commons.Core
+	references Sulfur.Main as Sulfur
+	references Sulfur modules Material, Shader, RenderData, Input
+	references Project.Rom
+
+	type CaptureCard
+	type Globals
+end

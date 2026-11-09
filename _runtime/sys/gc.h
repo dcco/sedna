@@ -15,6 +15,9 @@
 const int8_t GC_WHITE = 0;
 const int8_t GC_GRAY = 1;
 const int8_t GC_BLACK = 2;
+	
+	// special "color" used for permanent objects (string constants, etc)
+const int8_t GC_PERM = 3;
 
 const int8_t PHASE_NEW = 0;
 const int8_t PHASE_MARK = 1;
@@ -50,8 +53,8 @@ typedef struct gc_type {
 typedef struct gc_obj {
 	struct gc_obj* next;
 	gc_type_t* type;
-	unsigned int color : 2;
-	unsigned int arrFlag : 2;
+	int8_t color;
+	int8_t arrFlag;
 } gc_obj_t;
 
 const size_t GC_OBJ_SIZE = MAX_ALIGN_UP(sizeof(gc_obj_t));
@@ -122,7 +125,7 @@ extern void gc_init() {
 
 inline static void* _gc_alloc(int32_t size, gc_type_t* type, int8_t arrFlag) {
 	// initialize object
-	gc_obj_t* obj = (gc_obj_t*) calloc(1, GC_OBJ_SIZE + size);
+	gc_obj_t* obj = (gc_obj_t*) calloc(1, sizeof(gc_obj_t) + size);//GC_OBJ_SIZE + size);
 	obj->type = type;
 	obj->color = GC_WHITE;
 	obj->next = gc_head;
@@ -184,12 +187,28 @@ extern void gc_new_root(void* ptr) {
 	gc_root_total = gc_root_total + 1;
 }
 
+extern void* gc_replace_root(void* p1, void* p2) {
+	int8_t rFlag = 0;
+	for (int i = 0; i < gc_root_total; i++) {
+		if (gc_roots[i] == p1) {
+			gc_roots[i] = p2;
+			rFlag = 1;
+			break;
+		}
+	}
+	if (!rFlag) gc_new_root(p2);
+	return p2;
+}
+
 void _gc_mark_elem(int8_t* data, gc_type_t* type) {
 	for (int i = 0; i < type->total; i++) {
 		// read sub-pointer, if not already gray, add to gray set
 		int8_t* subPtr = data + type->offsets[i];
-		gc_obj_t* subObj = *((gc_obj_t**) subPtr) - 1;
-		if (subObj != NULL && subObj->color == GC_WHITE) {
+		gc_obj_t* subObjOff = *((gc_obj_t**) subPtr);
+		if (subObjOff == NULL) continue;
+		//gc_obj_t* subObj = *((gc_obj_t**) subPtr) - 1;
+		gc_obj_t* subObj = subObjOff - 1;
+		if (subObj->color == GC_WHITE) {
 			subObj->color = GC_GRAY;
 			_gray_push(subObj);
 		}
@@ -200,8 +219,11 @@ void _gc_mark_elem(int8_t* data, gc_type_t* type) {
 void _gc_mark_array_direct(gc_array_t* array) {
 	gc_obj_t** data = (gc_obj_t**) array->data;
 	for (int i = 0; i < array->size; i++) {
-		gc_obj_t* subObj = data[i] - 1;
-		if (subObj != NULL && subObj->color == GC_WHITE) {
+		gc_obj_t* subObjOff = data[i];
+		if (subObjOff == NULL) continue;
+		//gc_obj_t* subObj = data[i] - 1;
+		gc_obj_t* subObj = subObjOff - 1;
+		if (subObj->color == GC_WHITE) {
 			subObj->color = GC_GRAY;
 			_gray_push(subObj);
 		}
@@ -219,6 +241,7 @@ void _gc_mark_array_layout(gc_array_t* array, gc_type_t* type) {
 
 void _gc_mark_obj(gc_obj_t* obj) {
 	// mark as safe
+	if (obj->color == GC_PERM || obj->color == GC_BLACK) return;
 	obj->color = GC_BLACK;
 	// array (with nested pointers) case
 	if (obj->arrFlag == ARR_NEST) {
@@ -271,7 +294,7 @@ void _gc_sweep() {
 			gc_free(del_obj);
 		// otherwise, mark white and move on
 		} else {
-			gc_sweep->color = GC_WHITE;
+			if (gc_sweep->color != GC_PERM) gc_sweep->color = GC_WHITE;
 			gc_prev_sweep = gc_sweep;
 			gc_sweep = gc_sweep->next;
 		}
@@ -280,7 +303,11 @@ void _gc_sweep() {
 	gc_phase = PHASE_NEW;
 }
 
+//int8_t z = 0;
+
 extern void gc_collect() {
+	///if (z < 25) printf("gc\n");
+	//z = z + 1;
 	// add roots to gray set
 	if (gc_phase == PHASE_NEW) {
 		for (int i = 0; i < gc_root_total; i++) {

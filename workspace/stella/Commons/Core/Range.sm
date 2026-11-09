@@ -1,0 +1,15 @@
+
+fn size((Int, Int) range) Int
+	return range.2 - range.1
+end
+
+fn extend((Int, Int) range, Int delta) (Int, Int)
+	if delta < 0 then return (range.1 + delta, range.1) end
+	return (range.2, range.2 + delta)
+end
+
+fn diff((Int, Int) range, (Int, Int) other, Int dir) (Int, Int)
+	if dir < 0 && range.1 < other.2 then return (other.2, range.2)
+	elsif dir > 0 && range.2 > other.1 then return (range.1, other.1) end
+	return range
+end

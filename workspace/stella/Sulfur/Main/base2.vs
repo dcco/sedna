@@ -11,23 +11,23 @@ layout (location = 6) in vec2 iUVPos;
 layout (location = 7) in vec2 iUVSize;
 
 uniform mat4 uPMat;
-uniform int uTotal;
+//uniform int uTotal;
 out vec2 vTex;
 out float vTexId;
 out vec3 vColor;
 
 vec3 unpackRGB(uint c)
 {
-	float r = float((c >> 16) & 0xFFu) / 255.0;
-	float g = float((c >> 8) & 0xFFu) / 255.0;
-	float b = float(c & 0xFFu) / 255.0;
+	float r = float((c >> 24) & 0xFFu) / 255.0;
+	float g = float((c >> 16) & 0xFFu) / 255.0;
+	float b = float((c >> 8) & 0xFFu) / 255.0;
 	return vec3(r, g, b);
 }
 
 void main(void) {
 	vec2 pos = (aPos.xy * iSize) + iPos.xy;
 	gl_Position = uPMat * vec4(pos, 0.0, 1.0);
-	gl_Position.z = iPos.z;// / float(uTotal);
+	gl_Position.z = iPos.z / 65536.0; /// float(uTotal);
 	vTex = (aTex * iUVSize) + iUVPos;
 	vTexId = iTexId;
 	vColor = unpackRGB(iColor);

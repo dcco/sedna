@@ -1,0 +1,12 @@
+
+fn acolor(U8 r, U8 g, U8 b, U8 a) U32
+	return (toU32(r) << _24) | (toU32(g) << _16) | (toU32(b) << _8) | toU32(a)
+end
+
+fn color(U8 r, U8 g, U8 b) U32
+	return (toU32(r) << _16) | (toU32(g) << _8) | toU32(b)
+end
+
+fn checkPixel(U32 _color, U8 r, U8 g, U8 b) Bool
+	return _color >> _8 = color(r, g, b)
+end

@@ -62,9 +62,9 @@ fn glfwGetPrimaryMonitor() Monitor?
 		input
 	*)
 
-fn glfwGetKey(Window window, Int key)
+fn glfwGetKey(Window window, Int key) Int
 fn glfwGetMouseButton(Window window, Int button) Int
-fn glfwGetCursorPos(Window window, Out F64 x, Out F64 y)
+fn glfwGetCursorPos(Window window, CPtr[F64] x, CPtr[F64] y)
 fn glfwSetCursorPos(Window window, F64 x, F64 y)
 
 	-- time

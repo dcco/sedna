@@ -2,14 +2,14 @@
 open Dusk_type
 
 	(* int bool is TRUE when UNSIGNED *)
-type raw_token = INT of Int64.t * bool * bit_width | FLOAT of float | TRUE | FALSE | NULL
+type raw_token = INT of Int64.t * bool * bit_width | FLOAT of float | F64 of float | TRUE | FALSE | NULL
 	| STRLIT of string | KLIT of string | T_INT of bool * bit_width
 	| ID of string | TID of string | VID of string | CID of string | DIM of int | T_TYPE | T_FN | T_OUT
 	| REFERENCES | MODULE | MODULES | AS | IFACE | FTOR | REQUIRES | IMPL | IMPLEMENTS | WITH | END
 	| L_LINKER
 	| TYPE | STRUCT | ENUM | EXTENDS | ATTRS | UNION | CONST | GLOBALS
-	| FN | FNPTR | LIN | VAR | NEW | BY | IF | THEN | ELSIF | ELSE | IS | ISNT
-	| LOOP | WHILE | DO | FOR | IN | RETURN
+	| FN | FNPTR | LIN | VAR | NEW | IF | THEN | ELSIF | ELSE | IS | ISNT
+	| LOOP | WHILE | DO | FOR | FROM | IN | RETURN
 	| MATCH | CASE | OWISE
 	| GC_COLLECT | UNDERSCORE
 	| EQ | DOT | ELLIP | LPAREN | RPAREN | COMMA | TILDE | QMARK | QQ | AT
@@ -32,6 +32,7 @@ let string_of_xint (i: Int64.t) (u: bool) (bw: bit_width): string =
 let string_of_raw_token tk = match tk with
 	INT(i, u, bw) -> string_of_xint i u bw
 	| FLOAT f -> string_of_float f
+	| F64 f -> (string_of_float f) ^ "l"
 	| STRLIT s -> "\"" ^ (String.escaped s) ^ "\""
 	| KLIT s -> "^" ^ s
 	| DIM i -> (string_of_int i) ^ "d"
@@ -72,7 +73,6 @@ let string_of_raw_token tk = match tk with
 	| LIN -> "lin"
 	| VAR -> "var"
 	| NEW -> "new"
-	| BY -> "by"
 	| IF -> "if"
 	| THEN -> "then"
 	| ELSIF -> "elsif"
@@ -83,6 +83,7 @@ let string_of_raw_token tk = match tk with
 	| WHILE -> "while"
 	| DO -> "do"
 	| FOR -> "for"
+	| FROM -> "from"
 	| IN -> "in"
 	| MATCH -> "match"
 	| CASE -> "case"

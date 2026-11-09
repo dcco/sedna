@@ -1,0 +1,103 @@
+
+struct ImageMap{
+	TexArray arr,
+	Int arrSlot,
+	1d[TexImage?] imageStore,
+	1d[Sprite?] spriteStore
+}
+
+fn nullImageMap() ImageMap
+	return new ImageMap{
+		arr = nullTexArray(),
+		arrSlot = 0,
+		imageStore = new 1d[~TexImage?],
+		spriteStore = new 1d[~Sprite?]
+	}
+end
+
+fn newImageMap(TexArray arr) ImageMap
+	return new ImageMap{
+		arr = arr,
+		arrSlot = 1,
+		imageStore = new 1d(|~SheetDef|)[~TexImage?],
+		spriteStore = new 1d(|~SpriteDef|)[~Sprite?]
+	}
+end
+
+fn rawLoadImage(ImageMap map, String fName) TexImage
+	-- load image from external
+	var cName = cString("rom/" + fName + ".png")
+	var cw = cBox(0)
+	var ch = cBox(0)
+	var cc = cBox(0)
+	var cData = stbiLoad(cName, cw, ch, cc, _STBI_RGB_ALPHA)
+	if cData is null then
+		var fail = stbiFailureReason()
+		panic("Failed to load image: " + toString(fail))
+	end
+	-- load image into tex array
+	var image = newTexImage(map.arr, map.arrSlot, cData)
+	map.arrSlot = map.arrSlot + 1
+	-- free stbi data
+	stbiImageFree(cData)
+	return image
+end
+
+fn loadImages(ImageMap map)
+	for i < |~SheetDef| do
+		map.imageStore[i] = rawLoadImage(map, SheetDef(i).name)
+	end
+end
+
+fn initSprite(ImageMap map, SpriteDef sDef) Sprite
+	var image = map.imageStore[sDef.sheet.i]
+	if image is null then
+		panic("BUG: ImageMap.sm - Sprite loaded before image.")
+	end
+	var (tx, ty) = sDef.tPos
+	var (tw, th) = sDef.tSize
+	return newSprite(image, tilePixel(tx), tilePixel(ty), tilePixel(tw), tilePixel(th), sDef.span)
+end
+
+fn loadSprites(ImageMap map)
+	for i < |~SpriteDef| do
+		map.spriteStore[i] = initSprite(map, SpriteDef(i))
+	end
+end
+
+(*
+struct ImageMap{
+	HashMap[String, TexImage] data,
+	Int iSlot,
+	TexArray iData
+}
+
+fn newImageMap(TexArray arr, Int total, Int w, Int h) ImageMap
+	return new ImageMap{
+		data = newHashMap(~String, ~TexImage, total, stringHash, stringEquals),
+		iSlot = 0,
+		iData = arr
+	}
+end
+
+fn load(ImageMap map, String fName) TexImage
+	-- load image from external
+	var cName = cString(fName + ".png")
+	var cw = cBox(0)
+	var ch = cBox(0)
+	var cc = cBox(0)
+	var cData = stbiLoad(cName, cw, ch, cc, 4)
+	if cData is null then
+		var fail = stbiFailureReason()
+		panic("Failed to load image: " + toString(fail))
+	end
+	-- load image into tex array
+	var image = newTexImage(map.iData, map.iSlot, cData)
+	insert(map.data, fName, image)
+	-- advance meta-data
+	map.iSlot = map.iSlot + 1
+	-- free stbi data
+	stbiImageFree(cData)
+	return image
+end
+*)

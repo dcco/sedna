@@ -1,5 +1,16 @@
 
+module Core
+	type NewMath
+	type Color
+	type Range
+	type Rect
+end
+
 module Data
 	references Sys.Os
 	type HashMap
+end
+
+module Project
+	type Units
 end

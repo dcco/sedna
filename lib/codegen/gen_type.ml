@@ -28,6 +28,9 @@ let structType tau_l = struct_type context (Array.of_list tau_l)
 let gcArrType = struct_type context (Array.of_list [iType; iType; iType; _ptrType])
 let gcDimsType n = struct_type context (Array.of_list (List.init n (fun _ -> iType)))
 
+let gcObjType = struct_type context (Array.of_list [_ptrType; _ptrType; i8Type; i8Type])
+let strType n = struct_type context (Array.of_list [iType; array_type i8Type n])
+
 	(*
 		qualified basic types
 	*)
@@ -105,7 +108,6 @@ let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = 
 	| PrimTy "Bool" -> PrimST bType
 	| PrimTy "String" -> PrimST _ptrType
 	| PrimTy "PRNG" -> PrimST _ptrType
-	| PrimTy "VPtr" -> PrimST _ptrType
 	| PrimTy x -> failwith ("BUG: gen_type.ml - Non-existent primitive type \"" ^ x ^ "\". " ^ debug)
 	| NamedTy(t, _) -> _namedStoreType debug env t
 	| TupleTy(_, tau_l) -> TupleST (Array.of_list (List.map (toStoreType debug env) tau_l))
@@ -117,7 +119,8 @@ let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = 
 		(*failwith ("generated fun type: " ^ debug ^ "_" ^ (string_of_lltype tau_f))*)
 		FunPtrST(tau_f, toStoreType debug env tau_r)
 	(*| FunTy(_, _) -> PrimST _ptrType*)
-	| CPtrTy t -> StructPtrST [| ExplDST (toStoreType debug env t) |]
+	| CPtrTy t -> ArrayPtrST (toStoreType debug env t) (*StructPtrST [| ExplDST (toStoreType debug env t) |]*)
+	| XPtrTy -> PrimST _ptrType
 	| NullableTy tau -> toStoreType debug env tau
 	| BotTy -> PrimST iType
 	(*| NullTy -> failwith ("BUG: gen_type.ml - Null-only type encountered while generating storage type.")*)
@@ -250,8 +253,10 @@ let rec gcElemType (debug: string) (cont: llvm_cont) (env: dusk_env) (tau: g_typ
 	| PrimTy "String" -> [DirectChild]
 	| ArrayTy(_, _) -> [DirectChild]
 	| TupleTy(_, tau_l) -> gcElemTypeList debug cont env 0 tau_l
-	(*| ValArrayTy _ -> failwith ("BUG: gen_type.ml - Value-arrays cannot be stored in other data structures.")*)
-	| _ -> []
+	| NullableTy _ -> [DirectChild]
+	| XPtrTy -> [DirectChild]
+	| VarTy _ -> [DirectChild]
+	| PrimTy _ | IntTy _ | TagOfTy _ | FunTy _ | TValTy _ | CPtrTy _ | BotTy -> []
 and gcElemTypeList (debug: string) (cont: llvm_cont) (env: dusk_env) (fieldOffset: int) (tau_l: g_type list): gc_child list =
 	let tau_s = struct_type context (Array.of_list (List.map (fun t -> genStoreType (toStoreType debug env t)) tau_l)) in
 	let childList = ref [] in

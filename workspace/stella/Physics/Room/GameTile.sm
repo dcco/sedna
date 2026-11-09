@@ -1,0 +1,12 @@
+(*
+struct GameTile{
+	BaseTile base
+}
+
+fn newGameTile() GameTile
+	return new GameTile{
+		base = new BaseTile{
+			fore = GrassTT
+		}
+	}
+end*)

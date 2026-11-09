@@ -1,0 +1,81 @@
+
+struct Game{
+	Camera cam,
+	Room room,
+	GameObj? player,
+	1d[GameObj] _objList 
+}
+
+fn newGame(Camera cam, Room room) Game
+	return new Game{
+		cam = cam,
+		room = room,
+		player = null, 
+		_objList = new 1d[~GameObj]
+	}
+end
+
+fn addObj(Game game, GameObj obj)
+	game._objList += obj
+	game.room.addObj(obj.body)
+end
+
+fn reset(Game game)
+	game._objList.clear()
+	game.room.clear()
+	var player = newGameObj(MayObj)
+	var (sx, sy) = game.room.startPos
+	player.body.hitBox.x = fromTile(sx)
+	player.body.hitBox.y = fromTile(sy)
+	game.addObj(player)
+	game.player = player
+end
+
+fn input(Game game)
+	var player = game.player
+	if player is null then return end
+	var body = player.body
+	-- walking/strafing
+	if inputDown(KLeft) then
+		body.tarXspd = -0x380
+		body.facing = false
+	elsif inputDown(KRight) then
+		body.tarXspd = +0x380
+		body.facing = true
+	else
+		body.tarXspd = 0
+	end
+	-- accel speed
+	--var facing = body.facing
+	body.xacc = +0x80
+	-- jumping
+	if inputPress(KA) then
+		body.yspd = -0x600 - abs(body.xspd / 2)
+	end
+	-- gravity
+	if inputDown(KA) && body.yspd < -0x320 then
+		body.yacc = +0x50
+	else
+		body.yacc = _GRAV_CONST
+	end
+	--val grav = if (VBoard.down("a") && yspd < -0x420) "" + 0x68 else "" + 0xF0
+end
+
+fn update(Game game)
+	-- physics simulation
+	game.room.update()
+	-- object behavior update
+	for i < |game._objList| do
+		var obj = game._objList[i]
+		obj.update()	
+	end
+end
+
+fn draw(Game game)
+	var cam = game.cam
+	for i < |game._objList| do
+		var obj = game._objList[i]
+		obj.draw()
+	end
+	game.room.draw(cam)
+end

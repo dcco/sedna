@@ -47,8 +47,8 @@ let string_of_rs_err (e: resolve_err): string = match e with
 	| Redeclare_Err(x, p) ->
 		"Re-declaration of \"" ^ (string_of_qname x) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| AmbiguousOverload_Err(x, xl, p) ->
-		"Ambiguous overload options for declaration \"" ^ (string_of_qname x) ^ "\" at " ^ (string_of_pos p) ^ ". Options:\n --"
-		^ (String.concat "\n --" (List.map cr xl))
+		"Ambiguous overload options for declaration \"" ^ (string_of_qname x) ^ "\" at " ^ (string_of_pos p) ^ ".\nOptions:\n *"
+		^ (String.concat "\n * " (List.map cr xl))
 	| ReuseHandle_Err(path, x, p) ->
 		"Re-use of handle \"" ^ x ^ "\" while importing \"" ^ (String.concat "." path) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonEmptyReqList_Err p -> "Requirement given outside of TOC / top-level at " ^ (string_of_pos p) ^ "."

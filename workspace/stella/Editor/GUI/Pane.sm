@@ -1,0 +1,101 @@
+
+struct Pane[T]{
+	Int x,
+	Int y,
+	ElemState state,
+	Elem[T] def
+}
+
+fn _buildPane(Elem[T] elem, Int x, Int y) Pane[T]
+	var state = newElemState(elem.params)
+	var (w, h) = elem.size
+	state.width = w
+	state.height = h
+	return new Pane{
+		x = x,
+		y = y,
+		state = state,
+		def = elem
+	}
+end
+
+fn _buildLayout(Layout[T] layout, 1d[Pane[T]] paneList, Int _cx, Int _cy) (Int, Int)
+	-- add padding
+	var cx = _cx + layout.padding
+	var cy = _cy + layout.padding
+	-- build elements
+	var (maxWidth, maxHeight) = (0, 0)
+	for i < |layout.elemList| do
+		var elem = layout.elemList[i]
+		var pane = elem._buildPane(cx, cy)
+		paneList += pane
+		-- increment cursor
+		match layout.dir case HorizLD do
+			cx = cx + pane.state.width
+			if i != |layout.elemList| - 1 then cx = cx + layout.spacing end
+		owise
+			cy = cy + pane.state.height
+			if i != |layout.elemList| - 1 then cy = cy + layout.spacing end
+		end
+		-- re-calc max size
+		if pane.state.width > maxWidth then maxWidth = pane.state.width end
+		if pane.state.height > maxHeight then maxHeight = pane.state.height end
+	end
+	-- build child layouts
+	for i < |layout.childList| do
+		var child = layout.childList[i]
+		var (pw, ph) = child._buildLayout(paneList, cx, cy)
+		-- increment cursor
+		match layout.dir case HorizLD do
+			cx = cx + pw
+			if i != |layout.childList| - 1 then cx = cx + layout.spacing end
+		owise
+			cy = cy + ph
+			if i != |layout.childList| - 1 then cy = cy + layout.spacing end
+		end
+		-- re-calc max size
+		if pw > maxWidth then maxWidth = pw end
+		if ph > maxHeight then maxHeight = ph end
+	end
+	-- if back is enabled, add the backing panel
+	var totalWidth = cx + layout.padding - _cx
+	var totalHeight = cy + layout.padding - _cy
+	match layout.dir case HorizLD do
+		totalHeight = cy + maxHeight + layout.padding
+	owise
+		totalWidth = cx + maxWidth + layout.padding
+	end
+	-- (fill to minimum size)
+	var (minWidth, minHeight) = layout.minSize
+	if totalWidth < minWidth then totalWidth = minWidth end
+	if totalHeight < minHeight then totalHeight = minHeight end
+	paneList += newBackElem(~T, totalWidth, totalHeight)._buildPane(_cx, _cy)
+	return (totalWidth, totalHeight)
+end
+
+fn initLayout(Layout[T] layout, Int _cx, Int _cy) 1d[Pane[T]]
+	var paneList = new 1d[~Pane[T]]
+	_buildLayout(layout, paneList, _cx, _cy)
+	return paneList
+end
+
+fn updatePanes(1d[Pane[T]] paneList, T cont, Int mx, Int my) Bool
+	-- click behavior
+	if !GS.input.mbPress[_GLFW_MOUSE_BUTTON_1] then return false end
+	for i < |paneList| do
+		var pane = paneList[i]
+		var cx = mx - pane.x
+		var cy = my - pane.y
+		if cx >= 0 && cx < pane.state.width && cy >= 0 && cy < pane.state.height then
+			pane.def..click(cont, pane.state, cx, cy)
+			return true
+		end
+	end
+	return false
+end
+
+fn draw(Pane[T] pane, T cont)
+	pushOffset(pane.x, pane.y)
+	pane.def..draw(cont, pane.state)
+	popOffset()
+end

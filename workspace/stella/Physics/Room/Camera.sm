@@ -1,0 +1,18 @@
+
+struct Camera{
+	Int zoom,
+	Int canvasWidth,
+	Int canvasHeight,
+	Int x,
+	Int y
+}
+
+fn newCamera(Int canvasWidth, Int canvasHeight, Int zoom) Camera
+	return new Camera{
+		canvasWidth = canvasWidth,
+		canvasHeight = canvasHeight,
+		zoom = zoom,
+		x = 0,
+		y = 0
+	}
+end

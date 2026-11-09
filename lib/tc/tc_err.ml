@@ -17,6 +17,7 @@ type tc_info =
 	| CallTCInfo of string * g_type list * g_type * int option
 	| ListTCInfo of int option
 	| AssignTCInfo of string * g_type
+	| ForLoopTCInfo
 
 let string_of_tc_info (info: tc_info): string = match info with
 	FieldTCInfo(ctor, x, tau_p) ->
@@ -34,6 +35,7 @@ let string_of_tc_info (info: tc_info): string = match info with
 		| Some i ->	"[] Index: " ^ (string_of_int i)
 	)
 	| AssignTCInfo(x, t) -> "var " ^ x ^ ": " ^ (string_of_type cr t)
+	| ForLoopTCInfo -> "for loop"
 
 type tc_info_stub =
 	CallTCInfoStub of string * g_type list * g_type
@@ -49,9 +51,12 @@ type tc_err =
 	BadType_Err of lhs_type * g_type * tc_info * l_pos
 	| BadJoin_Err of lhs_type * lhs_type * tc_info * l_pos
 	| MismatchedArgNum_Err of int * int * tc_info * l_pos
+	| MismatchedTArgNum_Err of int * int * l_pos
+	| UnknownTArg_Err of l_pos
 	| IncompleteType_Err of lhs_type * l_pos
 		(* functions *)
 	| NoOverload_Err of string * lhs_type option * l_pos
+	| AmbiguousLookup_Err of string * l_pos
 		(* tuples *)
 	| NonTuple_Err of lhs_type * l_pos
 	| NonTuplePat_Err of g_type * l_pos
@@ -106,10 +111,14 @@ let string_of_tc_err (e: tc_err) = match e with
 	| MismatchedArgNum_Err(s, t, info, p) -> "Function call expected " ^ (string_of_int t) ^ " arguments and received " ^
 		(string_of_int s) ^ " at " ^ (string_of_pos p) ^ ".\n" ^
 		"  From: " ^ (string_of_tc_info info)
+	| MismatchedTArgNum_Err(s, t, p) -> "Type annotation expected " ^ (string_of_int t) ^ " arguments and received " ^
+		(string_of_int s) ^ " at " ^ (string_of_pos p) ^ ".\n"
+	| UnknownTArg_Err p -> "Could not determine all type arguments for polymorphic type at " ^ (string_of_pos p) ^ ".\n"
 	| IncompleteType_Err(t, p) -> "Could not determine final type of \"" ^ (string_of_ltype t) ^
 		"\" needed at " ^ (string_of_pos p) ^ ".\n"
 	| NoOverload_Err(f, t, p) -> "Function \"" ^ f ^ "\" does not have overload for " ^
 		(string_of_first_arg t) ^ " at " ^ (string_of_pos p) ^ "."
+	| AmbiguousLookup_Err(f, p) -> "Ambiguous lookup of overloaded function \"" ^ f ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonTuple_Err(t, p) -> "Tuple operation called on non-tuple type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonTuplePat_Err(t, p) -> "Tuple pattern used on non-tuple type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| RawTupleOp_Err(t, p) -> "(Redundant) Operation called on raw tuple literal \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."

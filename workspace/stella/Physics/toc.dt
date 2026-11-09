@@ -1,0 +1,21 @@
+
+module Obj
+	references Commons modules Core, Project
+
+	type MoveObj
+end
+
+module Room
+	references Sys.Os
+
+	references Commons modules Core, Project
+	references Sulfur modules Main, Material
+	references Project modules Globals, Rom
+	references Physics.Obj
+
+	type BaseTile
+	type GameTile
+	type Camera
+	type EndlessGrid
+	type Room
+end

@@ -31,6 +31,7 @@ let rec tag_of_type (tau_o: g_type option): string = match tau_o with
 	| Some (TValTy _) -> "any"
 		(* TODO: maybe make more robust overloading (currently impeded by need for cptr[any] functions) *)
 	| Some (CPtrTy _) -> "ptr"
+	| Some XPtrTy -> "ptr"
 
 let aug_cn (tag: string) (CN(x, xl): canon_name): canon_name = CN(tag ^ x, xl)
 
@@ -84,7 +85,8 @@ type type_env = {
 	globalAttrs: (string, tc_attrs) Hashtbl.t;
 	localIds: g_type StringMap.t;
 	guardMap: guard_map;
-	boxCount: int ref
+	boxCount: int ref;
+	patCount: int ref;
 }
 
 	(* - TEST fun: used to dump *)
@@ -141,7 +143,8 @@ let builtin_tenv (dl: g_virt_bind list): type_env =
 		globalAttrs = Hashtbl.create 10;
 		localIds = StringMap.empty;
 		guardMap = StringMap.empty;
-		boxCount = ref 0
+		boxCount = ref 0;
+		patCount = ref 0;
 	} in List.iter (fun (f, vd, _) -> match vd with
 		SymVD(s, tau_f) -> add_fun_tenv env f (s, tau_f)
 		| TDefVD td -> add_tdef_tenv env f td
@@ -151,6 +154,9 @@ let with_dir_tenv (env: type_env) (dir: string): type_env = { env with curDir = 
 
 let get_box_id_tenv (env: type_env): int =
 	let i = !(env.boxCount) in env.boxCount := i + 1; i
+
+let get_pat_var_tenv (env: type_env): string =
+	let i = !(env.patCount) in env.patCount := i + 1; ("__pat" ^ (string_of_int i))
 
 let lookup_fun_tenv (env: type_env) (f: canon_name) (tau_o: lhs_type option): (canon_name * sym_fun_type) option = match Hashtbl.find_opt env.globalFIds (cr f) with
 	None -> None (* this case should theoretically never come up *)

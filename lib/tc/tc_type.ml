@@ -29,7 +29,7 @@ let rec string_of_ltype (tau: lhs_type): string = match tau with
 	LT t -> string_of_type cr t
 	| NullLT -> "_Null"
 	| RawTupleLT [] -> "(??)"
-	| RawTupleLT (tau0 :: tau_t) -> "(" ^ string_of_ltype tau0 ^ " ?? " ^
+	| RawTupleLT (tau0 :: tau_t) -> "(" ^ string_of_ltype tau0 ^ ", " ^
 		String.concat ", " (List.map string_of_ltype tau_t) ^ ")"
 
 	(*

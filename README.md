@@ -114,16 +114,16 @@ From highest to lowest precedence, the following unary and binary operators are 
 |_|         
 -   !   ^
 
+-- arithmetic operators
+**
+*   /    /.   %
++   -
+
 -- bitwise operators
 <<  >>
 ^
 &
 |
-
--- arithmetic operators
-**
-*   /    /.   %
-+   -
 
 -- comparison / boolean operators
 =   !=   <    <=  >   >=

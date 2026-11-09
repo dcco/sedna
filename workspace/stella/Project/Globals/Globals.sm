@@ -1,0 +1,95 @@
+
+globals GS{
+	offsetStack = new 1d[(0, 0)],
+	sf = nullSulfur(),
+	iMap = nullImageMap(),
+	input = nullInput()
+}
+
+fn initGlobals(Window window, Sulfur sf)
+	-- initialize shaders, etc
+	GS.sf = sf
+	var texArr = newTexArray(8, 1024, 1024)
+	GS.sf.texArr = texArr
+
+	-- load images
+	GS.iMap = newImageMap(texArr)
+	GS.iMap.loadImages()
+	GS.iMap.loadSprites()
+
+	-- initial input
+	GS.input = newInput(window)
+end
+
+fn lookupSprite(SpriteDef sDef) Sprite?
+	return GS.iMap.spriteStore[sDef.i]
+end
+
+fn drawText(String text, U32 color, Int x, Int y)
+	var sprite = GS.iMap.spriteStore[TextSp.i]
+	if sprite is null then return end
+	var (ox, oy) = GS.offsetStack[|GS.offsetStack| - 1]
+	var cx = x
+	for i < |text| do
+		var c = text[i]
+		if c >= _32b && c <= _96b then
+			var frame = toInt(c - _32b)
+			GS.sf.frontBuffer.addSpriteC(color, ox + cx, oy + y, sprite, frame, false)
+		end
+		cx = cx + 4
+	end
+end
+
+fn drawBox(U32 c, Int x, Int y, Int w, Int h)
+	var (ox, oy) = GS.offsetStack[|GS.offsetStack| - 1]
+	GS.sf.frontBuffer.addBox(c, ox + x, oy + y, w, h)
+end
+
+fn drawSprite(Int x, Int y, Sprite sprite, Int frame, Bool facing)
+	var (ox, oy) = GS.offsetStack[|GS.offsetStack| - 1]
+	GS.sf.frontBuffer.addSprite(ox + x, oy + y, sprite, frame, facing)
+end
+
+fn pushOffset(Int x, Int y)
+	var (ox, oy) = GS.offsetStack[|GS.offsetStack| - 1]
+	GS.offsetStack += (ox + x, oy + y)
+end
+
+fn popOffset()
+	GS.offsetStack /= |GS.offsetStack| - 1
+end
+
+-- sentinel draw to ensure things inherit properly
+-- TODO: determine what to do for "divergent inheritance"
+fn draw()
+end
+
+	(*
+		player input (acknowledges KB/controller settings)
+	*)
+
+enum KeyType = KLeft | KRight | KA | KB
+
+fn inputDown(KeyType k) Bool
+	match k case KLeft do
+		return GS.input.keyDown[_GLFW_KEY_A]
+	case KRight do
+		return GS.input.keyDown[_GLFW_KEY_D]
+	case KA do
+		return GS.input.keyDown[_GLFW_KEY_J]
+	owise
+		return GS.input.keyDown[_GLFW_KEY_K]
+	end
+end
+
+fn inputPress(KeyType k) Bool
+	match k case KLeft do
+		return GS.input.keyPress[_GLFW_KEY_A]
+	case KRight do
+		return GS.input.keyPress[_GLFW_KEY_D]
+	case KA do
+		return GS.input.keyPress[_GLFW_KEY_J]
+	owise
+		return GS.input.keyPress[_GLFW_KEY_K]
+	end
+end

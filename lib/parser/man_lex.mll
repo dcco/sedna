@@ -99,7 +99,6 @@ rule token = parse
 	| "lin" { lexWrap lexbuf LIN }
 	| "var" { lexWrap lexbuf VAR }
 	| "new" { lexWrap lexbuf NEW }
-	| "by" { lexWrap lexbuf BY }
 	| "if" { lexWrap lexbuf IF }
 	| "then" { lexWrap lexbuf THEN }
 	| "elsif" { lexWrap lexbuf ELSIF }
@@ -110,6 +109,7 @@ rule token = parse
 	| "while" { lexWrap lexbuf WHILE }
 	| "do" { lexWrap lexbuf DO }
 	| "for" { lexWrap lexbuf FOR }
+	| "from" { lexWrap lexbuf FROM }
 	| "in" { lexWrap lexbuf IN }
 	| "match" { lexWrap lexbuf MATCH }
 	| "case" { lexWrap lexbuf CASE }
@@ -141,6 +141,7 @@ rule token = parse
 	| (("+" | "-" | "_")? as s) (numChar+ as i) (sizeChar? as b)
 		{ lexWrap lexbuf (full_int_of_string s false i b) }
 	
+	| (("-"? numChar+ "." numChar+) as f) ['l''L'] { lexWrap lexbuf (F64 (float_of_string f)) }
 	| ("-"? numChar+ "." numChar+) as f { lexWrap lexbuf (FLOAT (float_of_string f)) }
 
 	| "^" (['a'-'z']+ as k) { lexWrap lexbuf (KLIT k) }
@@ -149,6 +150,8 @@ rule token = parse
 	| "." { lexWrap lexbuf DOT }
 	| "=" { lexWrap lexbuf EQ }
 	| "!=" { lexWrap lexbuf NEQ }
+	| "<<" { lexWrap lexbuf LSHIFT }
+	| ">>" { lexWrap lexbuf RSHIFT }
 	| "<" { lexWrap lexbuf LANGLE }
 	| ">" { lexWrap lexbuf RANGLE }
 	| "<=" { lexWrap lexbuf LEQ }
@@ -167,8 +170,6 @@ rule token = parse
 	| "%" { lexWrap lexbuf PERC }
 	| "&" { lexWrap lexbuf AMPERSAND }
 	| "^" { lexWrap lexbuf CARET }
-	| "<<" { lexWrap lexbuf LSHIFT }
-	| ">>" { lexWrap lexbuf RSHIFT }
 	| "(" { lexWrap lexbuf LPAREN }
 	| ")" { lexWrap lexbuf RPAREN }
 	| "[" { lexWrap lexbuf LBRACE }

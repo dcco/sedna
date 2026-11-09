@@ -1,0 +1,136 @@
+
+struct Editor{
+	Camera cam,
+	Room room,
+	EState state,
+	Layout[EState] layout,
+	1d[Pane[EState]] paneList
+}
+
+fn newEditor(Camera cam, Room room) Editor
+	var layout = toolbar(cam.canvasWidth)
+	var paneList = initLayout(layout, 0, cam.canvasHeight - layout.minSize.2 + 1)
+	return new Editor{
+		cam = cam,
+		room = room,
+		state = newEState(),
+		layout = layout,
+		paneList = paneList
+	}
+end
+
+fn _paintTile(EState state, Room room, Int tx, Int ty)
+	var tile = room.data[tx, ty]
+	if tile is null then
+		tile = newBaseTile()
+		room.data[tx, ty] = tile
+	end
+	tile.fore = state.selTT
+	room.reify(tx, ty)
+end
+
+fn _getMatTile(Room room, Int tx, Int ty) TType
+	var tile = room.data[tx, ty]
+	if tile is null then return NullTT end
+	return tile.fore
+end
+
+fn _sameMatTile(Room room, Int tx, Int ty, TType oldType, (Int, Int) homeSector) Bool
+	if adiv(tx, _SEC_SIZE) != homeSector.1 || adiv(ty, _SEC_SIZE) != homeSector.2 then
+		return false
+	end
+	var tile = room.data[tx, ty]
+	if tile is null then
+		return oldType.i = 0
+	end
+	return (tile.fore.i = oldType.i)
+end
+
+fn _fillTile(EState state, Room room, Int tx, Int ty, TType oldType, (Int, Int) homeSector, Int lastDir, Int depth)
+	if !_sameMatTile(room, tx, ty, oldType, homeSector) then return end
+	-- paint tile
+	_paintTile(state, room, tx, ty)
+	-- left (1), right (2), up (3), down (4)
+	if lastDir != 2 then _fillTile(state, room, tx - 1, ty, oldType, homeSector, 1, depth + 1) end
+	if lastDir != 1 then _fillTile(state, room, tx + 1, ty, oldType, homeSector, 2, depth + 1) end
+	if lastDir != 4 then _fillTile(state, room, tx, ty - 1, oldType, homeSector, 3, depth + 1) end
+	if lastDir != 3 then _fillTile(state, room, tx, ty + 1, oldType, homeSector, 4, depth + 1) end
+end
+
+fn update(Editor editor)
+	var cam = editor.cam
+	var room = editor.room
+	var state = editor.state
+	-- camera movement
+	if GS.input.keyDown[_GLFW_KEY_W] then
+		cam.y = cam.y - 2
+	elsif GS.input.keyDown[_GLFW_KEY_S] then
+		cam.y = cam.y + 2
+	end
+	if GS.input.keyDown[_GLFW_KEY_A] then
+		cam.x = cam.x - 2
+	elsif GS.input.keyDown[_GLFW_KEY_D] then
+		cam.x = cam.x + 2
+	end
+	-- UI update
+	var (mx, my) = GS.input.mousePos()
+	mx = mx / cam.zoom
+	my = my / cam.zoom
+	var (mcx, mcy) = (mx + cam.x, my + cam.y)
+	var intFlag = updatePanes(editor.paneList, state, mx, my)
+	if intFlag then return end
+	-- paint (if not interacting with UI)
+	var tx = pixelTile(mcx)
+	var ty = pixelTile(mcy)
+	if GS.input.mbDown[_GLFW_MOUSE_BUTTON_1] then
+		match state.mode case PencilTM do
+			_paintTile(state, room, tx, ty)
+		case StartTM do
+			room.startPos = (tx, ty)
+		owise
+		end
+	elsif GS.input.mbDown[_GLFW_MOUSE_BUTTON_2] then
+		match state.mode case PencilTM do
+			room.data.delete(tx, ty)
+			room.reify(tx, ty)
+		end
+	end
+	-- click-only behavior (fill, etc)
+	if GS.input.mbPress[_GLFW_MOUSE_BUTTON_1] then
+		match state.mode case FillTM do
+			var oldType = _getMatTile(room, tx, ty)
+			if oldType.i != state.selTT.i then
+				var homeSector = (adiv(tx, _SEC_SIZE), adiv(ty, _SEC_SIZE))
+				_fillTile(state, room, tx, ty, oldType, homeSector, 0, 0)
+			end
+			state.mode = PencilTM
+		owise
+		end
+	end
+end
+
+fn drawBack(Editor editor)
+	var cam = editor.cam
+	-- calculate center sector
+	var mx = cam.x + cam.canvasWidth / 2
+	var my = cam.y + cam.canvasWidth / 2
+	var sx = adiv(mx, tilePixel(_SEC_SIZE))
+	var sy = adiv(my, tilePixel(_SEC_SIZE))
+	-- draw boundaries for center sector
+	var tx = sx * tilePixel(_SEC_SIZE)
+	var ty = sy * tilePixel(_SEC_SIZE)
+	drawBox(0xD0D0FFC0, tx, ty, tilePixel(_SEC_SIZE), 1)
+	drawBox(0xD0D0FFC0, tx, ty + tilePixel(_SEC_SIZE), tilePixel(_SEC_SIZE), 1)
+	drawBox(0xD0D0FFC0, tx, ty, 1, tilePixel(_SEC_SIZE))
+	drawBox(0xD0D0FFC0, tx + tilePixel(_SEC_SIZE), ty, 1, tilePixel(_SEC_SIZE))
+end
+
+fn drawFore(Editor editor)
+	var paneList = editor.paneList
+	-- draw toolbar (reverse priority order)
+	var ix = |paneList| - 1
+	while ix >= 0 do
+		paneList[ix].draw(editor.state)
+		ix = ix - 1
+	end
+end

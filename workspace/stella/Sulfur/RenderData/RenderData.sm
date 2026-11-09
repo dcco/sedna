@@ -38,24 +38,66 @@ fn addBox(RenderData rd, U32 c, Int x, Int y, Int w, Int h)
 	rd.total = rd.total + 1
 end
 
-fn addImage(RenderData rd, TexImage image, Int x, Int y)
+fn addSprite(RenderData rd, Int x, Int y, Sprite sprite, Int frame, Bool facing)
 	-- POS
-	rd.data.addFloat(toFloat(x))
-	rd.data.addFloat(toFloat(y))
+	if !facing then
+		rd.data.addFloat(toFloat(x - sprite.offX))
+	else
+		rd.data.addFloat(toFloat(x + sprite.offX + sprite.offWidth))
+	end
+	rd.data.addFloat(toFloat(y - sprite.offY))
 	-- * z-sorted by draw order
 	rd.data.addFloat(toFloat(-rd.total))
 	-- SIZE
-	rd.data.addFloat(toFloat(image.width))
-	rd.data.addFloat(toFloat(image.height))
+	if !facing then
+		rd.data.addFloat(toFloat(sprite.tw))
+	else
+		rd.data.addFloat(-toFloat(sprite.tw))
+	end
+	rd.data.addFloat(toFloat(sprite.th))
 	-- COLOR
 	rd.data.addU32(0xFFFFFFFF)
 	-- TEXID
-	rd.data.addFloat(toFloat(image.layer))
+	rd.data.addFloat(toFloat(sprite.image.layer))
 	-- TEX POS
-	rd.data.addFloat(0.0)
-	rd.data.addFloat(0.0)
+	var fx = sprite.fx + (toFloat(frame % sprite.spanWidth) * sprite.fw)
+	var fy = sprite.fy + (toFloat(frame / sprite.spanWidth) * sprite.fh)
+	rd.data.addFloat(fx)
+	rd.data.addFloat(fy)
 	-- TEX SIZE
-	rd.data.addFloat(1.0)
-	rd.data.addFloat(1.0)
+	rd.data.addFloat(sprite.fw)
+	rd.data.addFloat(sprite.fh)
+	rd.total = rd.total + 1
+end
+
+fn addSpriteC(RenderData rd, U32 c, Int x, Int y, Sprite sprite, Int frame, Bool facing)
+	-- POS
+	if !facing then
+		rd.data.addFloat(toFloat(x - sprite.offX))
+	else
+		rd.data.addFloat(toFloat(x + sprite.offX + sprite.offWidth))
+	end
+	rd.data.addFloat(toFloat(y - sprite.offY))
+	-- * z-sorted by draw order
+	rd.data.addFloat(toFloat(-rd.total))
+	-- SIZE
+	if !facing then
+		rd.data.addFloat(toFloat(sprite.tw))
+	else
+		rd.data.addFloat(-toFloat(sprite.tw))
+	end
+	rd.data.addFloat(toFloat(sprite.th))
+	-- COLOR
+	rd.data.addU32(c)
+	-- TEXID
+	rd.data.addFloat(toFloat(sprite.image.layer))
+	-- TEX POS
+	var fx = sprite.fx + (toFloat(frame % sprite.spanWidth) * sprite.fw)
+	var fy = sprite.fy + (toFloat(frame / sprite.spanWidth) * sprite.fh)
+	rd.data.addFloat(fx)
+	rd.data.addFloat(fy)
+	-- TEX SIZE
+	rd.data.addFloat(sprite.fw)
+	rd.data.addFloat(sprite.fh)
 	rd.total = rd.total + 1
 end

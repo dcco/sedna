@@ -71,6 +71,7 @@ let genStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_t
 	let offsetList = gcElemTypeList "(Struct Type Dec)" cont env 0 tau_l in
 	let tc_struct = (match offsetList with
 		[] -> const_null _ptrType
+			(* - i dont think this case can happen here *)
 		| [DirectChild] -> const_null _ptrType
 		| _ -> genGCType cont f offsetList
 	) in
@@ -177,6 +178,8 @@ let genGC (cont: llvm_cont): unit =
 	let gc_alloc = declare_function "gc_alloc" alloc_type cont.llmod in
 	let new_root_type = function_type voidType (Array.of_list [_ptrType]) in
 	let gc_new_root = declare_function "gc_new_root" new_root_type cont.llmod in
+	let repl_root_type = function_type _ptrType (Array.of_list [_ptrType; _ptrType]) in
+	let gc_repl_root = declare_function "gc_replace_root" repl_root_type cont.llmod in
 	let collect_type = function_type voidType (Array.of_list []) in
 	let gc_collect = declare_function "gc_collect" collect_type cont.llmod in
 	cont.gc := {
@@ -184,6 +187,7 @@ let genGC (cont: llvm_cont): unit =
 		array_grow = (arr_grow, grow_type);
 		gc_alloc = (gc_alloc, alloc_type);
 		gc_new_root = (gc_new_root, new_root_type);
+		gc_repl_root = (gc_repl_root, repl_root_type);
 		gc_collect = (gc_collect, collect_type);
 	}
 

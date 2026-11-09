@@ -7,6 +7,14 @@ struct Mesh{
 	1d[Float] rawData
 }
 
+fn nullMesh() Mesh
+	return new Mesh{
+		total = 0,
+		vertList = new 1d[~Vertex],
+		rawData = new 1d[~Float]
+	}
+end
+
 fn newMesh(1d[Float] vs, 1d[Float] uv) Mesh
 	var vertList = new 1d[~Vertex]
 	-- (per vertex) initialize vertex + UV data

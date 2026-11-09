@@ -1,0 +1,6 @@
+
+enum ObjType attrs{ MType mType } =
+	PLAYER{ MAcc } 
+
+enum ObjDef attrs{ (Int, Int) size, ObjType oType, SpriteDef sDef } =
+	MayObj{ (3, 7), PLAYER, MaySp }

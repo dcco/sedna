@@ -1,0 +1,73 @@
+
+const _COL_BLACK = 0x080820FF
+const _COL_STEEL = 0xB0B0CFFF
+const _COL_STEEL_DOWN = 0x70708FFF
+
+struct Elem[T]{
+	(Int, Int) size,
+	1d[XPtr] params,
+	Fn(T, ElemState, Int, Int) click,
+	Fn(T, ElemState) draw
+}
+
+	(* background pane element *)
+
+fn nopClick(BOT cont, ElemState state, Int x, Int y)
+end
+
+fn backDraw(BOT cont, ElemState state)
+	drawBox(_COL_STEEL, 0, 0, state.width, state.height)
+end
+
+fn newBackElem(TYPE[T], Int w, Int h) Elem[T]
+	return new Elem[T]{
+		size = (w, h),
+		params = new 1d[~XPtr],
+		click = nopClick,
+		draw = backDraw
+	}
+end
+
+	(* button element *)
+
+fn drawButton(BOT cont, ElemState state)
+	var w = state.width
+	var h = state.height
+	drawBox(_COL_BLACK, 0, 0, w, h)
+	drawBox(_COL_STEEL, 1, 1, w - 2, h - 2)
+	var text = fromAnonPtr(~String, state.params[0])
+	var tw = |text| * 4
+	drawText(text, _COL_BLACK, (w - tw) / 2, (h - 4) / 2)
+end
+
+fn newButton(String text, Int w, Int h, Fn(T, ElemState, Int, Int) click) Elem[T]
+	return new Elem{
+		size = (w, h),
+		params = new 1d[toAnonPtr(text)],
+		click = click,
+		draw = drawButton
+	}
+end
+
+	(* image button element *)
+(*
+fn drawImageButton(BOT cont, ElemState state)
+	var ref = fromRawPtr(~SpriteRef, state.params[0])
+	var sprite = GS.iMap.spriteStore[ref.sDef.i]
+	if sprite is null then return end
+	var frame = ref.frame
+	drawSprite(0, 0, sprite, frame, false)
+end
+
+fn newImageButton(SpriteDef sDef, Int frame, Int w, Int h, Fn(T, ElemState, Int, Int) click) Elem[T]
+	var sRef = new SpriteRef{
+		sDef = sDef,
+		frame = frame
+	}
+	return new Elem{
+		size = (w, h),
+		params = new 1d[toRawPtr(sRef)],
+		click = click,
+		draw = drawImageButton
+	}
+end*)

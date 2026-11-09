@@ -1,0 +1,28 @@
+
+struct GameObj{
+	ObjDef class,
+	MoveObj body
+}
+
+fn newGameObj(ObjDef class) GameObj
+	var body = newMoveObj(class.oType.mType)
+	var (w, h) = class.size
+	body.hitBox.setSize(fromPixel(w), fromPixel(h))
+	return new GameObj{
+		class = class,
+		body = body
+	}
+end
+
+fn update(GameObj obj)
+end
+
+fn draw(GameObj obj)
+	var class = obj.class
+	var body = obj.body
+	var sprite = GS.iMap.spriteStore[class.sDef.i]
+	if sprite is null then return end
+	--drawBox(0xA0A0A0FF, toPixel(body.hitBox.x), toPixel(body.hitBox.y),
+	--	toPixel(body.hitBox.width), toPixel(body.hitBox.height))
+	drawSprite(toPixel(body.hitBox.x), toPixel(body.hitBox.y), sprite, 1, body.facing)
+end

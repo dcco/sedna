@@ -1,0 +1,51 @@
+
+enum Axis = XA | YA
+
+struct Rect{
+	Int x,
+	Int y,
+	Int width,
+	Int height
+}
+
+fn right(Rect box) Int
+	return box.x + box.width
+end
+
+fn bottom(Rect box) Int
+	return box.y + box.height
+end
+
+fn copy(Rect box) Rect
+	return new Rect{
+		x = box.x,
+		y = box.y,
+		width = box.width,
+		height = box.height
+	}
+end
+
+fn setSize(Rect box, Int w, Int h) Rect
+	box.width = w
+	box.height = h
+	return box
+end
+
+fn setRange(Rect box, Axis axis, (Int, Int) range) Rect
+	match axis case XA do
+		box.x = range.1
+		box.width = range.2 - range.1
+	case YA do
+		box.y = range.1
+		box.height = range.2 - range.1
+	end
+	return box
+end
+
+fn rangeI(Rect box, Axis axis) (Int, Int)
+	match axis case XA do
+		return (box.x, box.x + box.width)
+	case YA do
+		return (box.y, box.y + box.height)
+	end
+end

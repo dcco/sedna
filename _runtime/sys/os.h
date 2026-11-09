@@ -46,14 +46,6 @@ extern float _Int_builtin_toRadians(int32_t i) {
 	return ((float) i) * M_PI / 180.0f;
 }
 
-extern uint32_t _U8_builtin_color(uint8_t r, uint8_t g, uint8_t b) {
-	return ((uint32_t) r) << 16 | ((uint32_t) g) << 8 | ((uint32_t) b);
-}
-
-extern uint32_t _U32_builtin_rgb(uint32_t c) {
-	return c >> 8;
-}
-
 extern void array_grow(gc_array_t* arr) {
 	arr->size = arr->size + 1;
 	if (arr->size >= arr->capacity) {

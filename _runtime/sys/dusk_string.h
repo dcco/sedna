@@ -14,12 +14,22 @@ typedef struct dusk_string {
 	char start;
 } dusk_string_t;
 
+	// required to ensure that string literal generation is aligned correctly
+_Static_assert(
+	sizeof(gc_obj_t) % _Alignof(dusk_string_t) == 0,
+	"GC header size is incompatible with string."
+);
+
+
+_Static_assert(sizeof(gc_obj_t) == 24, "GC header size mismatch");
+_Static_assert(offsetof(dusk_string_t, start) == 4, "String data offset mismatch");
+
 	/*
 		basic string functions
 	*/
 
 static dusk_string_t* _newString(int32_t len) {
-	dusk_string_t* s = (dusk_string_t*) gc_alloc(sizeof(dusk_string_t) + sizeof(char) * (len + 1), NULL);
+	dusk_string_t* s = (dusk_string_t*) gc_alloc(sizeof(dusk_string_t) + sizeof(char) * len, NULL);
 	s->len = len;
 	return s;
 }
@@ -59,6 +69,13 @@ extern void* _Int_builtin_toString(int32_t i) {
 	int length = snprintf(NULL, 0, "%d", i);
 	dusk_string_t* s = _newString(length);
 	snprintf(&s->start, length + 1, "%d", i);
+	return (void*) s;
+}
+
+extern void* _U32_builtin_toString(uint32_t i) {
+	int length = snprintf(NULL, 0, "%u", i);
+	dusk_string_t* s = _newString(length);
+	snprintf(&s->start, length + 1, "%u", i);
 	return (void*) s;
 }
 

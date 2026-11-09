@@ -20,6 +20,7 @@ type gc_iface = {
 	array_grow: llvalue * lltype;
 	gc_alloc: llvalue * lltype;
 	gc_new_root: llvalue * lltype;
+	gc_repl_root: llvalue * lltype;
 	gc_collect: llvalue * lltype;
 }
 
@@ -46,6 +47,7 @@ let newLCont (): llvm_cont =
 			array_grow = (const_null ptrType, ptrType);
 			gc_alloc = (const_null ptrType, ptrType);
 			gc_new_root = (const_null ptrType, ptrType);
+			gc_repl_root = (const_null ptrType, ptrType);
 			gc_collect = (const_null ptrType, ptrType);
 		};
 		uid = ref 0;

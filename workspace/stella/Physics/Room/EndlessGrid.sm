@@ -1,0 +1,74 @@
+
+	(*
+		individual sector
+	*)
+
+const _SEC_SIZE = 64
+
+struct Sector[T]{
+	2d[T?] data
+}
+
+	(*
+		endless grid
+		- made up of individual sectors, 
+	*)
+
+struct EndlessGrid[T]{
+	Int secX,
+	Int secY,
+	2d[Sector[T]?] sectors
+}
+
+fn newEndlessGrid(TYPE[T]) EndlessGrid[T]
+	var _s = new 2d(5, 5)[~Sector[T]?]
+	return new EndlessGrid{
+		secX = -2,
+		secY = -2,
+		sectors = _s
+	}
+end
+
+fn lookup(EndlessGrid[T] grid, Int x, Int y) T?
+	var tsx = adiv(x, _SEC_SIZE) - grid.secX
+	var tsy = adiv(y, _SEC_SIZE) - grid.secY
+	var (sw, sh) = |grid.sectors|
+	if tsx < 0 || tsy < 0 || tsx >= sw || tsy >= sh then
+		return null
+	end
+	var sector = grid.sectors[tsx, tsy]
+	if sector is null then return null end
+	return sector.data[amod(x, _SEC_SIZE), amod(y, _SEC_SIZE)]
+end
+
+fn update(EndlessGrid[T] grid, T tile, Int x, Int y)
+	var tsx = adiv(x, _SEC_SIZE) - grid.secX
+	var tsy = adiv(y, _SEC_SIZE) - grid.secY
+	var (sw, sh) = |grid.sectors|
+	if tsx < 0 || tsy < 0 || tsx >= sw || tsy >= sh then
+		-- TODO: decide how we want "extension" to go
+		return
+	end
+	var sector = grid.sectors[tsx, tsy]
+	if sector is null then
+		var _data = new 2d(_SEC_SIZE, _SEC_SIZE)[~T?]
+		sector = new Sector{ data = _data }
+		grid.sectors[tsx, tsy] = sector
+	end
+	sector.data[amod(x, _SEC_SIZE), amod(y, _SEC_SIZE)] = tile
+end
+
+fn delete(EndlessGrid[T] grid, Int x, Int y)
+	var tsx = adiv(x, _SEC_SIZE) - grid.secX
+	var tsy = adiv(y, _SEC_SIZE) - grid.secY
+	var (sw, sh) = |grid.sectors|
+	if tsx < 0 || tsy < 0 || tsx >= sw || tsy >= sh then
+		return
+	end
+	var sector = grid.sectors[tsx, tsy]
+	if sector is null then return end
+	sector.data[amod(x, _SEC_SIZE), amod(y, _SEC_SIZE)] = null
+	-- TODO: add emptiness check to delete sectoors
+end
+
+

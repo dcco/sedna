@@ -10,6 +10,7 @@ open Dusk_type
 type const =
 	IConst of Int64.t * bool * bit_width
 	| FConst of float
+	| F64Const of float
 	| SConst of string
 	| BConst of bool
 	| NullConst
@@ -44,7 +45,7 @@ type ('m, 'ann) exp =
 		(* - arity, dynamic dimensions, initializer *)
 	| FormatArrayExp of int * ('m, 'ann) exp list * ('m, 'ann) exp * 'ann
 	| ZeroArrayExp of int * ('m, 'ann) exp list * 'm raw_type * 'ann
-	| NewStructExp of 'm * ('m, 'ann) field_init * 'ann
+	| NewStructExp of 'm * ('m raw_type list) option * ('m, 'ann) field_init * 'ann
 		(* selectors *)
 	| IsNullExp of ('m, 'ann) exp * bool * 'ann
 		(* function call *)
@@ -66,7 +67,7 @@ type ('m, 'ann) stmt =
 	| PatStmt of pat * ('m, 'ann) exp * 'ann
 	| IfStmt of ('m, 'ann) exp * ('m, 'ann) stmt list * ('m, 'ann) stmt list * 'ann
 	| WhileStmt of ('m, 'ann) exp * ('m, 'ann) stmt list * 'ann
-	| ForStmt of string * range_type * ('m, 'ann) exp * ('m, 'ann) stmt list * 'ann
+	| ForStmt of string * ('m, 'ann) exp option * range_type * ('m, 'ann) exp * ('m, 'ann) stmt list * 'ann
 	| MatchStmt of ('m, 'ann) exp * ('m, 'ann) m_case list * 'ann
 	| GCCollectStmt of 'ann
 and ('m, 'ann) m_case =
@@ -95,7 +96,7 @@ let ann_exp e = match e with
 	| DataArrayExp(_, _, _, _, a) -> a
 	| FormatArrayExp(_, _, _, a) -> a
 	| ZeroArrayExp(_, _, _, a) -> a
-	| NewStructExp(_, _, a) -> a
+	| NewStructExp(_, _, _, a) -> a
 	| IsNullExp(_, _, a) -> a
 	| AppExp(_, _, a) -> a
 
@@ -106,7 +107,7 @@ let ann_stmt s = match s with
 	| PatStmt(_, _, a) -> a
 	| IfStmt(_, _, _, a) -> a
 	| WhileStmt(_, _, a) -> a
-	| ForStmt(_, _, _, _, a) -> a
+	| ForStmt(_, _, _, _, _, a) -> a
 	| MatchStmt(_, _, a) -> a
 	| GCCollectStmt a -> a
 

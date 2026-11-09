@@ -1,0 +1,61 @@
+
+enum LayoutDir = HorizLD | VertLD
+
+	-- this should be turned into a "union" type once i implement them
+struct Layout[T]{
+	Bool backFlag,
+	LayoutDir dir,
+	1d[Elem[T]] elemList,
+	1d[Layout[T]] childList,
+	Int spacing,
+	Int padding,
+	(Int, Int) minSize
+}
+
+fn horizElems(1d[Elem[T]] elemList, Int spacing) Layout[T]
+	return new Layout{
+		backFlag = false,
+		dir = HorizLD,
+		elemList = elemList,
+		childList = new 1d[~Layout[T]],
+		spacing = spacing,
+		padding = 0,
+		minSize = (0, 0)
+	}
+end
+
+fn horizGroup(1d[Layout[T]] childList, Int spacing) Layout[T]
+	return new Layout{
+		backFlag = false,
+		dir = HorizLD,
+		elemList = new 1d[~Elem[T]],
+		childList = childList,
+		spacing = spacing,
+		padding = 0,
+		minSize = (0, 0)
+	}
+end
+
+fn vertElems(1d[Elem[T]] elemList, Int spacing) Layout[T]
+	return new Layout{
+		backFlag = false,
+		dir = VertLD,
+		elemList = elemList,
+		childList = new 1d[~Layout[T]],
+		spacing = spacing,
+		padding = 0,
+		minSize = (0, 0)
+	}
+end
+
+fn vertGroup(1d[Layout[T]] childList, Int spacing) Layout[T]
+	return new Layout{
+		backFlag = false,
+		dir = VertLD,
+		elemList = new 1d[~Elem[T]],
+		childList = childList,
+		spacing = spacing,
+		padding = 0,
+		minSize = (0, 0)
+	}
+end

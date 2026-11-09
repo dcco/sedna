@@ -60,6 +60,7 @@ let anyIntCoreList intTy = [
 	("bitAnd", BinaryASMSym "bit_and", [intTy; intTy], intTy);
 	("bitOr", BinaryASMSym "bit_or", [intTy; intTy], intTy);
 	("bitXor", BinaryASMSym "bit_xor", [intTy; intTy], intTy);
+	("bitShiftLeft", BinaryASMSym "bit_shl", [intTy; intTy], intTy);
 
 	("toRawOffset", UnaryASMSym "xtoPtr", [intTy], CPtrTy u8Ty);
 ]
@@ -73,16 +74,20 @@ let signIntCoreList intTy = [
 	("geq", BinaryASMSym "igeq", [intTy; intTy], boolTy);
 	("gt", BinaryASMSym "igt", [intTy; intTy], boolTy);
 
+	("bitShiftRight", BinaryASMSym "bit_ashr", [intTy; intTy], intTy);
+
 	("toFloat", UnaryASMSym "itof", [intTy], floatTy);
 ]
 
 let unsignIntCoreList intTy = [
 	("div", BinaryASMSym "udiv", [intTy; intTy], intTy);
 	("mod", BinaryASMSym "umod", [intTy; intTy], intTy);
-	("leq", BinaryASMSym "uileq", [intTy; intTy], boolTy);
+	("leq", BinaryASMSym "uleq", [intTy; intTy], boolTy);
 	("lt", BinaryASMSym "ult", [intTy; intTy], boolTy);
 	("geq", BinaryASMSym "ugeq", [intTy; intTy], boolTy);
 	("gt", BinaryASMSym "ugt", [intTy; intTy], boolTy);
+
+	("bitShiftRight", BinaryASMSym "bit_lshr", [intTy; intTy], intTy);
 
 	("toFloat", UnaryASMSym "utof", [intTy], floatTy);
 ]
@@ -200,16 +205,22 @@ let builtinList =
 
 		(* float casting ops *)
 	("toInt", UnaryASMSym "ftoi", [floatTy], intTy);
+	("toInt", UnaryASMSym "f64toi", [f64Ty], intTy);
 
 		(* boolean ops *)
 	("not", UnaryASMSym "bnot", [boolTy], boolTy);
 	("and", BinaryASMSym "band", [boolTy; boolTy], boolTy);
 	("or", BinaryASMSym "bor", [boolTy; boolTy], boolTy);
+	("eq", BinaryASMSym "bxor", [boolTy; boolTy], boolTy);
+
+		(* reserved ops *)
+	("update", ExternalSym, [BotTy], unitTy);
 
 		(* string ops *)
 	("lookup", ExternalSym, [stringTy; intTy], u8Ty);
 	("add", ExternalSym, [stringTy; stringTy], stringTy);
 	("toString", ExternalSym, [intTy], stringTy);
+	("toString", ExternalSym, [u32Ty], stringTy);
 	("toString", ExternalSym, [floatTy], stringTy);
 	("measure", ExternalSym, [stringTy], intTy);
 	("eq", ExternalSym, [stringTy; stringTy], boolTy);
@@ -227,9 +238,6 @@ let builtinList =
 	("sin", ExternalSym, [floatTy], floatTy);
 	("cos", ExternalSym, [floatTy], floatTy);
 	("toRadians", ExternalSym, [intTy], floatTy);
-
-	("color", ExternalSym, [u8Ty; u8Ty; u8Ty], u32Ty);
-	("rgb", ExternalSym, [u32Ty], u32Ty);
 
 	("cLoad", InternalSym "cLoad", [stringTy], stringTy);
 
@@ -255,10 +263,15 @@ let builtinList =
 	("cBox", InternalSym "cBox", [varTy "A"], CPtrTy (varTy "A"));
 	("cRead", InternalSym "cRead", [CPtrTy (varTy "A")], varTy "A");
 	("cAlloc", ExternalSym, [TValTy (varTy "A"); intTy], CPtrTy (varTy "A"));
+	("lookup", InternalSym "cLookup", [CPtrTy (varTy "A"); intTy], varTy "A");
 
+	("coerce", InternalSym "coerce", [TValTy (varTy "A"); CPtrTy (varTy "B")], CPtrTy (varTy "A"));
 	("toCPtr", ExternalSym, [ArrayTy(1, varTy "A")], CPtrTy (varTy "A"));
 	("toRawPtr", ExternalSym, [ArrayTy(1, varTy "A")], CPtrTy u8Ty);
-	("toRawPtr", UnaryASMSym "nop", [CPtrTy (varTy "A")], CPtrTy u8Ty)
+
+		(* amorphous pointer functions *)
+	("fromAnonPtr", InternalSym "coerce", [TValTy (varTy "A"); XPtrTy], varTy "A");
+	("toAnonPtr", UnaryASMSym "nop", [varTy "A"], XPtrTy)
 ]
 
 let prngTy = primTy "PRNG"

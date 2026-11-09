@@ -2,10 +2,12 @@
 module Material
 	references Sys.Os
 	references OpenGL.Main
+	references Commons.Core
 	type Vertex
 	type Mesh
 	type TexArray
 	type TexImage
+	type Sprite
 end
 
 module Shader
@@ -17,6 +19,7 @@ module Shader
 end
 
 module RenderData
+	references Sys.Os
 	references OpenGL.Main
 	references Sulfur modules Material
 	type RenderData
@@ -26,4 +29,10 @@ module Main
 	references OpenGL.Main
 	references Sulfur modules Material, Shader, RenderData
 	type Sulfur
+end
+
+module Input
+	references Sys.Os
+	references GLFW.Main
+	type Input
 end

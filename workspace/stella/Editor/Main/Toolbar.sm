@@ -1,0 +1,123 @@
+
+	(* special elements: *)
+
+	(* - tile selection display *)
+
+fn drawSel(EState cont, ElemState state)
+	var tset = lookupSprite(Tset)
+	if tset is null then return end
+	drawSprite(0, 0, tset, cont.selTT.dispId, false)
+end
+
+fn newTileSel() Elem[EState]
+	return new Elem{
+		size = (_TPX, _TPX),
+		params = new 1d[~XPtr],
+		click = nopClick,
+		draw = drawSel
+	}
+end
+
+	(* - tile palette *)
+
+fn clickSel(EState cont, ElemState state, Int x, Int y)
+	var tx = pixelTile(x)
+	var ty = pixelTile(y)
+	var tw = pixelTile(state.width)
+	var ix = tx + (ty * tw)
+	if ix < |~TType| - 1 then
+		cont.selTT = TType(ix + 1)
+	end
+end
+
+fn drawPal(EState cont, ElemState state)
+	-- draw backing
+	var tw = pixelTile(state.width)
+	var th = pixelTile(state.height)
+	drawBox(_COL_STEEL_DOWN, 0, 0, state.width, state.height)
+	-- draw tiles
+	var tset = lookupSprite(Tset)
+	if tset is null then return end
+	for i < tw, j < th do
+		var ix = i + (j * tw)
+		if ix < |~TType| - 1 then
+			var tt = TType(ix + 1)
+			drawSprite(tilePixel(i), tilePixel(j), tset, tt.dispId, false)
+		end
+	end
+end
+
+fn newTilePal(Int tw, Int th) Elem[EState]
+	return new Elem{
+		size = (tilePixel(tw), tilePixel(th)),
+		params = new 1d[~XPtr],
+		click = clickSel,
+		draw = drawPal
+	}
+end
+
+	(* special [mode select] image button *)
+
+fn clickSetMode(EState cont, ElemState state, Int x, Int y)
+	var ref = fromAnonPtr(~ToolModeRef, state.params[1])
+	cont.mode = ref.mode
+end
+
+fn drawImageButton(EState cont, ElemState state)
+	var modeRef = fromAnonPtr(~ToolModeRef, state.params[1])
+	var subFrame = 0
+	if modeRef.mode.i = cont.mode.i then subFrame = 1 end
+	var sRef = fromAnonPtr(~SpriteRef, state.params[0])
+	var sprite = GS.iMap.spriteStore[sRef.sDef.i]
+	if sprite is null then return end
+	var frame = sRef.frame
+	drawSprite(0, 0, sprite, frame + subFrame, false)
+end
+
+fn newImageButton(SpriteDef sDef, Int frame, ToolMode tm, Int w, Int h) Elem[EState]
+	var sRef = new SpriteRef{
+		sDef = sDef,
+		frame = frame
+	}
+	var modeRef = new ToolModeRef{ mode = tm }
+	return new Elem{
+		size = (w, h),
+		params = new 1d[toAnonPtr(sRef), toAnonPtr(modeRef)],
+		click = clickSetMode,
+		draw = drawImageButton
+	}
+end
+
+	(* - map *)
+(*
+fn drawMapPane(EState cont, ElemState state)
+	
+end
+
+fn newMapPane(Int w, Int h) Elem[EState]
+	return new Elem{
+		size = (w, h),
+		params = new 1d[~XPtr],
+		click = nopClick,
+		draw = drawMapPane
+	}
+end*)
+
+	(* tool bar *)
+
+fn toolbar(Int canvasWidth) Layout[EState]
+	var toolsetPane = vertElems(new 1d[
+		newImageButton(Toolset, 0, StartTM, _TPX, _TPX),
+		newImageButton(Toolset, 2, PencilTM, _TPX, _TPX),
+		newImageButton(Toolset, 4, FillTM, _TPX, _TPX)
+	], 2)
+	var tilesetPane = vertElems(new 1d[
+		newTilePal(8, 4),
+		newTileSel()
+	], 4)
+	var layout = horizGroup(new 1d[toolsetPane, tilesetPane], 6)
+	layout.backFlag = true
+	layout.padding = 8
+	layout.minSize = (canvasWidth, 85)
+	return layout
+end

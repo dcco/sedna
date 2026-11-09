@@ -22,8 +22,8 @@ type gen_exp =
 	| EnumRawExpC of gen_exp
 	| TupleExpC of int * g_type * gen_exp list
 	| MemoryFieldExpC of gen_rw * gen_exp * int option
+	| RawIndexExpC of gen_rw * gen_exp * gen_exp
 		(* array operations *)
-	| ConstArrayExpC of int list * gen_exp list * g_type
 	| NewArrayExpC of gen_exp list * gen_exp list * g_type
 	| ArrayIndexExpC of gen_rw * gen_exp * gen_index
 	| ArrayLengthExpC of gen_exp
@@ -35,6 +35,10 @@ type gen_exp =
 	| SizeExpC of g_type
 		(* garbage collection *)
 	| GCNewRootExpC of gen_exp
+	| GCReplaceRootExpC of gen_exp * gen_exp
+		(* special constants *)
+	| ConstArrayExpC of int list * gen_exp list * g_type
+	| ConstStructExpC of gen_exp list * g_type
 and gen_rw = RC of int option * g_type | WC of gen_exp
 and gen_index =
 	RawIndexC of gen_exp
@@ -75,6 +79,7 @@ let rec collect_thru_exp (f: gen_exp -> 'a list) (e: gen_exp): 'a list = match e
 	| EnumRawExpC e' -> collect_thru_exp f e'
 	| TupleExpC(_, _, el) -> (f e) @ (List.concat (List.map (collect_thru_exp f) el))
 	| MemoryFieldExpC(rw, e', _) -> (f e) @ (collect_thru_rw f rw) @ (collect_thru_exp f e')
+	| RawIndexExpC(rw, ea, ei) -> (f e) @ (collect_thru_rw f rw) @ (collect_thru_exp f ea) @ (collect_thru_exp f ei) 
 	| NewArrayExpC(dim_l, el, _) ->
 		(List.concat (List.map (collect_thru_exp f) dim_l)) @
 		(List.concat (List.map (collect_thru_exp f) el))
@@ -87,7 +92,8 @@ let rec collect_thru_exp (f: gen_exp -> 'a list) (e: gen_exp): 'a list = match e
 	| ArrayAddExpC(ea, ev) -> (collect_thru_exp f ea) @ (collect_thru_exp f ev)
 	| NewStructExpC(_, el) -> List.concat (List.map (collect_thru_exp f) el)
 	| GCNewRootExpC e' -> collect_thru_exp f e'
-	| ConstExpC _ | VarExpC _ | EnumExpC _ | ConstArrayExpC _ | SizeExpC _ -> f e
+	| GCReplaceRootExpC(e1, e2) -> (collect_thru_exp f e1) @ (collect_thru_exp f e2)
+	| ConstExpC _ | VarExpC _ | EnumExpC _ | ConstArrayExpC _ | SizeExpC _ | ConstStructExpC _ -> f e
 and collect_thru_stmt (f: gen_exp -> 'a list) (s: gen_stmt): 'a list = match s with
 	EvalStmtC e -> collect_thru_exp f e
 	| AssignStmtC(_, e) -> collect_thru_exp f e
@@ -115,6 +121,7 @@ let collect_box_body: gen_stmt list -> (int * box_type) list = collect_thru_body
 	| CallExpC(iOpt, _, _, tau_r) -> (match iOpt with None -> [] | Some i -> [(i, VBoxTy tau_r)])
 	| TupleExpC(i, tau, _) -> [(i, VBoxTy tau)]
 	| MemoryFieldExpC(RC (Some i, tau_b), _, _) -> [(i, VBoxTy tau_b)]
+	| RawIndexExpC(RC (Some i, tau_b), _, _) -> [(i, VBoxTy tau_b)]
 	| ArrayIndexExpC(RC (Some i, tau_b), _, _) -> [(i, VBoxTy tau_b)]
 	| _ -> []
 )

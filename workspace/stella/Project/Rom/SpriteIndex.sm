@@ -1,0 +1,16 @@
+
+enum SheetDef attrs{ String name } =
+	TextSh{ "text"}
+	| TsetSh{ "tset" }
+	| MainSh{ "x1" }
+
+enum SpriteDef attrs{ SheetDef sheet, (Int, Int) tPos, (Int, Int) tSize, Int span } =
+	TextSp{ TextSh, (0, 0), (1, 1), 13 }
+	| Tset{ TsetSh, (0, 0), (1, 1), 20 }
+	| Toolset{ TsetSh, (0, 20), (1, 1), 20 }
+	| MaySp{ MainSh, (0, 0), (2, 2), 20 }
+
+struct SpriteRef{
+	SpriteDef sDef,
+	Int frame
+}

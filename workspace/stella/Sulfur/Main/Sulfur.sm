@@ -16,10 +16,22 @@ struct Sulfur{
 	Int height,
 	1d[Float] pMat,
 	RenderData frontBuffer,
-	Shader shaderMain,
 	Mesh defQuad,
+	Shader? shaderMain,
 	TexArray? texArr
 }
+
+fn nullSulfur() Sulfur
+	return new Sulfur{
+		width = 0,
+		height = 0,
+		pMat = new 1d[~Float],
+		frontBuffer = newRenderData(),
+		defQuad = nullMesh(),
+		shaderMain = null,
+		texArr = null
+	}
+end
 
 fn initSulfur(Int w, Int h) Sulfur
 	-- simple open gl defaults
@@ -54,25 +66,42 @@ fn initSulfur(Int w, Int h) Sulfur
 		height = h,
 		pMat = orthoMat(0.0, toFloat(w), toFloat(h), 0.0, -1.0, 1.0),
 		frontBuffer = newRenderData(),
-		shaderMain = shaderMain,
 		defQuad = defQuad,
+		shaderMain = shaderMain,
 		texArr = null
 	}
 
 	return self
 end
 
+fn clear(Sulfur sulfur, Bool alphaFlag)
+	glBindFramebuffer(_GL_FRAMEBUFFER, _0)
+	glViewport(0, 0, sulfur.width, sulfur.height)
+	if alphaFlag then glClearColor(0.1, 0.15, 0.15, 1.0)
+	else glClearColor(0.0, 0.0, 0.0, 0.0)
+	end
+	glClear(_GL_COLOR_BUFFER_BIT | _GL_DEPTH_BUFFER_BIT)
+end
+
 fn render(Sulfur sulfur)
 	var texArr = sulfur.texArr
 	if texArr is null then return end
+	var shader = sulfur.shaderMain
+	if shader is null then return end
 
-	-- clear main frame buffer
-	glBindFramebuffer(_GL_FRAMEBUFFER, _0)
-	glViewport(0, 0, sulfur.width, sulfur.height)
-	glClear(_GL_COLOR_BUFFER_BIT | _GL_DEPTH_BUFFER_BIT)
-	glUseProgram(sulfur.shaderMain.prog)
-	glUniformMatrix4fv(sulfur.shaderMain.uPers, 1, _0b, toCPtr(sulfur.pMat))
-
-	-- 
-	sulfur.shaderMain.drawData(sulfur.defQuad, texArr, sulfur.frontBuffer.data, sulfur.frontBuffer.total)
+	glUseProgram(shader.prog)
+	glUniformMatrix4fv(shader.uPers, 1, _0b, toCPtr(sulfur.pMat))
+	shader.drawData(sulfur.defQuad, texArr, sulfur.frontBuffer.data, sulfur.frontBuffer.total)
 end
+
+fn renderExt(Sulfur sulfur, TexArray arr, RenderData rd)
+	var texArr = sulfur.texArr
+	if texArr is null then return end
+	var shader = sulfur.shaderMain
+	if shader is null then return end
+
+	glUseProgram(shader.prog)
+	glUniformMatrix4fv(shader.uPers, 1, _0b, toCPtr(sulfur.pMat))
+	shader.drawData(sulfur.defQuad, arr, rd.data, rd.total)
+end
+

@@ -1,0 +1,26 @@
+
+fn adiv(Int x, Int y) Int
+	if x < 0 then return -(-(x + 1) / y) - 1 end
+	return x / y
+end
+
+fn amod(Int x, Int y) Int
+	if x < 0 then return y + ((x + 1) % y) - 1 end
+	return x % y
+end
+
+fn min(Int x, Int y) Int
+	if x < y then return x else return y end
+end
+
+fn max(Int x, Int y) Int
+	if x > y then return x else return y end
+end
+
+fn nextPow2(Int n) Int
+	var sz = 2
+	while sz < n do
+		sz = sz * 2
+	end
+	return sz
+end

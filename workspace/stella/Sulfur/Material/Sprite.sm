@@ -1,0 +1,52 @@
+
+struct Sprite{
+	TexImage image,
+	Int tw,
+	Int th,
+	Float fx,
+	Float fy,
+	Float fw,
+	Float fh,
+	Int spanWidth,
+	Int offX,
+	Int offY,
+	Int offWidth
+}
+
+fn _readOffset(TexImage image, Int px, Int py, Int pw, Int ph) (Bool, Int, Int)
+	for i < pw, j < ph do
+		if checkPixel(image.data[px + i, py + j], _127b, _255b, _255b) then
+			return (true, i, j)
+		end
+	end
+	return (false, 0, 0)
+end
+
+fn newSprite(TexImage image, Int px, Int py, Int pw, Int ph, Int spanWidth) Sprite
+	var sprite = new Sprite{
+		image = image,
+		tw = pw,
+		th = ph,
+		fx = px /. image.width,
+		fy = py /. image.height,
+		fw = pw /. image.width,
+		fh = ph /. image.height,
+		spanWidth = spanWidth,
+		offX = 0,
+		offY = 0,
+		offWidth = pw
+	}
+	if !checkPixel(image.data[px, py], _255b, _127b, _127b) then return sprite end
+	var (oFlag, offX, offY) = image._readOffset(px, py, pw, ph)
+	if !oFlag then return sprite end
+	sprite.offX = offX
+	sprite.offY = offY
+	from i = offX + 1 while i < pw do
+		if !checkPixel(image.data[px + i, py + offY], _127b, _255b, _255b) then
+			sprite.offWidth = i - offX
+			return sprite
+		end
+	end
+	sprite.offWidth = pw - offX
+	return sprite
+end

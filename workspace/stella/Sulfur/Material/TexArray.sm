@@ -6,6 +6,15 @@ struct TexArray{
 	Int height
 }
 
+fn nullTexArray() TexArray
+	return new TexArray{
+		id = _0,
+		layerTotal = 0,
+		width = 0,
+		height = 0
+	}
+end
+
 fn resizeTexArray(TexArray arr, Int total, Int w, Int h)
 	-- initialize texture array
 	glBindTexture(_GL_TEXTURE_2D_ARRAY, arr.id)

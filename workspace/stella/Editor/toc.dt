@@ -1,0 +1,27 @@
+
+module GUI
+	references Sys.Os
+	references GLFW.Main as GLFW
+	references Sulfur modules Input
+	references Project modules Globals, Rom
+
+	type ElemState
+	type Elem
+	type Layout
+	type Pane
+end
+
+module Main
+	references Sys.Os
+	references GLFW.Main as GLFW
+	references Sulfur modules Main, RenderData, Input
+	references Project modules Globals, Rom
+
+	references Commons modules Core, Project
+	references Physics modules Room
+	references Editor modules GUI
+
+	type EState
+	type Toolbar
+	type Editor
+end

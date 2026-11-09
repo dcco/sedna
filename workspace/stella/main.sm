@@ -1,13 +1,24 @@
 references Sys modules Os
 references GLFW.Main
 references OpenGL.Main as GL
+
 references Sulfur.Main as Sulfur
-references Sulfur modules Material, RenderData
-references Rom.Data
+references Sulfur modules Material, RenderData, Input
+references Project modules Globals, Rom
+references Physics.Room
+references Editor.Main as Editor
+references Game.Game
+
+const _FPS = _60l
+const _DELAY = _1000l / _FPS
+
+const _ZOOM = 3
+const _WW = 1024
+const _WH = 800
+const _SW = (_WW / _ZOOM) + 1
+const _SH = (_WH / _ZOOM) + 1
 
 lin main()
-	print("HELLO WORLD!")
-
 	-- initialize glfw	
 	if glfwInit() = 0 then
 		panic("Could not initialize GLFW.")
@@ -22,7 +33,7 @@ lin main()
 	glfwWindowHint(_GLFW_DEPTH_BITS, 24)
 	glfwWindowHint(_GLFW_DOUBLEBUFFER, _GLFW_TRUE)
 
-	var window = glfwCreateWindow(1024, 800, cString("Sedna"), null, null)
+	var window = glfwCreateWindow(_WW, _WH, cString("Sedna"), null, null)
 	if window is null then
 		glfwTerminate()
 		panic("Could not create GLFW window.")
@@ -43,23 +54,75 @@ lin main()
 	else panic("Could not create OpenGL context.")
 	end
 
-	-- initialize shaders, etc
-	var sulfur = initSulfur(1024, 800)
-	var texArr = newTexArray(8, 1024, 1024)
-	sulfur.texArr = texArr
+	-- initialize globals (cannot be done before opengl is initialized)
+	var sulfur = initSulfur(_WW, _WH)
+	initGlobals(window, sulfur)
 
-	-- load images
-	var iMap = newImageMap(texArr, 100, 1024, 1024)
-	var layer0 = iMap.load("sori")
+	-- create "capture card" (does pixel-perfect zoom)
+	var cc = newCaptureCard(_WW, _WH, _ZOOM)
+
+	-- load editor state
+	var room = newRoom()
+	var cam = newCamera(_SW, _SH, _ZOOM)
+	var editor = newEditor(cam, room)
+	var game = newGame(cam, room)
+	var modeFlag = false
+
+	-- timer logic
+	var prevTime = time()
+	var remTime = _0l
 
 	-- main loop
 	while glfwWindowShouldClose(window) = 0 do
+		-- timer logic
+		var curTime = time()
+		remTime = remTime + (curTime - prevTime)
+		prevTime = curTime
+		-- update
+		while remTime >= _DELAY do
+			remTime = remTime - _DELAY
+			-- if too much delay, give up to avoid stutter
+			if remTime >= _1000l then remTime = _0l end
+			-- update all
+			GS.input.update()
+			if !modeFlag then
+				editor.update()
+			else
+				game.input()
+				game.update()
+			end
+			-- mode switch
+			if GS.input.keyPress[_GLFW_KEY_0] then
+				modeFlag = !modeFlag
+				-- initialize game
+				if modeFlag then
+					game.reset()
+				end
+			end
+		end
+		-- main rendering
+		sulfur.clear(false)
 		sulfur.frontBuffer.clear()
-		sulfur.frontBuffer.addBox(0xFFE0E0F0, 8, 8, 16, 32)
-		sulfur.frontBuffer.addImage(layer0, 20, 50)
+		if !modeFlag then
+			pushOffset(-cam.x, -cam.y)
+				editor.drawBack()
+				room.draw(cam)
+			popOffset()
+			editor.drawFore()
+		else
+			pushOffset(-cam.x, -cam.y)
+				game.draw()
+			popOffset()
+		end
 		sulfur.render()
+		-- capture card
+		cc.copy()
+		sulfur.clear(true)
+		sulfur.renderExt(cc.arr, cc.rd)
+		-- final draw
 		glfwPollEvents()
 		glfwSwapBuffers(window)
+		gc_collect
 	end
 
 	-- cleanup

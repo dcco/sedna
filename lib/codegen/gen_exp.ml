@@ -12,14 +12,26 @@ open Gen_type
 
 	(* string literal generation *)
 
+let const_gc_perm = const_int i8Type 3
+
+let genGCWrap (v: llvalue): llvalue =
+	let gcVal = const_struct context
+		[| const_null _ptrType; const_null _ptrType; const_gc_perm; const_int i8Type 0 |]
+	in const_struct context [| gcVal; v |]
+
 let genStrLit (cont: llvm_cont) (env: dusk_env) (s: string): dusk_val =
 		(* create (pointer to) string constant data *)
 	let i = genRef cont in
 	let strVal = const_string context (s ^ "\x00") in
 	let structVal = const_struct context
 		[| const_int iType (String.length s); strVal |] in
-	let structRef = define_global ("_sz" ^ (string_of_int i)) structVal cont.llmod in
-	Hashtbl.add env (DStrLit s) (DVal (structRef, LitVT)); (structRef, HeapPtrDT dummyInnerType)
+		(* - wrap in gc object header *)
+	let structRef = define_global ("_sz" ^ (string_of_int i)) (genGCWrap structVal) cont.llmod in
+	set_global_constant true structRef;
+	let objType = structType [gcObjType; strType (String.length s + 1)] in
+		(* - read from gc header *)
+	let strRef = const_gep objType structRef [|const_int iType 0; const_int iType 1|] in
+	Hashtbl.add env (DStrLit s) (DVal (strRef, LitVT)); (strRef, HeapPtrDT dummyInnerType)
 
 	(* expression generation *)
 
@@ -32,6 +44,7 @@ let genConst (cont: llvm_cont) (env: dusk_env) (c: const): dusk_val = match c wi
 			| S64 -> i64Type
 		in (const_of_int64 t i (not u), PrimDT t)
 	| FConst f -> (const_float fType f, PrimDT fType)
+	| F64Const f -> (const_float f64Type f, PrimDT f64Type)
 	| BConst b -> (const_int bType (if b then 1 else 0), PrimDT bType)
 	| SConst s -> (match Hashtbl.find_opt env (DStrLit s) with
 		Some (DVal(v, LitVT)) -> (v, HeapPtrDT dummyInnerType)
@@ -190,6 +203,12 @@ let genArrayIndexGEP (debug: string) (cont: llvm_cont) ((v, t): dusk_val) (vi: l
 
 let genGCType (cont: llvm_cont) (f: string) (offsetList: gc_child list): llvalue =
 		(* obtain offsets of each pointer value *)
+	(*print_string ("TYPE: " ^ f ^ "{ " ^
+		(String.concat ", " (List.map (fun o -> match o with
+			DirectChild -> "0"
+			| OffsetChild i -> string_of_int i
+		) offsetList)) ^ " }\n"
+	);*)
 	let ol = List.map (fun o -> match o with
 		DirectChild -> const_int iType 0
 		| OffsetChild i -> const_int iType i
@@ -280,6 +299,7 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 			| "itoi64_u" -> (build_sext v i64Type "_castT" bx, i64Type)
 				(* float casts *)
 			| "ftoi" -> (build_fptosi v iType "_castT" bx, iType)
+			| "f64toi" -> (build_fptosi v iType "_castT" bx, iType)
 			| "itof" -> (build_sitofp v fType "_castT" bx, fType)
 			| "utof" -> (build_uitofp v fType "_castT" bx, fType)
 				(* misc casts *)
@@ -330,11 +350,15 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 				(* boolean ops *)
 			| "band" -> (build_and v1 v2 "_andT" bx, bType)
 			| "bor" -> (build_or v1 v2 "_orT" bx, bType)
+			| "bxor" -> (build_xor v1 v2 "_xorT" bx, bType)
 				(* enum/ptr ops *)
-			| "tag_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
+			| "tag_eq" -> (build_icmp Icmp.Eq v1 v2 "_caseT" bx, bType)
 			| "ptr_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
 			| "ptr_neq" -> (build_icmp Icmp.Ne v1 v2 "_isntT" bx, bType)
 				(* bitwise ops *)
+			| "bit_shl" -> (build_shl v1 v2 "_bitShlT" bx, tv)
+			| "bit_ashr" -> (build_ashr v1 v2 "_bitShrT" bx, tv)
+			| "bit_lshr" -> (build_lshr v1 v2 "_bitShrT" bx, tv)
 			| "bit_and" -> (build_and v1 v2 "_bitAndT" bx, tv)
 			| "bit_or" -> (build_or v1 v2 "_bitOrT" bx, tv)
 			| "bit_xor" -> (build_xor v1 v2 "_bitXorT" bx, tv)
@@ -390,6 +414,20 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 			| WC ev ->
 				let (vv, _) = genExp cont env ev in
 				genPtrStore "(Field Operator)" cont env vp_i vv; voidVal
+		)
+	| RawIndexExpC(rw, ea, ei) ->
+			(* calculate index *)
+		let va = genExp cont env ea in
+		let (vi, _) = genExp cont env ei in
+			(* calculate array index pointer *)
+		let vPtr = genArrayIndexGEP "(Array RW Index)" cont va vi in
+			(* read / write to index *)
+		(match rw with
+			RC(boxOpt, _) ->
+				genPtrLoad "_elemT" "(Array RW Index)" cont env vPtr boxOpt
+			| WC ev ->
+				let (vv, _) = genExp cont env ev in
+				genPtrStore "(Array RW Index)" cont env vPtr vv; (const_int iType 0, PrimDT voidType)
 		)
 	| NewArrayExpC(dim_l, el, tau) ->
 			(* calculate size + dimensions *)
@@ -476,7 +514,12 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 		let (v, t) = genExp cont env e in
 		let (new_root_fun, new_root_type) = !(cont.gc).gc_new_root in
 		ignore (build_call new_root_type new_root_fun (Array.of_list [v]) "" bx); (v, t)
-	| ConstArrayExpC _ ->
+	| GCReplaceRootExpC(e1, e2) ->
+		let (v1, _) = genExp cont env e1 in
+		let (v2, t2) = genExp cont env e2 in
+		let (repl_root_fun, repl_root_type) = !(cont.gc).gc_repl_root in
+		(build_call repl_root_type repl_root_fun (Array.of_list [v1; v2]) "" bx, t2) 
+	| ConstArrayExpC _ | ConstStructExpC _ ->
 		failwith "BUG: gen_exp.ml - Wrong generation function used for constant-only expression."
 
 	(* special expression generation that only gives constants *)
@@ -508,4 +551,16 @@ let rec genConstExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = (
 		)) in
 		let xVal = define_global "_arrC" sVal cont.llmod in
 		(xVal, gcArrValType tau_store)
+	| ConstStructExpC(el, tau) ->
+			(* determine type *)
+		let tau_store = toStoreType "(Constant Struct)" env tau in
+		let tau_v = storeToValType "(Constant Struct)" env tau_store in
+			(* define struct global *)
+		let res_l = List.map (genConstExp cont env) el in
+		let sVal = const_struct context (Array.of_list (List.map fst res_l)) in
+			(*
+				TODO: im not sure if this will work correctly if the tuple is a standalone somewhere
+			*)
+		(*let xVal = define_global "_structC" sVal cont.llmod in*)
+		(sVal, tau_v)
 	| _ -> failwith "BUG: gen_exp.ml - Non-constant initializer for global declaration encountered in generation phase."

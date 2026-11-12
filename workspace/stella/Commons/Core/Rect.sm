@@ -35,7 +35,7 @@ fn setRange(Rect box, Axis axis, (Int, Int) range) Rect
 	match axis case XA do
 		box.x = range.1
 		box.width = range.2 - range.1
-	case YA do
+	owise
 		box.y = range.1
 		box.height = range.2 - range.1
 	end
@@ -45,7 +45,7 @@ end
 fn rangeI(Rect box, Axis axis) (Int, Int)
 	match axis case XA do
 		return (box.x, box.x + box.width)
-	case YA do
+	owise
 		return (box.y, box.y + box.height)
 	end
 end

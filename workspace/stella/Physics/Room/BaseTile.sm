@@ -22,3 +22,17 @@ fn draw(BaseTile tile, Sprite tset, Int px, Int py)
 	drawSprite(px, py, tset, tile.fore.baseId + tile.rFrame, false)
 end
 
+fn ttLookup(Int canonId) TType
+	var l = 0
+	var r = |~TType|
+	while r > l + 1 do
+		var m = l + ((r - l) / 2)
+		var cId = toInt(TType(m).canonId)
+		if cId = canonId then return TType(m)
+		elsif cId < canonId then l = m + 1
+		else r = m end
+	end
+	if l < |~TType| then return TType(l) end
+	return NullTT
+end
+

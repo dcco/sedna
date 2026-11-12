@@ -1,0 +1,216 @@
+
+union JsonObj =
+	NULL
+	| INT{ Int _i }
+	| STRING{ String s }
+	| LIST{ 1d[JsonObj] l }
+	| DICT{ 1d[(String, JsonObj)] m }
+(*
+fn jNULL() JsonObj
+	return new NULL{}
+end*)
+
+fn jINT(Int i) JsonObj
+	return new INT{ _i = i }
+end
+
+fn jSTRING(String s) JsonObj
+	return new STRING{ s = s }
+end
+
+fn jLIST(1d[JsonObj] l) JsonObj
+	return new LIST{ l = l }
+end
+
+fn jDICT(1d[(String, JsonObj)] m) JsonObj
+	return new DICT{ m = m }
+end
+
+fn asINT(JsonObj j, String debug) Int
+	match j
+	case INT do return j._i
+	owise panic("JsonObj.sm - Received unexpected Json value when expecting INT. (" + debug + ")")
+	end
+end
+
+fn asSTRING(JsonObj j, String debug) String
+	match j
+	case STRING do return j.s
+	owise panic("JsonObj.sm - Received unexpected Json value when expecting STRING. (" + debug + ")")
+	end
+end
+
+fn asLIST(JsonObj j, String debug) 1d[JsonObj]
+	match j
+	case LIST do return j.l
+	owise panic("JsonObj.sm - Received unexpected Json value when expecting ARRAY. (" + debug + ")")
+	end
+end
+
+struct JDict{
+	1d[(String, JsonObj)] m
+}
+
+fn asDICT(JsonObj j, String debug) JDict
+	match j
+	case DICT do return new JDict{ m = j.m }
+	owise panic("JsonObj.sm - Received unexpected Json value when expecting MAP. (" + debug + ")")
+	end
+end
+
+fn lookup(JDict j, String _k) JsonObj
+	var m = j.m
+	for i < |m| do
+		var (k, v) = m[i]
+		if k = _k then return v end
+	end
+	panic("JsonObj.sm - Lookup of key " + _k + " failed.")
+end
+
+fn writeJson(FileWriter fc, JsonObj obj)
+	match obj
+	case NULL do
+		fc.writeString("null")
+	case INT do
+		fc.writeString(toString(obj._i))
+	case STRING do
+		fc.writeString("\"" + obj.s + "\"")
+	case LIST do
+		var l = obj.l
+		fc.writeString("[")
+		for i < |l| do
+			if i != 0 then fc.writeString(",") end
+			fc.writeJson(l[i])
+		end
+		fc.writeString("]")
+	case DICT do
+		var m = obj.m
+		fc.writeString("{")
+		for i < |m| do
+			if i != 0 then fc.writeString(",") end
+			var (k, v) = m[i]
+			fc.writeString("\"" + k + "\":")
+			fc.writeJson(v)
+		end
+		fc.writeString("}")
+	owise end
+end
+
+fn isWhitespace(U8 c) Bool
+	return (c >= _9b && c <= _13b || c = ' ')
+end
+
+fn _readJsonC(FileReader fc, U8 c, String debug)
+	while !fc.eof() do
+		var _c = fc.readByte()
+		if _c = c then return
+		elsif !isWhitespace(c) then
+			panic("JsonObj.sm - Invalid character " + toString(toInt(_c)) + " while reading " + debug + ".")
+		end
+	end
+	panic("JsonObj.sm - End of file while reading " + debug + ".")
+end
+
+fn _readJsonINT(FileReader fc, Bool negFlag, I64 i) Int
+	-- does not implement full decimals/exponents bc w/e
+	var done = false
+	while !fc.eof() && !done do
+		var c = fc.readByte()
+		if c >= '0' && c <= '9' then
+			i = (i * 10l) + toI64(c - '0')
+		else
+			fc.seek(-1)
+			done = true
+		end
+	end
+	if negFlag then i = -i end
+	return toInt(i)
+end
+
+fn _readJsonSTRING(FileReader fc) String
+	-- does not implement escape chars, may do so eventually
+	var cList = new 1d[~U8]
+	var done = false
+	while !fc.eof() && !done do
+		var c = fc.readByte()
+		if c = '\"' then
+			done = true
+		else
+			cList += c
+		end
+	end
+	if !done then
+		panic("JsonObj.sm - End of file while reading Json string.")
+	end
+	return toString(cList)
+end
+
+fn _readJsonLIST(FileReader fc, Fn(FileReader) JsonObj rec) 1d[JsonObj]
+	var oList = new 1d[~JsonObj]
+	var done = false
+	var commaWait = false
+	while !fc.eof() && !done do
+		var c = fc.readByte()
+		if !isWhitespace(c) then
+			if c = ']' then
+				done = true
+			elsif c = ',' || !commaWait then
+				if !commaWait then fc.seek(-1) end
+				oList += fc.rec()
+				commaWait = true
+			else
+				panic("JsonObj.sm - Invalid character " + toString(toInt(c)) + " while reading Json array.") 
+			end
+		end
+	end
+	if !done then
+		panic("JsonObj.sm - End of file while reading Json array.")
+	end
+	return oList
+end
+
+fn _readJsonDICT(FileReader fc, Fn(FileReader) JsonObj rec) 1d[(String, JsonObj)]
+	var kvList = new 1d[~(String, JsonObj)]
+	var done = false
+	var commaWait = false
+	while !fc.eof() && !done do
+		var c = fc.readByte()
+		if !isWhitespace(c) then
+			if c = '}' then
+				done = true
+			elsif c = ',' || !commaWait && c = '\"' then
+				if commaWait then fc._readJsonC('\"', "Json map (expected \")") end
+				var k = fc._readJsonSTRING()
+				fc._readJsonC(':', "Json map (expected :)")
+				var v = fc.rec()
+				kvList += (k, v)
+				commaWait = true
+			else
+				panic("JsonObj.sm - Invalid character " + toString(toInt(c)) + " while reading Json map.") 
+			end
+		end
+	end
+	return kvList
+end
+
+fn readJson(FileReader fc) JsonObj
+	while !fc.eof() do
+		var c = fc.readByte()
+		if isWhitespace(c) then
+			-- whitespace
+		elsif c = '{' then
+			return jDICT(fc._readJsonDICT(readJson))
+		elsif c = '[' then
+			return jLIST(fc._readJsonLIST(readJson))
+		elsif c = '\"' then
+			return jSTRING(fc._readJsonSTRING())
+		elsif c >= '0' && c <= '9' then
+			return jINT(fc._readJsonINT(false, toI64(c - '0')))
+		elsif c = '-' then
+			return jINT(fc._readJsonINT(true, 0l))
+		else
+			panic("JsonObj.sm - Invalid character " + toString(toInt(c)) + " while reading Json object.") 
+		end
+	end
+	panic("JsonObj.sm - End of file while reading Json object.")
+end

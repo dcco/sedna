@@ -80,6 +80,7 @@ fn initLayout(Layout[T] layout, Int _cx, Int _cy) 1d[Pane[T]]
 end
 
 fn updatePanes(1d[Pane[T]] paneList, T cont, Int mx, Int my) Bool
+	-- TODO: fix click-behind behaviorsd
 	-- click behavior
 	if !GS.input.mbPress[_GLFW_MOUSE_BUTTON_1] then return false end
 	for i < |paneList| do

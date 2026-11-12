@@ -130,6 +130,7 @@ rule token = parse
 	| "U64" { lexWrap lexbuf (T_INT(true, S64)) }
 
 	| "\"" { strlit (lexeme_start_p lexbuf) "" lexbuf }
+	| "\'" { charlit (lexeme_start_p lexbuf) lexbuf }
 	| (['A'-'Z']) as x { lexWrap lexbuf (VID (String.make 1 x)) }
 	| ("_"? ['a'-'z'] idChar*) as x { lexWrap lexbuf (ID x) }
 	| ("_" ['A'-'Z''_']['A'-'Z''_''0'-'9']*) as x { lexWrap lexbuf (CID x) }
@@ -200,6 +201,26 @@ and strlit p x = parse
 	| "\\\\" { strlit p (x ^ "\\") lexbuf }
 	| ("\\x" hexChar hexChar) as h { strlit p ((stringOfASCII (asciiHexLit h)) ^ x) lexbuf}
 	| _ as c { strlit p (x ^ (String.make 1 c)) lexbuf }
+and charlit p = parse
+	| "\r\n" | "\r" | "\n" { new_line lexbuf; token lexbuf }
+	| "\'" { (CHARLIT 0, p) }
+	| "\\0" { charlit_end p 0 lexbuf }
+	| "\\a" { charlit_end p 7 lexbuf }
+	| "\\b" { charlit_end p 8 lexbuf }
+	| "\\t" { charlit_end p 9 lexbuf }
+	| "\\n" { charlit_end p 10 lexbuf }
+	| "\\v" { charlit_end p 11 lexbuf }
+	| "\\f" { charlit_end p 12 lexbuf }
+	| "\\r" { charlit_end p 13 lexbuf }
+	| "\\\"" { charlit_end p 34 lexbuf }
+	| "\\'" { charlit_end p 39 lexbuf }
+	| "\\\\" { charlit_end p 92 lexbuf }
+	| ("\\x" hexChar hexChar) as h { charlit_end p (asciiHexLit h) lexbuf}
+	| _ as c { charlit_end p (Char.code c) lexbuf }
+and charlit_end p c = parse
+	| "\r\n" | "\r" | "\n" { new_line lexbuf; token lexbuf }
+	| "\'" { (CHARLIT c, p) }
+	| _ { charlit_end p c lexbuf }
 and comment i = parse
 	| "\r\n" | "\r" | "\n" { new_line lexbuf; comment i lexbuf }
 	| "(*" { comment (i + 1) lexbuf }

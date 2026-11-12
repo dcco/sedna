@@ -16,7 +16,7 @@ let const_gc_perm = const_int i8Type 3
 
 let genGCWrap (v: llvalue): llvalue =
 	let gcVal = const_struct context
-		[| const_null _ptrType; const_null _ptrType; const_gc_perm; const_int i8Type 0 |]
+		[| const_null _ptrType; const_null _ptrType; const_gc_perm; const_int i8Type 0; const_null _ptrType |]
 	in const_struct context [| gcVal; v |]
 
 let genStrLit (cont: llvm_cont) (env: dusk_env) (s: string): dusk_val =
@@ -63,15 +63,19 @@ let genConst (cont: llvm_cont) (env: dusk_env) (c: const): dusk_val = match c wi
 		### VARIABLE GENERATION ###
 	*)
 
-let genLoadVar (cont: llvm_cont) (env: dusk_env) (k: dusk_key) (debugName: string): dusk_val = match Hashtbl.find_opt env k with
+let genLoadVar (cont: llvm_cont) (env: dusk_env) (k: dusk_key) (ct: g_cast_type option) (debugName: string): dusk_val = match Hashtbl.find_opt env k with
 	(*Some (DFunVal (v, t)) -> (v, t)
 	| *)
 	Some (DVal (v, FunVT(t, tr))) -> (v, FunDT(t, tr))
 	| Some (DVal (v, FunPtrVT(t, tr))) ->
 		(build_load _ptrType v debugName cont.builder, FunDT(t, tr))
-	| Some (DVal (v, VarVT t)) ->
+	| Some (DVal (v, VarVT t)) -> (match ct with
+		None ->	(build_load (genType t) v debugName cont.builder, t)
+		| Some cti ->
+			let t' = genCastType "(Type Lookup Narrowing)" env cti in
+			(build_load (genType t') v debugName cont.builder, t')
+	)
 		(*print_endline ((string_of_llvalue v) ^ " :: " ^ (string_of_dtype t));*)
-		(build_load (genType t) v debugName cont.builder, t)
 	| Some _ -> failwith ("BUG: gen_exp.ml - Variable \"" ^ debugName ^ "\" resolved to non-value in generation phase.")
 	| None -> failwith ("BUG: gen_exp.ml - Unexpected variable \"" ^ debugName ^ "\" encountered in generation phase.")
 
@@ -118,6 +122,7 @@ let genPtrLoad (name: string) (debug: string) (cont: llvm_cont) (env: dusk_env)
 			let v_inner = build_load t_inner' v ("_inner_" ^ name) cont.builder in*)
 			genStoreBox debug cont env boxId v
 		| (StackPtrDT _, None) ->
+			print_string ((string_of_store_type t) ^ "\n");
 			failwith ("BUG: gen_exp.ml - Attempted to load from pointer that must be boxed without a generated box. " ^ debug)
 		| _ -> (v, t')
 	)
@@ -245,7 +250,7 @@ let genAlloc (cont: llvm_cont) (env: dusk_env) (tName: string) (tau_inner: inner
 		(* lookup type information global *)
 	let gc_layout_elem = (match Hashtbl.find_opt env (DTName tName) with
 		Some (DTDef (StructTD_C(_, tc))) -> tc
-		| _ -> failwith "BUG: gen_exp.ml - Bad type for struct initialization encountered in generation phase."
+		| _ -> failwith ("BUG: gen_exp.ml - Bad type for struct initialization " ^ tName ^ " encountered in generation phase.")
 	) in
 		(* heap allocate *)
 	let (alloc_fun, alloc_type) = !(cont.gc).gc_alloc in
@@ -277,7 +282,7 @@ let _revType (t: dusk_type): lltype = match t with
 
 let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx = cont.builder in match e with
 	ConstExpC c -> genConst cont env c
-	| VarExpC x -> genLoadVar cont env (DVar x) x 
+	| VarExpC(x, tn) -> genLoadVar cont env (DVar x) tn x
 	| UnaryExpC(xOp, e) ->
 		let (v, _tv) = genExp cont env e in
 		let tv = _revType _tv in
@@ -288,8 +293,8 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 			| "bnot" -> (build_not v "_notT" bx, bType)
 				(* integer downcasts *)
 			| "xtox8_d" -> (build_trunc v i8Type "_castT" bx, i8Type)
-			| "xtox16_d" -> (build_trunc v i8Type "_castT" bx, i16Type)
-			| "xtox32_d" -> (build_trunc v i8Type "_castT" bx, iType)
+			| "xtox16_d" -> (build_trunc v i16Type "_castT" bx, i16Type)
+			| "xtox32_d" -> (build_trunc v iType "_castT" bx, iType)
 				(* integer upcasts *)
 			| "utox16_u" -> (build_zext v i16Type "_castT" bx, i16Type)
 			| "utox32_u" -> (build_zext v iType "_castT" bx, iType)

@@ -26,7 +26,7 @@ let is_boxed_type (env: type_env) (tau: g_type): bool = match tau with
 	TupleTy _ -> true
 	| NamedTy(cx, _) -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
 		Some (_, TcTDef td) -> (match td with
-			UnionTD _ -> true
+			TupUnionTD _ -> true
 			| _ -> false
 		)
 		| _ -> failwith "BUG: tc_exp.ml - Invalid type encountered while checking boxed type status."
@@ -37,6 +37,7 @@ let is_heap_type (env: type_env) (tau: g_type): bool = match tau with
 	NamedTy(cx, _) -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
 		Some (_, TcTDef td) -> (match td with
 			StructTD _ -> true
+			| StrUnionTD _ -> true
 			| _ -> false
 		)
 		| _ -> failwith "BUG: tc_exp.ml - Invalid type encountered while checking heap type status."
@@ -69,13 +70,31 @@ let lookup_field_list (fl: (string * g_type) list) (x: string) (e: tc_err): (g_t
 	(* special type narrowing functions *)
 
 	(* TODO: add substitution for union case lookup *)
-let lookup_union_cases (env: type_env) (tau: g_type): (bool* canon_name * (canon_name union_case) list) option = match tau with
+(*let lookup_tup_union_cases (env: type_env) (tau: g_type): (bool * canon_name * (canon_name tup_union_case) list) option = match tau with
 	NamedTy(tx, _) -> (match Hashtbl.find_opt env.globalTIds (cr tx) with
-		Some (_, TcTDef (UnionTD ul)) -> Some (false, tx, ul)
+		Some (_, TcTDef (TupUnionTD ul)) -> Some (false, tx, ul)
 		| Some (_, TcTDef (EnumTD ecl)) -> Some (true, tx, List.map (fun (tx, tag, eb) -> (tx, tag, [], eb)) ecl)
 		| _ -> None
 	)
-	| _ -> None
+	| _ -> None*)
+
+let lookup_union_case (p: l_pos) (env: type_env) (tau: g_type) (tag: string): (canon_name any_union_case) tc_res = match tau with
+	NamedTy(tx, _) -> (match Hashtbl.find_opt env.globalTIds (cr tx) with
+		Some (_, TcTDef (StrUnionTD ucl)) -> (match List.find_opt (fun (x, _, _, _) -> x = tag) ucl with
+			Some (_, cx, fl, eb) -> Valid (StrUnionCase(cx, fl, eb))
+			| None -> Error (BadTag_Err(tau, tag, p))
+		)
+		| Some (_, TcTDef (TupUnionTD ucl)) -> (match List.find_opt (fun (x, _, _, _) -> x = tag) ucl with
+			Some (_, cx, tau_l, eb) -> Valid (TupUnionCase(cx, tau_l, eb))
+			| None -> Error (BadTag_Err(tau, tag, p))
+		)
+		| Some (_, TcTDef (EnumTD ecl)) -> (match List.find_opt (fun (x, _, _) -> x = tag) ecl with
+			Some (_, cx, eb) -> Valid (EmptyUnionCase(cx, eb))
+			| None -> Error (BadTag_Err(tau, tag, p))
+		)
+		| _ -> Error (NonUnion_Err(tau, p))
+	)
+	| _ -> Error (NonUnion_Err(tau, p))
 
 	(* guard / narrowing related functions *)
 
@@ -85,13 +104,26 @@ let guard_set_of_type (env: type_env) (tau: lhs_type): guard_set option = match 
 	| NullLT -> Some (null_guard_set true)
 	| _ -> None
 
-let narrow_type (env: type_env) (x: string) (tau: g_type): lhs_type = match try_narrow_guard_map env.guardMap x with
-	None -> LT tau
-	| Some true -> NullLT
-	| Some false -> (match tau with
-		NullableTy t -> LT t
-		| _ -> LT tau
+let narrow_type (env: type_env) (x: string) (tau: g_type): lhs_type * g_cast_type option = match try_narrow_guard_map env.guardMap x with
+	None -> (LT tau, None)
+	| Some "null" -> (NullLT, None)
+	| Some "valid" -> (match tau with
+		NullableTy t -> (LT t, None)
+		| _ -> (LT tau, None)
 	)
+	| Some ctor ->
+		let (tx, tau_l) = (match tau with
+			NamedTy(tx, tau_l) -> (tx, tau_l)
+			| _ -> failwith ("BUG: tc_exp.ml - Encountered guard narrowing for non-named type" ^ (string_of_type cr tau))
+		) in (match Hashtbl.find_opt env.globalTIds (cr tx) with
+			Some (_, TcTDef (StrUnionTD ucl)) -> (match List.find_opt (fun (y, _, _, _) -> ctor = y) ucl with
+				Some (_, _, fl, _) ->
+					let txl = List.map (fun (_, t) -> t) fl in
+					(RawStructLT(tx, ctor, fl, tau_l), Some (RawStructCT txl))
+				| _ -> (LT tau, None)
+			)
+			| _ -> (LT tau, None)
+		)
 
 (*
 let narrow_type (env: type_env) (x: string) (tau: g_type): g_type = match try_narrow_guard_map env.guardMap x with
@@ -123,7 +155,7 @@ let tc_fun_var (env: type_env) (f: canon_name) (tau_a: lhs_type option)
 	Some (FunTy(tau_pl, tau_r)) ->
 		Valid (cr f, (tau_pl, tau_r), (fun el tau_r ->
 			let iOpt = if is_boxed_type env tau_r then Some (get_box_id_tenv env) else None in
-			Valid (CallExpC(iOpt, VarExpC (cr f), el, tau_r))
+			Valid (CallExpC(iOpt, VarExpC(cr f, None), el, tau_r))
 		))
 	| _ -> (match lookup_fun_tenv env f tau_a with
 		Some (_f, (d, tau_f)) -> (match d with
@@ -132,7 +164,7 @@ let tc_fun_var (env: type_env) (f: canon_name) (tau_a: lhs_type option)
 			| InternalSym fsm -> Valid (cr _f, tau_f, fun el tau_r -> calc_cfun env fsm el tau_r p)
 			| _ -> Valid (cr _f, tau_f, fun el tau_r ->
 				let iOpt = if is_boxed_type env tau_r then Some (get_box_id_tenv env) else None in
-				Valid (CallExpC(iOpt, VarExpC (cr _f), el, tau_r))
+				Valid (CallExpC(iOpt, VarExpC(cr _f, None), el, tau_r))
 			)
 		)
 		| None -> Error (NoOverload_Err(cr f, tau_a, p))
@@ -185,14 +217,25 @@ let tc_op (env: type_env) (xop: x_op) (tau_a: lhs_type) (p: l_pos): (string * ca
 			let* tau = lookup_gen attrs x (BadAttr_Err(cr cx, x, p)) in
 			Valid ("", ([NamedTy(cx, tau_al)], tau), fun el tau_r ->
 				let rc = rc_of_type env tau_r in
-				Valid (ArrayIndexExpC(rc, VarExpC (attrConstName cx x), RawIndexC (List.hd el)))
+				Valid (ArrayIndexExpC(rc, VarExpC(attrConstName cx x, None), RawIndexC (List.hd el)))
 			)
 		| _ -> Error (NonStruct_Err(tau_a, p))
 	)
+	| (StructFieldOp(rw, x), RawStructLT(cx, vx, fl, tau_al)) ->
+		let* (tau, i) = lookup_field_list fl x (BadField_Err((cr cx) ^ "#" ^ vx, x, p)) in
+		let (tau_args, tau_r) =
+			if rw = RR then ([NamedTy(cx, tau_al)], tau)
+			else ([NamedTy(cx, tau_al); tau], unitTy)
+		in Valid ("<< union struct field >>", (tau_args, tau_r), fun el _ ->
+			let rw' = if rw = RR then rc_of_type env tau_r else WC (List.nth el 1) in
+				(* 0th field is for tag *)
+			Valid (MemoryFieldExpC(rw', List.hd el, Some (i + 1)))
+		)
 	| (StructFieldOp _, _) -> Error (NonStruct_Err(tau_a, p))
 		(* union -> enum *)
 	| (TupleTagOp, LT (NamedTy(cx, tau_l))) -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
-		Some (_, TcTDef (UnionTD _)) ->
+		Some (_, TcTDef (TupUnionTD _))
+		| Some (_, TcTDef (StrUnionTD _)) ->
 			Valid ("", ([NamedTy(cx, tau_l)], TagOfTy cx), fun el tau_r ->
 				Valid (MemoryFieldExpC(rc_of_type env tau_r, List.hd el, Some 0))
 			)
@@ -203,6 +246,14 @@ let tc_op (env: type_env) (xop: x_op) (tau_a: lhs_type) (p: l_pos): (string * ca
 	| (EnumRawOp, LT (NamedTy(cx, tau_l))) -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
 		Some (_, TcTDef (EnumTD _)) ->
 			Valid ("<< raw enum value >>", ([NamedTy(cx, tau_l)], intTy), fun el _ ->
+				Valid (EnumRawExpC (List.hd el))
+			)
+		| _ -> Error (NonEnum_Err(tau_a, p))
+	)
+	| (EnumRawOp, LT (TagOfTy cx)) -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
+		Some (_, TcTDef (TupUnionTD _))
+		| Some (_, TcTDef (StrUnionTD _)) ->
+			Valid ("<< raw enum value >>", ([TagOfTy cx], intTy), fun el _ ->
 				Valid (EnumRawExpC (List.hd el))
 			)
 		| _ -> Error (NonEnum_Err(tau_a, p))
@@ -263,7 +314,8 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 	| TConstExp(t, _) -> Valid (SizeExpC t, LT (TValTy t))
 	| VarExp(x, p) -> 
 		let* (x', tau) = tc_var env x p in
-		Valid (VarExpC x', narrow_type env x' tau)
+		let (tau', ct) = narrow_type env x' tau in
+		Valid (VarExpC(x', ct), tau')
 	| OpExp(_, _) -> failwith "BUG: tc_exp.ml - Operator expression in non-application position."
 		(* TODO: named ty args for @ constructor + tuple *)
 	| AtCtorExp(ctor, p) -> (match Hashtbl.find_opt env.globalTIds (cr ctor) with
@@ -310,7 +362,7 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 		(* TODO: when constructing a struct type, figure out how the "type inference" will work *)
 	| NewStructExp(cx, t_ann, fl, p) ->
 		let* ftl' = map_try_res (fun (x, e) -> let* (e', t) = tc_exp env e in Valid (x, e', t)) fl in
-		let* (el', tau_l) = (match Hashtbl.find_opt env.globalTIds (cr cx) with
+		let* (cx_parent, el', tau_l) = (match Hashtbl.find_opt env.globalTIds (cr cx) with
 			Some (_, TcTDef (StructTD(xl, pl))) ->
 				let* sol = (match t_ann with None -> Valid (new_sol ()) | Some _tl -> tc_init_sol xl _tl p) in
 				let* el' = map_try_res (fun (x, tau_p) ->
@@ -320,10 +372,18 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 							let* _ = tc_subtype sol (FieldTCInfo(cr cx, x, tau_p)) tau_a tau_p p in Valid e' 
 				) pl in
 				let* _ = complete_sol sol p in
-				let* tau_l = extract_sol sol xl p in Valid (el', tau_l)
+				let* tau_l = extract_sol sol xl p in Valid (cx, el', tau_l)
+			| Some (_, TcCtorS(cx_parent, fl)) ->
+				let sol = new_sol () in
+				let* el' = map_try_res (fun (x, tau_p) ->
+					match List.find_opt (fun (y, _, _) -> x = y) ftl' with
+						None -> Error (MissingField_Err(cr cx, x, FieldTCInfo(cr cx, x, tau_p), p))
+						| Some (_, e', tau_a) ->
+							let* _ = tc_subtype sol (FieldTCInfo(cr cx, x, tau_p)) tau_a tau_p p in Valid e' 
+				) fl in Valid (cx_parent, (EnumExpC (cr cx)) :: el', [])
 			| Some _ -> Error (BadCtorStruct_Err(cr cx, p))
 			| _ -> Error (NonCtor_Err(cr cx, p))
-		) in Valid (NewStructExpC(cr cx, el'), LT (NamedTy(cx, tau_l)))
+		) in Valid (NewStructExpC(cr cx, el'), LT (NamedTy(cx_parent, tau_l)))
 	| IsNullExp(e, y, p) ->
 		let* (ev, tau) = tc_exp env e in
 		let asm = if y then "ptr_eq" else "ptr_neq" in
@@ -379,34 +439,35 @@ let tc_extra_exp (env: type_env) (e: r_exp) (x: string): (gen_exp * lhs_type * g
 		let* tau_f = complete_type tau p in
 		let b = [
 			VarStmtC("__i", ConstExpC (i_const 0), intTy);
-			WhileStmtC(BinExpC("ilt", VarExpC "__i", ArrayLengthExpC (VarExpC x)), [
-				EvalStmtC (ArrayIndexExpC(WC ei', VarExpC x, RawIndexC (VarExpC "__i")));
-				AssignStmtC("__i", BinExpC("xadd", VarExpC "__i", ConstExpC (i_const 1)))
+			WhileStmtC(BinExpC("ilt", var_exp_cn "__i", ArrayLengthExpC (var_exp_cn x)), [
+				EvalStmtC (ArrayIndexExpC(WC ei', var_exp_cn x, RawIndexC (var_exp_cn "__i")));
+				AssignStmtC("__i", BinExpC("xadd", var_exp_cn "__i", ConstExpC (i_const 1)))
 			])
 		] in Valid (NewArrayExpC(List.map fst dt_l', [], tau_f), LT (ArrayTy(i, tau_f)), b)
 	| _ -> let* (e', tau) = tc_exp env e in Valid (e', tau, [])
 
 	(* guard reader *)
 
-let var_ctor_list (env: type_env) (x: string): string list =
+(*let var_ctor_list (env: type_env) (x: string): string list =
 	let vcl_aux tx =
 		let td = (match Hashtbl.find_opt env.globalTIds tx with
 			Some (_, TcTDef td) -> td
 			| _ -> failwith "BUG: tc_exp.ml - Attempted to read constructor list for non-existent type definition."
 		) in (match td with
 			EnumTD cl -> List.map (fun (_, cx, _) -> cr cx) cl
-			| UnionTD ul -> List.map (fun (_, cx, _, _) -> cr cx) ul
+			| TupUnionTD ul -> List.map (fun (_, cx, _, _) -> cr cx) ul
+			| StrUnionTD ul -> List.map (fun (_, cx, _, _) -> cr cx) ul
 			| _ -> print_string tx; failwith "BUG: tc_exp.ml - Attempted to read constructor list for non-enum/union variable."
 		)
 	in match fst (tc_simple_var env x) with
 	NamedTy(tx, _) -> vcl_aux (cr tx)
 	| TagOfTy tx -> vcl_aux (cr tx)
-	| _ -> failwith "BUG: tc_exp.ml - Attempted to read constructor list for non-enum/union variable."
+	| _ -> failwith "BUG: tc_exp.ml - Attempted to read constructor list for non-enum/union variable."*)
 
 let rec read_guard_exp (env: type_env) (e: gen_exp): guard_map = match e with
-	BinExpC("ptr_eq", VarExpC x, ConstExpC NullConst) ->
+	BinExpC("ptr_eq", VarExpC(x, _), ConstExpC NullConst) ->
 		new_guard_map x (null_guard_set true)
-	| BinExpC("ptr_neq", VarExpC x, ConstExpC NullConst) ->
+	| BinExpC("ptr_neq", VarExpC(x, _), ConstExpC NullConst) ->
 		new_guard_map x (null_guard_set false)
 	(*| BinExpC("tag_eq", VarExpC x, EnumExpC y) ->
 		new_guard_map x (new_guard_set y (var_ctor_list env x))
@@ -423,9 +484,9 @@ let rec read_guard_exp (env: type_env) (e: gen_exp): guard_map = match e with
 			because of how unrelated propositions work within this
 	*)
 and neg_read_guard_exp (env: type_env) (e: gen_exp): guard_map = match e with
-	BinExpC("ptr_eq", VarExpC x, ConstExpC NullConst) ->
+	BinExpC("ptr_eq", VarExpC(x, _), ConstExpC NullConst) ->
 		new_guard_map x (null_guard_set false)
-	| BinExpC("ptr_neq", VarExpC x, ConstExpC NullConst) ->
+	| BinExpC("ptr_neq", VarExpC(x, _), ConstExpC NullConst) ->
 		new_guard_map x (null_guard_set true)
 	| UnaryExpC("bnot", ev) -> read_guard_exp env ev
 	| BinExpC("band", e1, e2) ->
@@ -433,6 +494,9 @@ and neg_read_guard_exp (env: type_env) (e: gen_exp): guard_map = match e with
 	| BinExpC("bor", e1, e2) ->
 		conj_guard_map (neg_read_guard_exp env e1) (neg_read_guard_exp env e2)
 	| _ -> StringMap.empty
+
+let update_guard_map_raw (guardMap: guard_map) (x: string) (g: guard_set): guard_map =
+	StringMap.update x (fun _ -> Some g) guardMap
 
 let update_guard_map (env: type_env) (guardMap: guard_map) (x: string) (tau: lhs_type): guard_map =
 	StringMap.update x (fun _ -> guard_set_of_type env tau) guardMap
@@ -460,11 +524,22 @@ let tc_unpack_pat (cont: fun_cont) (env: type_env) (yo: pat_var) (px: pat) (tau_
 	| VarPat x -> (match yo with
 		PlainVar _ -> Valid (env, [])
 		| PatVar px' ->
-			let (e', env') = tc_update_env cont env x tau_v (VarExpC px') in
+			let (e', env') = tc_update_env cont env x tau_v (var_exp_cn px') in
 			Valid (env', [VarStmtC(x, e', tau_v)])
 	)
 		(* TODO: figure out whether case analysis goes here or w/ the conditions *)
-	| ListPat(_, []) -> Valid (env, [])
+	| ListPat(tag_o, []) -> (match (tag_o, tau_v) with
+		(Some tag, NamedTy(utx, _)) -> (match Hashtbl.find_opt env.globalTIds (cr utx) with
+			Some (_, TcTDef (StrUnionTD ucl)) -> (match yo with
+				PlainVar x ->
+					let xl = List.map (fun (x, _, _, _) -> x) ucl in
+					Valid ({ env with guardMap = update_guard_map_raw env.guardMap x (GuardSet([tag], xl)) }, [])
+				| _ -> Valid (env, [])
+			)
+			| _ -> Valid (env, [])
+		)
+		| _ -> Valid (env, [])
+	)
 	| ListPat(tag_o, xol) ->
 			(* extract tuple type *)
 		let* (xol', tau_vl) = (match (tag_o, tau_v) with
@@ -473,14 +548,19 @@ let tc_unpack_pat (cont: fun_cont) (env: type_env) (yo: pat_var) (px: pat) (tau_
 					Error (MismatchedPatNum_Err(List.length tau_l, List.length xol, p))
 				else Valid (xol, tau_l)
 			| (None, _) -> Error (NonTuplePat_Err(tau_v, p))
-			| (Some tag_x, NamedTy(utx, _)) -> (match lookup_union_cases env tau_v with
+			| (Some tag_x, NamedTy(utx, _)) ->
+				let* uc = lookup_union_case p env tau_v tag_x in (match uc with
+					TupUnionCase(_, tau_l, _) -> Valid (None :: xol, (TagOfTy utx) :: tau_l)
+					| _ -> Error (NonTagTuple_Err(tau_v, p))
+				)
+			(*match lookup_tup_union_cases env tau_v with
 				Some (_, _, ucl) -> (match List.find_opt (fun (tx, _, _, _) -> tag_x = tx) ucl with
 					Some (_, _, tau_l, _) -> Valid (None :: xol, (TagOfTy utx) :: tau_l)
 					| None -> Error (BadTag_Err(tau_v, tag_x, p))
 				)
 				| None -> Error (NonTagTuple_Err(tau_v, p))
-			)
-			| _ -> Error (NonTagTuple_Err(tau_v, p))
+			*)
+			| _ -> Error (NonUnion_Err(tau_v, p))
 		) in
 			(* bind to variables *)
 		let px' = (match yo with
@@ -491,7 +571,7 @@ let tc_unpack_pat (cont: fun_cont) (env: type_env) (yo: pat_var) (px: pat) (tau_
 			None -> (env', b', i + 1)
 			| Some x ->
 				let tau_v = List.nth tau_vl i in
-				let e = MemoryFieldExpC(rc_of_type env' tau_v, VarExpC px', Some i) in
+				let e = MemoryFieldExpC(rc_of_type env' tau_v, var_exp_cn px', Some i) in
 				let (e', envX) = tc_update_env cont env' x tau_v e in
 				(envX, b' @ [VarStmtC(x, e', tau_v)], i + 1)
 		) (env, [], 0) xol' in
@@ -509,14 +589,23 @@ let tc_cond_pat (env: type_env) (y: string) (px: pat) (tau_v: g_type) (p: l_pos)
 	| ListPat(None, _) -> (match tau_v with
 		TupleTy(zf, _) ->
 			if zf then
-				let e1 = MemoryFieldExpC(RC(None, tau_v), VarExpC y, Some 0) in
+				let e1 = MemoryFieldExpC(RC(None, tau_v), var_exp_cn y, Some 0) in
 				Valid (Some (BinExpC("ptr_neq", e1, ConstExpC NullConst)))
 			else Valid None
 		| _ -> Error (NonTuplePat_Err(tau_v, p))
 	)
 	| ListPat(Some tag, _) ->
+		let* uc = lookup_union_case p env tau_v tag in
+		let (cx, e1) = (match uc with
+			EmptyUnionCase(cx, _) -> (cx, var_exp_cn y)
+			| TupUnionCase(cx, _, _) -> (cx, MemoryFieldExpC(RC(None, tau_v), var_exp_cn y, Some 0))
+			| StrUnionCase(cx, _, _) ->
+				(*let tau_l = List.map (fun (_, t) -> t) fl in*)
+				(cx, MemoryFieldExpC(RC(None, tau_v), var_exp_cn y, Some 0))
+		) in
+		Valid (Some (BinExpC("tag_eq", e1, EnumExpC (cr cx))))
 			(* - we are given the type, so we can lookup the tag directly (which never requires disambiguation) *)
-		let* (enumFlag, _, ucl) = (match lookup_union_cases env tau_v with
+	(*	let* (enumFlag, _, ucl) = (match lookup_tup_union_cases env tau_v with
 			Some ucl -> Valid ucl
 			| None -> Error (NonTagTuple_Err(tau_v, p))
 		) in
@@ -527,9 +616,9 @@ let tc_cond_pat (env: type_env) (y: string) (px: pat) (tau_v: g_type) (p: l_pos)
 		let e1 =
 			if enumFlag then VarExpC y
 			else MemoryFieldExpC(RC(None, tau_v), VarExpC y, Some 0) in
-		Valid (Some (BinExpC("tag_eq", e1, EnumExpC (cr cx))))
+		Valid (Some (BinExpC("tag_eq", e1, EnumExpC (cr cx))))*)
 	| NullListPat ->
-		let e1 = MemoryFieldExpC(RC(None, tau_v), VarExpC y, Some 0) in
+		let e1 = MemoryFieldExpC(RC(None, tau_v), var_exp_cn y, Some 0) in
 		Valid (Some (BinExpC("ptr_eq", e1, ConstExpC NullConst)))
 
 	(* statement type-checking *)
@@ -545,7 +634,7 @@ let rec tc_stmt (cont: fun_cont) (env: type_env) (s: r_stmt) (tau_r: g_type): (t
 		let* _ = tc_simp_subtype (AssignTCInfo(cr x, tau_x)) tau tau_x p in 
 		let env' = { env with guardMap = update_guard_map env env.guardMap (cr x) tau } in
 		if is_heap_type env tau_x && gFlag then
-			let e_repl' = GCReplaceRootExpC(VarExpC (cr x), e') in
+			let e_repl' = GCReplaceRootExpC(var_exp_cn (cr x), e') in
 			Valid (env', [AssignStmtC(cr x, e_repl')], false)
 		else Valid (env', [AssignStmtC(cr x, e')], false)
 	| ReturnStmt(eo, p) -> (match eo with
@@ -643,7 +732,7 @@ let rec tc_stmt (cont: fun_cont) (env: type_env) (s: r_stmt) (tau_r: g_type): (t
 		) in
 			(* for loop header:  _iterator, conditional depending on list case *)
 		let (i', end') = (x, e') (*if list_flag then ("__i", LengthExpC e') else (x, e') *) in
-		let x' = VarExpC i' in
+		let x' = var_exp_cn i' in
 		let cond' = BinExpC(cmp, x', end') in
 			(* for loop body: body; _iterator = _iterator + 1 *)
 		let* (_, b', _) = tc_body (nonLinCont cont) env' b tau_r in
@@ -653,10 +742,15 @@ let rec tc_stmt (cont: fun_cont) (env: type_env) (s: r_stmt) (tau_r: g_type): (t
 		Valid (env, [VarStmtC(i', e_init', intTy); WhileStmtC(cond', b'')], false)
 	| MatchStmt(e, mcl, p) ->
 		let* (e', tau_e) = tc_exp env e in
-		let* tau_v = complete_type tau_e p in
-		let y = get_pat_var_tenv env in
-		let* (b', term) = tc_match_case_list cont env y tau_v mcl tau_r in
-		Valid (env, (VarStmtC(y, e', tau_v)) :: b', term)
+		let* tau_v = complete_type tau_e p in (match e with
+			VarExp(x, _) ->
+				let* (b', term) = tc_match_case_list cont env (PlainVar (cr x)) tau_v mcl tau_r in
+				Valid (env, b', term)
+			| _ ->
+				let px = get_pat_var_tenv env in
+				let* (b', term) = tc_match_case_list cont env (PatVar px) tau_v mcl tau_r in
+				Valid (env, (VarStmtC(px, e', tau_v)) :: b', term)
+		)
 	| GCCollectStmt _ -> Valid (env, [GCCollectStmtC], false)
 and tc_body (cont: fun_cont) (env: type_env) (b: r_stmt list) (tau_r: g_type): (type_env * gen_stmt list * bool) tc_res = match b with
 	[] -> Valid (env, [], false)
@@ -667,11 +761,13 @@ and tc_body (cont: fun_cont) (env: type_env) (b: r_stmt list) (tau_r: g_type): (
 				if term0 then Error (EarlyReturn_Err (cont.f, ann_stmt s))
 				else let* (env3, st', termX) = tc_body cont env2 st tau_r in Valid (env3, s' @ st', termX)
 		)
-and tc_match_case_list (cont: fun_cont) (env: type_env) (y: string) (tau_v: g_type) (mcl: rm_case list) (tau_r: g_type): (gen_stmt list * bool) tc_res = match mcl with
+and tc_match_case_list (cont: fun_cont) (env: type_env) (y: pat_var) (tau_v: g_type) (mcl: rm_case list) (tau_r: g_type): (gen_stmt list * bool) tc_res = match mcl with
 	[] -> failwith "BUG: tc_exp.ml - Match with no cases encountered."
 	| [mc] ->
-		let* (_, b', term) = tc_match_case cont env y tau_v mc tau_r in
-		Valid (b', term)
+		let* (ec_o', b', term) = tc_match_case cont env y tau_v mc tau_r in (match ec_o' with
+			None -> Valid (b', term)
+			| Some ec' -> Valid ([IfStmtC(ec', b', term, [], false)], false)
+		)
 	| mc :: mct ->
 		let MCase(_, _, p) = mc in
 		let* (ec_o', b1', term1) = tc_match_case cont env y tau_v mc tau_r in
@@ -681,9 +777,10 @@ and tc_match_case_list (cont: fun_cont) (env: type_env) (y: string) (tau_v: g_ty
 		) in
 		let* (b2', term2) = tc_match_case_list cont env y tau_v mct tau_r in
 		Valid ([IfStmtC(ec', b1', term1, b2', term2)], term1 && term2)
-and tc_match_case (cont: fun_cont) (env: type_env) (y: string) (tau_v: g_type) (MCase(px, b, p): rm_case) (tau_r: g_type): (gen_exp option * gen_stmt list * bool) tc_res =
-	let* ec' = tc_cond_pat env y px tau_v p in
-	let* (env', b1) = tc_unpack_pat cont env (PatVar y) px tau_v p in
+and tc_match_case (cont: fun_cont) (env: type_env) (y: pat_var) (tau_v: g_type) (MCase(px, b, p): rm_case) (tau_r: g_type): (gen_exp option * gen_stmt list * bool) tc_res =
+	let yx = (match y with PlainVar x -> x | PatVar _p -> _p) in
+	let* ec' = tc_cond_pat env yx px tau_v p in
+	let* (env', b1) = tc_unpack_pat cont env y px tau_v p in
 	let* (_, b2, term) = tc_body cont env' b tau_r in
 	Valid (ec', b1 @ b2, term)
 

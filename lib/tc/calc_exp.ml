@@ -34,7 +34,7 @@ let read_usize (e: gen_exp): (bool * bit_width) = match e with
 let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match e with
 	ConstExpC c -> Valid (ConstExpC c)
 	| EnumExpC tag -> Valid (EnumExpC tag)
-	| VarExpC x -> (match Hashtbl.find_opt env.globalIds x with
+	| VarExpC(x, _) -> (match Hashtbl.find_opt env.globalIds x with
 		Some (_, _, cOpt) -> (match cOpt with
 			None -> Error (NonCVar_Err(x, p))
 			| Some c -> Valid c

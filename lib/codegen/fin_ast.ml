@@ -8,9 +8,11 @@ open Fin_type
 		-- box creation
 	*)
 
+(*type rw_type = RWT of g_type | RawRT of g_type list*)
+
 type gen_exp =
 	ConstExpC of const
-	| VarExpC of string
+	| VarExpC of string * g_cast_type option
 	| UnaryExpC of string * gen_exp
 	| BinExpC of string * gen_exp * gen_exp
 	| CallExpC of int option * gen_exp * gen_exp list * g_type
@@ -53,6 +55,8 @@ and gen_stmt =
 	| WhileStmtC of gen_exp * gen_stmt list
 		(* garbage collection *)
 	| GCCollectStmtC
+
+let var_exp_cn (x: string) = VarExpC(x, None)
 
 type gen_met =
 	MethodC of (string * g_type) list * g_type * gen_stmt list

@@ -21,7 +21,7 @@ _Static_assert(
 );
 
 
-_Static_assert(sizeof(gc_obj_t) == 24, "GC header size mismatch");
+_Static_assert(sizeof(gc_obj_t) == 32, "GC header size mismatch");
 _Static_assert(offsetof(dusk_string_t, start) == 4, "String data offset mismatch");
 
 	/*
@@ -84,6 +84,14 @@ extern void* _Float_builtin_toString(float f) {
 	dusk_string_t* s = _newString(length);
 	snprintf(&s->start, length + 1, "%f", f);
 	return (void*) s;
+}
+
+extern void* _a1_builtin_toString(void* _a) {
+	gc_array_t* a = (gc_array_t*) _a;
+	dusk_string_t* dst = _newString(a->size + 1);
+	memcpy(&dst->start, a->data, a->size);
+	(&dst->start)[a->size] = 0;
+	return (void*) dst;
 }
 
 extern char* _String_builtin_cString(void* s) {

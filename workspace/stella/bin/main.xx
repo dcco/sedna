@@ -574,41 +574,39 @@ __Commons_Core_Rect_Commons_Core_setSize:
 	.p2align	4, 0x90
 __Commons_Core_Rect_Commons_Core_setRange:
 .seh_proc __Commons_Core_Rect_Commons_Core_setRange
-	subq	$32, %rsp
-	.seh_stackalloc 32
+	subq	$24, %rsp
+	.seh_stackalloc 24
 	.seh_endprologue
-	movq	%rcx, 24(%rsp)
-	movw	%dx, 22(%rsp)
-	movq	%r8, 8(%rsp)
-	movw	22(%rsp), %ax
-	movw	%ax, 6(%rsp)
-	cmpw	$0, 6(%rsp)
+	movq	%rcx, 16(%rsp)
+	movw	%dx, 14(%rsp)
+	movq	%r8, (%rsp)
+	cmpw	$0, 14(%rsp)
 	jne	.LBB17_2
-	movq	24(%rsp), %rax
-	movq	8(%rsp), %rcx
+	movq	16(%rsp), %rax
+	movq	(%rsp), %rcx
 	movl	(%rcx), %ecx
 	movl	%ecx, (%rax)
-	movq	24(%rsp), %rax
-	movq	8(%rsp), %rcx
+	movq	16(%rsp), %rax
+	movq	(%rsp), %rcx
 	movl	4(%rcx), %ecx
-	movq	8(%rsp), %rdx
+	movq	(%rsp), %rdx
 	subl	(%rdx), %ecx
 	movl	%ecx, 8(%rax)
 	jmp	.LBB17_3
 .LBB17_2:
-	movq	24(%rsp), %rax
-	movq	8(%rsp), %rcx
+	movq	16(%rsp), %rax
+	movq	(%rsp), %rcx
 	movl	(%rcx), %ecx
 	movl	%ecx, 4(%rax)
-	movq	24(%rsp), %rax
-	movq	8(%rsp), %rcx
+	movq	16(%rsp), %rax
+	movq	(%rsp), %rcx
 	movl	4(%rcx), %ecx
-	movq	8(%rsp), %rdx
+	movq	(%rsp), %rdx
 	subl	(%rdx), %ecx
 	movl	%ecx, 12(%rax)
 .LBB17_3:
-	movq	24(%rsp), %rax
-	addq	$32, %rsp
+	movq	16(%rsp), %rax
+	addq	$24, %rsp
 	retq
 	.seh_endproc
 
@@ -626,9 +624,7 @@ __Commons_Core_Rect_Commons_Core_rangeI:
 	movq	%rcx, (%rsp)
 	movq	%rdx, 32(%rsp)
 	movw	%r8w, 30(%rsp)
-	movw	30(%rsp), %ax
-	movw	%ax, 28(%rsp)
-	cmpw	$0, 28(%rsp)
+	cmpw	$0, 30(%rsp)
 	jne	.LBB18_2
 	movq	(%rsp), %rax
 	movq	32(%rsp), %rcx
@@ -739,8 +735,8 @@ __Commons_Data_HashMap_builtin_lookup:
 	movslq	8(%rcx), %rcx
 	xorl	%edx, %edx
 	divq	%rcx
-	movb	%dl, %al
-	movb	%al, 84(%rsp)
+	movl	%edx, %eax
+	movl	%eax, 84(%rsp)
 .LBB20_1:
 	movb	$1, %al
 	testb	$1, %al
@@ -825,8 +821,8 @@ __Commons_Data_HashMap_builtin_insert:
 	movslq	8(%rcx), %rcx
 	xorl	%edx, %edx
 	divq	%rcx
-	movb	%dl, %al
-	movb	%al, 92(%rsp)
+	movl	%edx, %eax
+	movl	%eax, 92(%rsp)
 	movl	92(%rsp), %eax
 	movl	%eax, 88(%rsp)
 	movb	$0, 87(%rsp)
@@ -1950,7 +1946,7 @@ _Int_Sulfur_Material_newTexArray:
 	cmpl	$0, (%rax)
 	jne	.LBB36_2
 	leaq	_sz0(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
 .LBB36_2:
 	jmp	.LBB36_3
@@ -2544,7 +2540,7 @@ _ptr_Sulfur_Shader_makeShaderSrc:
 	callq	_ptr_builtin_toString
 	movq	%rax, %rdx
 	leaq	_sz1(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	callq	_String_builtin_panic
@@ -2586,7 +2582,7 @@ _ptr_Sulfur_Shader_initShader:
 	cmpl	$0, 252(%rsp)
 	jne	.LBB42_2
 	leaq	_sz2(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
 .LBB42_2:
 	jmp	.LBB42_3
@@ -2643,7 +2639,7 @@ _ptr_Sulfur_Shader_initShader:
 	callq	_ptr_builtin_toString
 	movq	%rax, %rdx
 	leaq	_sz3(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	callq	_String_builtin_panic
@@ -2862,7 +2858,7 @@ _ptr_Sulfur_Shader_initShader:
 .LBB42_19:
 	movq	168(%rsp), %rdx
 	leaq	_sz4(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	callq	_String_builtin_panic
@@ -2927,7 +2923,7 @@ _ptr_Sulfur_Shader_initShader:
 .LBB42_25:
 	movq	152(%rsp), %rdx
 	leaq	_sz4(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	callq	_String_builtin_panic
@@ -3730,9 +3726,9 @@ _Int_Sulfur_Main_initSulfur:
 	movq	$36, 8(%rcx)
 	movl	$2, (%rcx)
 	movq	%rcx, 40(%rax)
-	leaq	_sz5+24(%rip), %rax
+	leaq	_sz5+32(%rip), %rax
 	movq	%rax, 128(%rsp)
-	leaq	_sz6+24(%rip), %rax
+	leaq	_sz6+32(%rip), %rax
 	movq	%rax, 120(%rsp)
 	leaq	tc__Sulfur_Shader_ShaderDef(%rip), %rdx
 	movl	$40, %ecx
@@ -3746,10 +3742,10 @@ _Int_Sulfur_Main_initSulfur:
 	movl	$44, 24(%rax)
 	movb	$0, (%rax)
 	movq	%rax, 208(%rsp)
-	leaq	_sz7+24(%rip), %rcx
+	leaq	_sz7+32(%rip), %rcx
 	callq	_String_builtin_cString
 	movq	%rax, 136(%rsp)
-	leaq	_sz8+24(%rip), %rcx
+	leaq	_sz8+32(%rip), %rcx
 	callq	_String_builtin_cString
 	movq	136(%rsp), %rcx
 	movq	%rax, %rdx
@@ -4228,7 +4224,7 @@ __Sulfur_Input_Input_builtin_update:
 	movq	16(%rax), %rax
 	movb	43(%rsp), %dl
 	movq	64(%rsp), %r8
-	movq	8(%r8), %r8
+	movq	24(%r8), %r8
 	movl	44(%rsp), %r9d
 	movq	16(%r8), %r8
 	movslq	%r9d, %r10
@@ -4389,7 +4385,7 @@ __Sulfur_Material_TexArray_Project_Rom_newImageMap:
 	movq	%rax, 64(%rsp)
 	movq	%rsp, %rax
 	movq	$0, 32(%rax)
-	movl	$4, %edx
+	movl	$5, %edx
 	callq	gc_alloc_array
 	movq	%rax, 56(%rsp)
 	leaq	tc__Project_Rom_ImageMap(%rip), %rdx
@@ -4423,11 +4419,11 @@ __Project_Rom_ImageMap_Project_Rom_rawLoadImage:
 	movq	%rdx, 120(%rsp)
 	movq	120(%rsp), %rdx
 	leaq	_sz12(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	leaq	_sz13(%rip), %rdx
-	addq	$24, %rdx
+	addq	$32, %rdx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	callq	_String_builtin_cString
@@ -4457,7 +4453,7 @@ __Project_Rom_ImageMap_Project_Rom_rawLoadImage:
 	callq	_ptr_builtin_toString
 	movq	%rax, %rdx
 	leaq	_sz14(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_add
 	movq	%rax, %rcx
 	callq	_String_builtin_panic
@@ -4557,7 +4553,7 @@ __Project_Rom_ImageMap_Project_Rom_initSprite:
 	cmpq	$0, 120(%rsp)
 	jne	.LBB63_2
 	leaq	_sz15(%rip), %rcx
-	addq	$24, %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
 .LBB63_2:
 	jmp	.LBB63_3
@@ -4639,7 +4635,7 @@ __Project_Rom_ImageMap_Project_Rom_loadSprites:
 	movq	%rcx, 64(%rsp)
 	movl	$0, 60(%rsp)
 .LBB64_1:
-	cmpl	$4, 60(%rsp)
+	cmpl	$5, 60(%rsp)
 	jge	.LBB64_3
 	movq	64(%rsp), %rax
 	movq	24(%rax), %rax
@@ -5183,9 +5179,7 @@ __Project_Globals_KeyType_Project_Globals_inputDown:
 	.seh_stackalloc 8
 	.seh_endprologue
 	movw	%cx, 6(%rsp)
-	movw	6(%rsp), %ax
-	movw	%ax, 4(%rsp)
-	cmpw	$0, 4(%rsp)
+	cmpw	$0, 6(%rsp)
 	jne	.LBB75_2
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
@@ -5195,7 +5189,7 @@ __Project_Globals_KeyType_Project_Globals_inputDown:
 	popq	%rcx
 	retq
 .LBB75_2:
-	cmpw	$1, 4(%rsp)
+	cmpw	$1, 6(%rsp)
 	jne	.LBB75_4
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
@@ -5205,7 +5199,7 @@ __Project_Globals_KeyType_Project_Globals_inputDown:
 	popq	%rcx
 	retq
 .LBB75_4:
-	cmpw	$2, 4(%rsp)
+	cmpw	$2, 6(%rsp)
 	jne	.LBB75_6
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
@@ -5236,9 +5230,7 @@ __Project_Globals_KeyType_Project_Globals_inputPress:
 	.seh_stackalloc 8
 	.seh_endprologue
 	movw	%cx, 6(%rsp)
-	movw	6(%rsp), %ax
-	movw	%ax, 4(%rsp)
-	cmpw	$0, 4(%rsp)
+	cmpw	$0, 6(%rsp)
 	jne	.LBB76_2
 	movq	_Project_Globals_input(%rip), %rax
 	movq	16(%rax), %rax
@@ -5248,7 +5240,7 @@ __Project_Globals_KeyType_Project_Globals_inputPress:
 	popq	%rcx
 	retq
 .LBB76_2:
-	cmpw	$1, 4(%rsp)
+	cmpw	$1, 6(%rsp)
 	jne	.LBB76_4
 	movq	_Project_Globals_input(%rip), %rax
 	movq	16(%rax), %rax
@@ -5258,7 +5250,7 @@ __Project_Globals_KeyType_Project_Globals_inputPress:
 	popq	%rcx
 	retq
 .LBB76_4:
-	cmpw	$2, 4(%rsp)
+	cmpw	$2, 6(%rsp)
 	jne	.LBB76_6
 	movq	_Project_Globals_input(%rip), %rax
 	movq	16(%rax), %rax
@@ -5277,116 +5269,1482 @@ __Project_Globals_KeyType_Project_Globals_inputPress:
 	retq
 	.seh_endproc
 
-	.def	_FileChannel_Project_Serial_writeInt;
+	.def	_a1_Project_Serial_intsSerial;
 	.scl	2;
 	.type	32;
 	.endef
-	.globl	_FileChannel_Project_Serial_writeInt
+	.globl	_a1_Project_Serial_intsSerial
 	.p2align	4, 0x90
-_FileChannel_Project_Serial_writeInt:
-.seh_proc _FileChannel_Project_Serial_writeInt
-	subq	$72, %rsp
-	.seh_stackalloc 72
+_a1_Project_Serial_intsSerial:
+.seh_proc _a1_Project_Serial_intsSerial
+	subq	$56, %rsp
+	.seh_stackalloc 56
 	.seh_endprologue
-	movq	%rcx, 64(%rsp)
-	movl	%edx, 60(%rsp)
-	movl	60(%rsp), %eax
-	movl	%eax, 40(%rsp)
-	leaq	40(%rsp), %rax
-	movq	%rax, 48(%rsp)
-	movq	64(%rsp), %rcx
-	movq	48(%rsp), %rdx
-	movl	$4, %r8d
-	callq	_FileChannel_Sys_Os_writeRaw
-	nop
-	addq	$72, %rsp
+	movq	%rcx, 48(%rsp)
+	movq	48(%rsp), %rax
+	movq	%rax, 40(%rsp)
+	leaq	tc__Project_Serial_SerialObj(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	40(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, (%rcx)
+	movq	$0, 8(%rcx)
+	addq	$56, %rsp
 	retq
 	.seh_endproc
 
-	.def	_FileChannel_Project_Serial_writeSerial;
+	.def	_String_Project_Serial_stringSerial;
 	.scl	2;
 	.type	32;
 	.endef
-	.globl	_FileChannel_Project_Serial_writeSerial
+	.globl	_String_Project_Serial_stringSerial
 	.p2align	4, 0x90
-_FileChannel_Project_Serial_writeSerial:
-.seh_proc _FileChannel_Project_Serial_writeSerial
+_String_Project_Serial_stringSerial:
+.seh_proc _String_Project_Serial_stringSerial
 	subq	$88, %rsp
 	.seh_stackalloc 88
 	.seh_endprologue
 	movq	%rcx, 80(%rsp)
-	movq	%rdx, 72(%rsp)
-	movq	80(%rsp), %rcx
-	movq	72(%rsp), %rax
-	movq	(%rax), %rax
-	movl	8(%rax), %edx
-	callq	_FileChannel_Project_Serial_writeInt
-	movl	$0, 52(%rsp)
+	movl	$4, %ecx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %edx
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 72(%rsp)
+	movl	$0, 68(%rsp)
 .LBB78_1:
-	movl	52(%rsp), %eax
-	movq	72(%rsp), %rcx
-	movq	(%rcx), %rcx
-	cmpl	8(%rcx), %eax
+	movl	68(%rsp), %eax
+	movl	%eax, 64(%rsp)
+	movq	80(%rsp), %rcx
+	callq	_String_builtin_measure
+	movl	%eax, %ecx
+	movl	64(%rsp), %eax
+	cmpl	%ecx, %eax
 	jge	.LBB78_3
-	movq	80(%rsp), %rax
-	movq	%rax, 40(%rsp)
-	movq	72(%rsp), %rax
-	movq	(%rax), %rcx
-	callq	_a1_builtin_toRawPtr
-	movq	40(%rsp), %rcx
-	movq	%rax, %rdx
-	movq	72(%rsp), %rax
-	movq	(%rax), %rax
-	movl	8(%rax), %r8d
-	shll	$2, %r8d
-	callq	_FileChannel_Sys_Os_writeRaw
-	movl	52(%rsp), %eax
-	addl	$1, %eax
+	movq	72(%rsp), %rcx
+	movq	%rcx, 40(%rsp)
+	movl	8(%rcx), %eax
 	movl	%eax, 52(%rsp)
+	callq	array_grow
+	movq	40(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 56(%rsp)
+	movq	80(%rsp), %rcx
+	movl	68(%rsp), %edx
+	callq	_String_builtin_lookup
+	movl	52(%rsp), %ecx
+	movb	%al, %dl
+	movq	56(%rsp), %rax
+	movzbl	%dl, %edx
+	movslq	%ecx, %rcx
+	movl	%edx, (%rax,%rcx,4)
+	movl	68(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 68(%rsp)
 	jmp	.LBB78_1
 .LBB78_3:
-	movq	72(%rsp), %rax
-	movq	8(%rax), %rax
-	movq	%rax, 56(%rsp)
-	cmpq	$0, 56(%rsp)
-	jne	.LBB78_5
-	movq	80(%rsp), %rcx
-	xorl	%edx, %edx
-	callq	_FileChannel_Project_Serial_writeInt
+	movq	72(%rsp), %rcx
+	callq	_a1_Project_Serial_intsSerial
 	nop
 	addq	$88, %rsp
 	retq
-.LBB78_5:
-	jmp	.LBB78_6
-.LBB78_6:
-	movq	80(%rsp), %rcx
-	movl	$1, %edx
-	callq	_FileChannel_Project_Serial_writeInt
-	movq	80(%rsp), %rcx
-	movq	56(%rsp), %rax
-	movl	8(%rax), %edx
-	callq	_FileChannel_Project_Serial_writeInt
-	movl	$0, 52(%rsp)
-.LBB78_7:
-	movl	52(%rsp), %eax
-	movq	56(%rsp), %rcx
-	cmpl	8(%rcx), %eax
-	jge	.LBB78_9
-	movq	80(%rsp), %rcx
+	.seh_endproc
+
+	.def	__Project_Serial_SerialObj_Project_Serial_stringUnserial;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Project_Serial_SerialObj_Project_Serial_stringUnserial
+	.p2align	4, 0x90
+__Project_Serial_SerialObj_Project_Serial_stringUnserial:
+.seh_proc __Project_Serial_SerialObj_Project_Serial_stringUnserial
+	subq	$88, %rsp
+	.seh_stackalloc 88
+	.seh_endprologue
+	movq	%rcx, 80(%rsp)
+	movq	80(%rsp), %rax
+	movq	(%rax), %rax
+	movl	8(%rax), %eax
+	movl	%eax, 76(%rsp)
+	movl	$1, %ecx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %edx
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 64(%rsp)
+	movl	$0, 60(%rsp)
+.LBB79_1:
+	movl	60(%rsp), %eax
+	cmpl	76(%rsp), %eax
+	jge	.LBB79_3
+	movq	64(%rsp), %rcx
+	movq	%rcx, 48(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 44(%rsp)
+	callq	array_grow
+	movl	44(%rsp), %ecx
+	movq	48(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	80(%rsp), %rdx
+	movq	(%rdx), %rdx
+	movl	60(%rsp), %r8d
+	movq	16(%rdx), %rdx
+	movslq	%r8d, %r9
+	movl	(%rdx,%r9,4), %edx
+	movslq	%r8d, %r8
+	movslq	%ecx, %rcx
+	movb	%dl, (%rax,%rcx)
+	movl	60(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 60(%rsp)
+	jmp	.LBB79_1
+.LBB79_3:
+	movq	64(%rsp), %rcx
+	callq	_a1_builtin_toString
+	nop
+	addq	$88, %rsp
+	retq
+	.seh_endproc
+
+	.def	_a1_Project_Serial_listSerial;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_a1_Project_Serial_listSerial
+	.p2align	4, 0x90
+_a1_Project_Serial_listSerial:
+.seh_proc _a1_Project_Serial_listSerial
+	subq	$72, %rsp
+	.seh_stackalloc 72
+	.seh_endprologue
+	movq	%rcx, 64(%rsp)
+	movq	%rsp, %rax
+	movq	$0, 32(%rax)
+	xorl	%r8d, %r8d
+	movb	%r8b, %r9b
+	movl	$4, %ecx
+	movl	%r8d, %edx
+	callq	gc_alloc_array
+	movq	%rax, 56(%rsp)
+	movq	64(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	leaq	tc__Project_Serial_SerialObj(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	48(%rsp), %r8
 	movq	56(%rsp), %rdx
-	movl	52(%rsp), %eax
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%r8, 8(%rcx)
+	movq	%rdx, (%rcx)
+	addq	$72, %rsp
+	retq
+	.seh_endproc
+
+	.def	_FileWriter_Project_Serial_writeSerial;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileWriter_Project_Serial_writeSerial
+	.p2align	4, 0x90
+_FileWriter_Project_Serial_writeSerial:
+.seh_proc _FileWriter_Project_Serial_writeSerial
+	subq	$72, %rsp
+	.seh_stackalloc 72
+	.seh_endprologue
+	movq	%rcx, 64(%rsp)
+	movq	%rdx, 56(%rsp)
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rax
+	movq	(%rax), %rax
+	movl	8(%rax), %edx
+	callq	_FileWriter_Sys_Os_writeInt
+	movq	64(%rsp), %rcx
+	movq	56(%rsp), %rax
+	movq	(%rax), %rdx
+	callq	_FileWriter_Sys_Os_write
+	movq	56(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 48(%rsp)
+	cmpq	$0, 48(%rsp)
+	jne	.LBB81_2
+	movq	64(%rsp), %rcx
+	xorl	%edx, %edx
+	callq	_FileWriter_Sys_Os_writeInt
+	nop
+	addq	$72, %rsp
+	retq
+.LBB81_2:
+	jmp	.LBB81_3
+.LBB81_3:
+	movq	64(%rsp), %rcx
+	movl	$1, %edx
+	callq	_FileWriter_Sys_Os_writeInt
+	movq	64(%rsp), %rcx
+	movq	48(%rsp), %rax
+	movl	8(%rax), %edx
+	callq	_FileWriter_Sys_Os_writeInt
+	movl	$0, 44(%rsp)
+.LBB81_4:
+	movl	44(%rsp), %eax
+	movq	48(%rsp), %rcx
+	cmpl	8(%rcx), %eax
+	jge	.LBB81_6
+	movq	64(%rsp), %rcx
+	movq	48(%rsp), %rdx
+	movl	44(%rsp), %eax
 	movq	16(%rdx), %rdx
 	movslq	%eax, %r8
 	movq	(%rdx,%r8,8), %rdx
 	cltq
-	callq	_FileChannel_Project_Serial_writeSerial
-	movl	52(%rsp), %eax
+	callq	_FileWriter_Project_Serial_writeSerial
+	movl	44(%rsp), %eax
 	addl	$1, %eax
+	movl	%eax, 44(%rsp)
+	jmp	.LBB81_4
+.LBB81_6:
+	addq	$72, %rsp
+	retq
+	.seh_endproc
+
+	.def	_FileReader_Project_Serial_readSerial;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Serial_readSerial
+	.p2align	4, 0x90
+_FileReader_Project_Serial_readSerial:
+.seh_proc _FileReader_Project_Serial_readSerial
+	subq	$136, %rsp
+	.seh_stackalloc 136
+	.seh_endprologue
+	movq	%rcx, 128(%rsp)
+	movq	128(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readInt
+	movl	%eax, 124(%rsp)
+	movq	128(%rsp), %rcx
+	movl	124(%rsp), %r8d
+	movl	$4, %edx
+	callq	_FileReader_Sys_Os_read
+	movq	%rax, 112(%rsp)
+	movq	128(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readInt
+	movl	%eax, 108(%rsp)
+	cmpl	$0, 108(%rsp)
+	jne	.LBB82_2
+	movq	112(%rsp), %rcx
+	callq	_a1_Project_Serial_intsSerial
+	nop
+	addq	$136, %rsp
+	retq
+.LBB82_2:
+	jmp	.LBB82_3
+.LBB82_3:
+	movq	128(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readInt
+	movl	%eax, 104(%rsp)
+	movl	$8, %ecx
+	xorl	%r8d, %r8d
+	movl	$1, %r9d
+	xorl	%eax, %eax
+	movl	%r8d, %edx
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 96(%rsp)
+	movl	$0, 92(%rsp)
+.LBB82_4:
+	movl	92(%rsp), %eax
+	cmpl	104(%rsp), %eax
+	jge	.LBB82_6
+	movq	96(%rsp), %rcx
+	movq	%rcx, 64(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 76(%rsp)
+	callq	array_grow
+	movq	64(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 80(%rsp)
+	movq	128(%rsp), %rcx
+	callq	_FileReader_Project_Serial_readSerial
+	movl	76(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movl	92(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 92(%rsp)
+	jmp	.LBB82_4
+.LBB82_6:
+	movq	112(%rsp), %rax
+	movq	%rax, 56(%rsp)
+	movq	96(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	leaq	tc__Project_Serial_SerialObj(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	48(%rsp), %r8
+	movq	56(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%r8, 8(%rcx)
+	movq	%rdx, (%rcx)
+	addq	$136, %rsp
+	retq
+	.seh_endproc
+
+	.def	_Int_Project_Json_jINT;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_Int_Project_Json_jINT
+	.p2align	4, 0x90
+_Int_Project_Json_jINT:
+.seh_proc _Int_Project_Json_jINT
+	subq	$40, %rsp
+	.seh_stackalloc 40
+	.seh_endprologue
+	movl	%ecx, 36(%rsp)
+	movl	36(%rsp), %eax
+	movl	%eax, 32(%rsp)
+	xorl	%eax, %eax
+	movl	%eax, %edx
+	movl	$8, %ecx
+	callq	gc_alloc
+	movl	32(%rsp), %edx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movl	%edx, 4(%rcx)
+	movw	$1, (%rcx)
+	addq	$40, %rsp
+	retq
+	.seh_endproc
+
+	.def	_String_Project_Json_jSTRING;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_String_Project_Json_jSTRING
+	.p2align	4, 0x90
+_String_Project_Json_jSTRING:
+.seh_proc _String_Project_Json_jSTRING
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	48(%rsp), %rax
+	movq	%rax, 40(%rsp)
+	leaq	tc__Project_Json_STRING(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	40(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, 8(%rcx)
+	movw	$2, (%rcx)
+	addq	$56, %rsp
+	retq
+	.seh_endproc
+
+	.def	_a1_Project_Json_jLIST;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_a1_Project_Json_jLIST
+	.p2align	4, 0x90
+_a1_Project_Json_jLIST:
+.seh_proc _a1_Project_Json_jLIST
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	48(%rsp), %rax
+	movq	%rax, 40(%rsp)
+	leaq	tc__Project_Json_LIST(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	40(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, 8(%rcx)
+	movw	$3, (%rcx)
+	addq	$56, %rsp
+	retq
+	.seh_endproc
+
+	.def	_a1_Project_Json_jDICT;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_a1_Project_Json_jDICT
+	.p2align	4, 0x90
+_a1_Project_Json_jDICT:
+.seh_proc _a1_Project_Json_jDICT
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	48(%rsp), %rax
+	movq	%rax, 40(%rsp)
+	leaq	tc__Project_Json_DICT(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	40(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, 8(%rcx)
+	movw	$4, (%rcx)
+	addq	$56, %rsp
+	retq
+	.seh_endproc
+
+	.def	__Project_Json_JsonObj_Project_Json_asINT;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Project_Json_JsonObj_Project_Json_asINT
+	.p2align	4, 0x90
+__Project_Json_JsonObj_Project_Json_asINT:
+.seh_proc __Project_Json_JsonObj_Project_Json_asINT
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	%rdx, 40(%rsp)
+	movq	48(%rsp), %rax
+	cmpw	$1, (%rax)
+	jne	.LBB87_2
+	movq	48(%rsp), %rax
+	movl	4(%rax), %eax
+	addq	$56, %rsp
+	retq
+.LBB87_2:
+	movq	40(%rsp), %rdx
+	leaq	_sz16(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz17(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+	int3
+	.seh_endproc
+
+	.def	__Project_Json_JsonObj_Project_Json_asSTRING;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Project_Json_JsonObj_Project_Json_asSTRING
+	.p2align	4, 0x90
+__Project_Json_JsonObj_Project_Json_asSTRING:
+.seh_proc __Project_Json_JsonObj_Project_Json_asSTRING
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	%rdx, 40(%rsp)
+	movq	48(%rsp), %rax
+	cmpw	$2, (%rax)
+	jne	.LBB88_2
+	movq	48(%rsp), %rax
+	movq	8(%rax), %rax
+	addq	$56, %rsp
+	retq
+.LBB88_2:
+	movq	40(%rsp), %rdx
+	leaq	_sz18(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz19(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+	int3
+	.seh_endproc
+
+	.def	__Project_Json_JsonObj_Project_Json_asLIST;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Project_Json_JsonObj_Project_Json_asLIST
+	.p2align	4, 0x90
+__Project_Json_JsonObj_Project_Json_asLIST:
+.seh_proc __Project_Json_JsonObj_Project_Json_asLIST
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	%rdx, 40(%rsp)
+	movq	48(%rsp), %rax
+	cmpw	$3, (%rax)
+	jne	.LBB89_2
+	movq	48(%rsp), %rax
+	movq	8(%rax), %rax
+	addq	$56, %rsp
+	retq
+.LBB89_2:
+	movq	40(%rsp), %rdx
+	leaq	_sz20(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz21(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+	int3
+	.seh_endproc
+
+	.def	__Project_Json_JsonObj_Project_Json_asDICT;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Project_Json_JsonObj_Project_Json_asDICT
+	.p2align	4, 0x90
+__Project_Json_JsonObj_Project_Json_asDICT:
+.seh_proc __Project_Json_JsonObj_Project_Json_asDICT
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+	movq	%rdx, 40(%rsp)
+	movq	48(%rsp), %rax
+	cmpw	$4, (%rax)
+	jne	.LBB90_2
+	movq	48(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 32(%rsp)
+	leaq	tc__Project_Json_JDict(%rip), %rdx
+	movl	$8, %ecx
+	callq	gc_alloc
+	movq	32(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, (%rcx)
+	addq	$56, %rsp
+	retq
+.LBB90_2:
+	movq	40(%rsp), %rdx
+	leaq	_sz22(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz23(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+	int3
+	.seh_endproc
+
+	.def	__Project_Json_JDict_builtin_lookup;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Project_Json_JDict_builtin_lookup
+	.p2align	4, 0x90
+__Project_Json_JDict_builtin_lookup:
+.seh_proc __Project_Json_JDict_builtin_lookup
+	subq	$104, %rsp
+	.seh_stackalloc 104
+	.seh_endprologue
+	movq	%rcx, 96(%rsp)
+	movq	%rdx, 88(%rsp)
+	movq	96(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 80(%rsp)
+	movl	$0, 76(%rsp)
+.LBB91_1:
+	movl	76(%rsp), %eax
+	movq	80(%rsp), %rcx
+	cmpl	8(%rcx), %eax
+	jge	.LBB91_3
+	movq	80(%rsp), %rax
+	movslq	76(%rsp), %rdx
+	movq	16(%rax), %rcx
+	shlq	$4, %rdx
+	movq	(%rcx,%rdx), %rax
+	movq	8(%rcx,%rdx), %rcx
+	movq	%rcx, 40(%rsp)
+	movq	%rax, 32(%rsp)
+	leaq	32(%rsp), %rax
+	movq	%rax, 64(%rsp)
+	movq	64(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 56(%rsp)
+	movq	64(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 48(%rsp)
+	movq	56(%rsp), %rcx
+	movq	88(%rsp), %rdx
+	callq	_String_builtin_eq
+	testb	$1, %al
+	jne	.LBB91_4
+	jmp	.LBB91_5
+.LBB91_3:
+	movq	88(%rsp), %rdx
+	leaq	_sz24(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz25(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB91_4:
+	movq	48(%rsp), %rax
+	addq	$104, %rsp
+	retq
+.LBB91_5:
+	jmp	.LBB91_6
+.LBB91_6:
+	movl	76(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 76(%rsp)
+	jmp	.LBB91_1
+	.seh_endproc
+
+	.def	_FileWriter_Project_Json_writeJson;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileWriter_Project_Json_writeJson
+	.p2align	4, 0x90
+_FileWriter_Project_Json_writeJson:
+.seh_proc _FileWriter_Project_Json_writeJson
+	subq	$152, %rsp
+	.seh_stackalloc 152
+	.seh_endprologue
+	movq	%rcx, 144(%rsp)
+	movq	%rdx, 136(%rsp)
+	movq	136(%rsp), %rax
+	cmpw	$0, (%rax)
+	jne	.LBB92_2
+	movq	144(%rsp), %rcx
+	leaq	_sz26(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_3
+.LBB92_2:
+	movq	136(%rsp), %rax
+	cmpw	$1, (%rax)
+	je	.LBB92_4
+	jmp	.LBB92_5
+.LBB92_3:
+	addq	$152, %rsp
+	retq
+.LBB92_4:
+	movq	144(%rsp), %rax
+	movq	%rax, 56(%rsp)
+	movq	136(%rsp), %rax
+	movl	4(%rax), %ecx
+	callq	_Int_builtin_toString
+	movq	56(%rsp), %rcx
+	movq	%rax, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_6
+.LBB92_5:
+	movq	136(%rsp), %rax
+	cmpw	$2, (%rax)
+	je	.LBB92_7
+	jmp	.LBB92_8
+.LBB92_6:
+	jmp	.LBB92_3
+.LBB92_7:
+	movq	144(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	movq	136(%rsp), %rax
+	movq	8(%rax), %rdx
+	leaq	_sz27(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz27(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	48(%rsp), %rcx
+	movq	%rax, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_9
+.LBB92_8:
+	movq	136(%rsp), %rax
+	cmpw	$3, (%rax)
+	je	.LBB92_10
+	jmp	.LBB92_11
+.LBB92_9:
+	jmp	.LBB92_6
+.LBB92_10:
+	movq	136(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 128(%rsp)
+	movq	144(%rsp), %rcx
+	leaq	_sz28(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	movl	$0, 108(%rsp)
+	jmp	.LBB92_13
+.LBB92_11:
+	movq	136(%rsp), %rax
+	cmpw	$4, (%rax)
+	je	.LBB92_19
+	jmp	.LBB92_20
+.LBB92_12:
+	jmp	.LBB92_9
+.LBB92_13:
+	movl	108(%rsp), %eax
+	movq	128(%rsp), %rcx
+	cmpl	8(%rcx), %eax
+	jge	.LBB92_15
+	cmpl	$0, 108(%rsp)
+	jne	.LBB92_16
+	jmp	.LBB92_17
+.LBB92_15:
+	movq	144(%rsp), %rcx
+	leaq	_sz30(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_12
+.LBB92_16:
+	movq	144(%rsp), %rcx
+	leaq	_sz29(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_18
+.LBB92_17:
+	jmp	.LBB92_18
+.LBB92_18:
+	movq	144(%rsp), %rcx
+	movq	128(%rsp), %rdx
+	movl	108(%rsp), %eax
+	movq	16(%rdx), %rdx
+	movslq	%eax, %r8
+	movq	(%rdx,%r8,8), %rdx
+	cltq
+	callq	_FileWriter_Project_Json_writeJson
+	movl	108(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 108(%rsp)
+	jmp	.LBB92_13
+.LBB92_19:
+	movq	136(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 112(%rsp)
+	movq	144(%rsp), %rcx
+	leaq	_sz31(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	movl	$0, 108(%rsp)
+	jmp	.LBB92_22
+.LBB92_20:
+	jmp	.LBB92_21
+.LBB92_21:
+	jmp	.LBB92_12
+.LBB92_22:
+	movl	108(%rsp), %eax
+	movq	112(%rsp), %rcx
+	cmpl	8(%rcx), %eax
+	jge	.LBB92_24
+	cmpl	$0, 108(%rsp)
+	jne	.LBB92_25
+	jmp	.LBB92_26
+.LBB92_24:
+	movq	144(%rsp), %rcx
+	leaq	_sz33(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_21
+.LBB92_25:
+	movq	144(%rsp), %rcx
+	leaq	_sz29(%rip), %rdx
+	addq	$32, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	jmp	.LBB92_27
+.LBB92_26:
+	jmp	.LBB92_27
+.LBB92_27:
+	movq	112(%rsp), %rax
+	movslq	108(%rsp), %rdx
+	movq	16(%rax), %rcx
+	shlq	$4, %rdx
+	movq	(%rcx,%rdx), %rax
+	movq	8(%rcx,%rdx), %rcx
+	movq	%rcx, 72(%rsp)
+	movq	%rax, 64(%rsp)
+	leaq	64(%rsp), %rax
+	movq	%rax, 96(%rsp)
+	movq	96(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 88(%rsp)
+	movq	96(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 80(%rsp)
+	movq	144(%rsp), %rax
+	movq	%rax, 40(%rsp)
+	movq	88(%rsp), %rdx
+	leaq	_sz27(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz32(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	40(%rsp), %rcx
+	movq	%rax, %rdx
+	callq	_FileWriter_Sys_Os_writeString
+	movq	144(%rsp), %rcx
+	movq	80(%rsp), %rdx
+	callq	_FileWriter_Project_Json_writeJson
+	movl	108(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 108(%rsp)
+	jmp	.LBB92_22
+	.seh_endproc
+
+	.def	_U8_Project_Json_isWhitespace;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_U8_Project_Json_isWhitespace
+	.p2align	4, 0x90
+_U8_Project_Json_isWhitespace:
+.seh_proc _U8_Project_Json_isWhitespace
+	pushq	%rax
+	.seh_stackalloc 8
+	.seh_endprologue
+	movb	%cl, 7(%rsp)
+	movb	7(%rsp), %cl
+	movb	%cl, %al
+	subb	$9, %al
+	setae	%al
+	movb	%cl, %dl
+	subb	$14, %dl
+	setb	%dl
+	andb	%dl, %al
+	subb	$32, %cl
+	sete	%cl
+	orb	%cl, %al
+	popq	%rcx
+	retq
+	.seh_endproc
+
+	.def	_FileReader_Project_Json__readJsonC;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Json__readJsonC
+	.p2align	4, 0x90
+_FileReader_Project_Json__readJsonC:
+.seh_proc _FileReader_Project_Json__readJsonC
+	subq	$72, %rsp
+	.seh_stackalloc 72
+	.seh_endprologue
+	movq	%rcx, 64(%rsp)
+	movb	%dl, 63(%rsp)
+	movq	%r8, 48(%rsp)
+.LBB94_1:
+	movq	64(%rsp), %rcx
+	callq	_FileReader_Sys_Os_eof
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB94_2
+	jmp	.LBB94_3
+.LBB94_2:
+	movq	64(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readByte
+	movb	%al, 47(%rsp)
+	movb	47(%rsp), %al
+	cmpb	63(%rsp), %al
+	je	.LBB94_4
+	jmp	.LBB94_5
+.LBB94_3:
+	movq	48(%rsp), %rdx
+	leaq	_sz37(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz36(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB94_4:
+	nop
+	addq	$72, %rsp
+	retq
+.LBB94_5:
+	movb	63(%rsp), %cl
+	callq	_U8_Project_Json_isWhitespace
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB94_7
+	jmp	.LBB94_8
+.LBB94_6:
+	jmp	.LBB94_1
+.LBB94_7:
+	movzbl	47(%rsp), %ecx
+	callq	_Int_builtin_toString
+	movq	%rax, %rdx
+	leaq	_sz34(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz35(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	movq	48(%rsp), %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz36(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB94_8:
+	jmp	.LBB94_9
+.LBB94_9:
+	jmp	.LBB94_6
+	.seh_endproc
+
+	.def	_FileReader_Project_Json__readJsonINT;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Json__readJsonINT
+	.p2align	4, 0x90
+_FileReader_Project_Json__readJsonINT:
+.seh_proc _FileReader_Project_Json__readJsonINT
+	subq	$72, %rsp
+	.seh_stackalloc 72
+	.seh_endprologue
+	movq	%rcx, 64(%rsp)
+	andb	$1, %dl
+	movb	%dl, 63(%rsp)
+	movq	%r8, 48(%rsp)
+	movb	$0, 47(%rsp)
+.LBB95_1:
+	movq	64(%rsp), %rcx
+	callq	_FileReader_Sys_Os_eof
+	xorb	$-1, %al
+	movb	47(%rsp), %cl
+	xorb	$-1, %cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB95_2
+	jmp	.LBB95_3
+.LBB95_2:
+	movq	64(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readByte
+	movb	%al, 46(%rsp)
+	cmpb	$48, 46(%rsp)
+	setae	%al
+	cmpb	$57, 46(%rsp)
+	setbe	%cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB95_4
+	jmp	.LBB95_5
+.LBB95_3:
+	testb	$1, 63(%rsp)
+	jne	.LBB95_7
+	jmp	.LBB95_8
+.LBB95_4:
+	imulq	$10, 48(%rsp), %rax
+	movb	46(%rsp), %cl
+	subb	$48, %cl
+	movzbl	%cl, %ecx
+	addq	%rcx, %rax
+	movq	%rax, 48(%rsp)
+	jmp	.LBB95_6
+.LBB95_5:
+	movq	64(%rsp), %rcx
+	movl	$4294967295, %edx
+	callq	_FileReader_Sys_Os_seek
+	movb	$1, 47(%rsp)
+.LBB95_6:
+	jmp	.LBB95_1
+.LBB95_7:
+	xorl	%eax, %eax
+	subq	48(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	jmp	.LBB95_9
+.LBB95_8:
+	jmp	.LBB95_9
+.LBB95_9:
+	movq	48(%rsp), %rax
+	addq	$72, %rsp
+	retq
+	.seh_endproc
+
+	.def	_FileReader_Project_Json__readJsonSTRING;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Json__readJsonSTRING
+	.p2align	4, 0x90
+_FileReader_Project_Json__readJsonSTRING:
+.seh_proc _FileReader_Project_Json__readJsonSTRING
+	subq	$88, %rsp
+	.seh_stackalloc 88
+	.seh_endprologue
+	movq	%rcx, 80(%rsp)
+	movl	$1, %ecx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %edx
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 72(%rsp)
+	movb	$0, 71(%rsp)
+.LBB96_1:
+	movq	80(%rsp), %rcx
+	callq	_FileReader_Sys_Os_eof
+	xorb	$-1, %al
+	movb	71(%rsp), %cl
+	xorb	$-1, %cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB96_2
+	jmp	.LBB96_3
+.LBB96_2:
+	movq	80(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readByte
+	movb	%al, 70(%rsp)
+	cmpb	$34, 70(%rsp)
+	je	.LBB96_4
+	jmp	.LBB96_5
+.LBB96_3:
+	movb	71(%rsp), %al
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB96_7
+	jmp	.LBB96_8
+.LBB96_4:
+	movb	$1, 71(%rsp)
+	jmp	.LBB96_6
+.LBB96_5:
+	movq	72(%rsp), %rcx
+	movq	%rcx, 56(%rsp)
+	movl	8(%rcx), %eax
 	movl	%eax, 52(%rsp)
-	jmp	.LBB78_7
-.LBB78_9:
+	callq	array_grow
+	movl	52(%rsp), %ecx
+	movq	56(%rsp), %rax
+	movq	16(%rax), %rax
+	movb	70(%rsp), %dl
+	movslq	%ecx, %rcx
+	movb	%dl, (%rax,%rcx)
+.LBB96_6:
+	jmp	.LBB96_1
+.LBB96_7:
+	leaq	_sz38(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_panic
+.LBB96_8:
+	jmp	.LBB96_9
+.LBB96_9:
+	movq	72(%rsp), %rcx
+	callq	_a1_builtin_toString
+	nop
 	addq	$88, %rsp
 	retq
+	.seh_endproc
+
+	.def	_FileReader_Project_Json__readJsonLIST;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Json__readJsonLIST
+	.p2align	4, 0x90
+_FileReader_Project_Json__readJsonLIST:
+.seh_proc _FileReader_Project_Json__readJsonLIST
+	subq	$104, %rsp
+	.seh_stackalloc 104
+	.seh_endprologue
+	movq	%rcx, 96(%rsp)
+	movq	%rdx, 88(%rsp)
+	movl	$8, %ecx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %edx
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 80(%rsp)
+	movb	$0, 79(%rsp)
+	movb	$0, 78(%rsp)
+.LBB97_1:
+	movq	96(%rsp), %rcx
+	callq	_FileReader_Sys_Os_eof
+	xorb	$-1, %al
+	movb	79(%rsp), %cl
+	xorb	$-1, %cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB97_2
+	jmp	.LBB97_3
+.LBB97_2:
+	movq	96(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readByte
+	movb	%al, 77(%rsp)
+	movb	77(%rsp), %cl
+	callq	_U8_Project_Json_isWhitespace
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB97_4
+	jmp	.LBB97_5
+.LBB97_3:
+	movb	79(%rsp), %al
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB97_16
+	jmp	.LBB97_17
+.LBB97_4:
+	cmpb	$93, 77(%rsp)
+	je	.LBB97_7
+	jmp	.LBB97_8
+.LBB97_5:
+	jmp	.LBB97_6
+.LBB97_6:
+	jmp	.LBB97_1
+.LBB97_7:
+	movb	$1, 79(%rsp)
+	jmp	.LBB97_9
+.LBB97_8:
+	cmpb	$44, 77(%rsp)
+	sete	%al
+	movb	78(%rsp), %cl
+	xorb	$-1, %cl
+	orb	%cl, %al
+	testb	$1, %al
+	jne	.LBB97_10
+	jmp	.LBB97_11
+.LBB97_9:
+	jmp	.LBB97_6
+.LBB97_10:
+	movb	78(%rsp), %al
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB97_13
+	jmp	.LBB97_14
+.LBB97_11:
+	movzbl	77(%rsp), %ecx
+	callq	_Int_builtin_toString
+	movq	%rax, %rdx
+	leaq	_sz39(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz40(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB97_12:
+	jmp	.LBB97_9
+.LBB97_13:
+	movq	96(%rsp), %rcx
+	movl	$4294967295, %edx
+	callq	_FileReader_Sys_Os_seek
+	jmp	.LBB97_15
+.LBB97_14:
+	jmp	.LBB97_15
+.LBB97_15:
+	movq	80(%rsp), %rcx
+	movq	%rcx, 48(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 60(%rsp)
+	callq	array_grow
+	movq	48(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 64(%rsp)
+	movq	88(%rsp), %rax
+	movq	96(%rsp), %rcx
+	callq	*%rax
+	movl	60(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	64(%rsp), %rax
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movb	$1, 78(%rsp)
+	jmp	.LBB97_12
+.LBB97_16:
+	leaq	_sz41(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_panic
+.LBB97_17:
+	jmp	.LBB97_18
+.LBB97_18:
+	movq	80(%rsp), %rax
+	addq	$104, %rsp
+	retq
+	.seh_endproc
+
+	.def	_FileReader_Project_Json__readJsonDICT;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Json__readJsonDICT
+	.p2align	4, 0x90
+_FileReader_Project_Json__readJsonDICT:
+.seh_proc _FileReader_Project_Json__readJsonDICT
+	subq	$120, %rsp
+	.seh_stackalloc 120
+	.seh_endprologue
+	movq	%rcx, 112(%rsp)
+	movq	%rdx, 104(%rsp)
+	movl	$16, %ecx
+	xorl	%r8d, %r8d
+	movl	$1, %r9d
+	leaq	tc_tup.12(%rip), %rax
+	movl	%r8d, %edx
+	movq	%rax, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 96(%rsp)
+	movb	$0, 95(%rsp)
+	movb	$0, 94(%rsp)
+.LBB98_1:
+	movq	112(%rsp), %rcx
+	callq	_FileReader_Sys_Os_eof
+	xorb	$-1, %al
+	movb	95(%rsp), %cl
+	xorb	$-1, %cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB98_2
+	jmp	.LBB98_3
+.LBB98_2:
+	movq	112(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readByte
+	movb	%al, 93(%rsp)
+	movb	93(%rsp), %cl
+	callq	_U8_Project_Json_isWhitespace
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB98_4
+	jmp	.LBB98_5
+.LBB98_3:
+	movq	96(%rsp), %rax
+	addq	$120, %rsp
+	retq
+.LBB98_4:
+	cmpb	$125, 93(%rsp)
+	je	.LBB98_7
+	jmp	.LBB98_8
+.LBB98_5:
+	jmp	.LBB98_6
+.LBB98_6:
+	jmp	.LBB98_1
+.LBB98_7:
+	movb	$1, 95(%rsp)
+	jmp	.LBB98_9
+.LBB98_8:
+	cmpb	$44, 93(%rsp)
+	sete	%al
+	movb	94(%rsp), %cl
+	xorb	$-1, %cl
+	cmpb	$34, 93(%rsp)
+	sete	%dl
+	andb	%dl, %cl
+	orb	%cl, %al
+	testb	$1, %al
+	jne	.LBB98_10
+	jmp	.LBB98_11
+.LBB98_9:
+	jmp	.LBB98_6
+.LBB98_10:
+	testb	$1, 94(%rsp)
+	jne	.LBB98_13
+	jmp	.LBB98_14
+.LBB98_11:
+	movzbl	93(%rsp), %ecx
+	callq	_Int_builtin_toString
+	movq	%rax, %rdx
+	leaq	_sz44(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz45(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB98_12:
+	jmp	.LBB98_9
+.LBB98_13:
+	movq	112(%rsp), %rcx
+	movl	$34, %edx
+	leaq	_sz42(%rip), %r8
+	addq	$32, %r8
+	callq	_FileReader_Project_Json__readJsonC
+	jmp	.LBB98_15
+.LBB98_14:
+	jmp	.LBB98_15
+.LBB98_15:
+	movq	112(%rsp), %rcx
+	callq	_FileReader_Project_Json__readJsonSTRING
+	movq	%rax, 80(%rsp)
+	movq	112(%rsp), %rcx
+	leaq	_sz43+32(%rip), %r8
+	movb	$58, %dl
+	callq	_FileReader_Project_Json__readJsonC
+	movq	104(%rsp), %rax
+	movq	112(%rsp), %rcx
+	callq	*%rax
+	movq	%rax, 72(%rsp)
+	movq	96(%rsp), %rcx
+	movq	%rcx, 48(%rsp)
+	movslq	8(%rcx), %rax
+	movq	%rax, 40(%rsp)
+	callq	array_grow
+	movq	40(%rsp), %rcx
+	movq	48(%rsp), %rax
+	movq	16(%rax), %rax
+	shlq	$4, %rcx
+	movq	80(%rsp), %rdx
+	movq	72(%rsp), %r8
+	movq	%r8, 64(%rsp)
+	movq	%rdx, 56(%rsp)
+	movq	56(%rsp), %rdx
+	movq	64(%rsp), %r8
+	movq	%r8, 8(%rax,%rcx)
+	movq	%rdx, (%rax,%rcx)
+	movb	$1, 94(%rsp)
+	jmp	.LBB98_12
+	.seh_endproc
+
+	.def	_FileReader_Project_Json_readJson;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_FileReader_Project_Json_readJson
+	.p2align	4, 0x90
+_FileReader_Project_Json_readJson:
+.seh_proc _FileReader_Project_Json_readJson
+	subq	$56, %rsp
+	.seh_stackalloc 56
+	.seh_endprologue
+	movq	%rcx, 48(%rsp)
+.LBB99_1:
+	movq	48(%rsp), %rcx
+	callq	_FileReader_Sys_Os_eof
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB99_2
+	jmp	.LBB99_3
+.LBB99_2:
+	movq	48(%rsp), %rcx
+	callq	_FileReader_Sys_Os_readByte
+	movb	%al, 47(%rsp)
+	movb	47(%rsp), %cl
+	callq	_U8_Project_Json_isWhitespace
+	testb	$1, %al
+	jne	.LBB99_4
+	jmp	.LBB99_5
+.LBB99_3:
+	leaq	_sz48(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_panic
+.LBB99_4:
+	jmp	.LBB99_6
+.LBB99_5:
+	cmpb	$123, 47(%rsp)
+	je	.LBB99_7
+	jmp	.LBB99_8
+.LBB99_6:
+	jmp	.LBB99_1
+.LBB99_7:
+	movq	48(%rsp), %rcx
+	leaq	_FileReader_Project_Json_readJson(%rip), %rdx
+	callq	_FileReader_Project_Json__readJsonDICT
+	movq	%rax, %rcx
+	callq	_a1_Project_Json_jDICT
+	nop
+	addq	$56, %rsp
+	retq
+.LBB99_8:
+	cmpb	$91, 47(%rsp)
+	jne	.LBB99_10
+	movq	48(%rsp), %rcx
+	leaq	_FileReader_Project_Json_readJson(%rip), %rdx
+	callq	_FileReader_Project_Json__readJsonLIST
+	movq	%rax, %rcx
+	callq	_a1_Project_Json_jLIST
+	nop
+	addq	$56, %rsp
+	retq
+.LBB99_10:
+	cmpb	$34, 47(%rsp)
+	jne	.LBB99_12
+	movq	48(%rsp), %rcx
+	callq	_FileReader_Project_Json__readJsonSTRING
+	movq	%rax, %rcx
+	callq	_String_Project_Json_jSTRING
+	nop
+	addq	$56, %rsp
+	retq
+.LBB99_12:
+	cmpb	$48, 47(%rsp)
+	setae	%al
+	cmpb	$57, 47(%rsp)
+	setbe	%cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB99_13
+	jmp	.LBB99_14
+.LBB99_13:
+	movq	48(%rsp), %rcx
+	movb	47(%rsp), %al
+	subb	$48, %al
+	movzbl	%al, %eax
+	movl	%eax, %r8d
+	xorl	%edx, %edx
+	callq	_FileReader_Project_Json__readJsonINT
+	movl	%eax, %ecx
+	callq	_Int_Project_Json_jINT
+	nop
+	addq	$56, %rsp
+	retq
+.LBB99_14:
+	cmpb	$45, 47(%rsp)
+	jne	.LBB99_16
+	movq	48(%rsp), %rcx
+	movl	$1, %edx
+	xorl	%eax, %eax
+	movl	%eax, %r8d
+	callq	_FileReader_Project_Json__readJsonINT
+	movl	%eax, %ecx
+	callq	_Int_Project_Json_jINT
+	nop
+	addq	$56, %rsp
+	retq
+.LBB99_16:
+	movzbl	47(%rsp), %ecx
+	callq	_Int_builtin_toString
+	movq	%rax, %rdx
+	leaq	_sz46(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz47(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+	int3
 	.seh_endproc
 
 	.def	__Physics_Obj_MType_Physics_Obj_newMoveObj;
@@ -5450,30 +6808,30 @@ _Int_Physics_Obj__decSpd:
 	movl	4(%rsp), %eax
 	subl	(%rsp), %eax
 	cmpl	$0, %eax
-	jle	.LBB80_2
+	jle	.LBB101_2
 	movl	4(%rsp), %eax
 	subl	(%rsp), %eax
 	popq	%rcx
 	retq
-.LBB80_2:
+.LBB101_2:
 	movl	4(%rsp), %eax
 	addl	(%rsp), %eax
 	cmpl	$0, %eax
-	jl	.LBB80_4
-	jmp	.LBB80_5
-.LBB80_3:
+	jl	.LBB101_4
+	jmp	.LBB101_5
+.LBB101_3:
 	xorl	%eax, %eax
 	popq	%rcx
 	retq
-.LBB80_4:
+.LBB101_4:
 	movl	4(%rsp), %eax
 	addl	(%rsp), %eax
 	popq	%rcx
 	retq
-.LBB80_5:
-	jmp	.LBB80_6
-.LBB80_6:
-	jmp	.LBB80_3
+.LBB101_5:
+	jmp	.LBB101_6
+.LBB101_6:
+	jmp	.LBB101_3
 	.seh_endproc
 
 	.def	_Int_Physics_Obj__incSpd;
@@ -5499,14 +6857,14 @@ _Int_Physics_Obj__incSpd:
 	setg	%cl
 	andb	%cl, %al
 	testb	$1, %al
-	jne	.LBB81_1
-	jmp	.LBB81_2
-.LBB81_1:
+	jne	.LBB102_1
+	jmp	.LBB102_2
+.LBB102_1:
 	movl	8(%rsp), %eax
 	addl	4(%rsp), %eax
 	addq	$16, %rsp
 	retq
-.LBB81_2:
+.LBB102_2:
 	cmpl	$0, 12(%rsp)
 	setl	%al
 	movl	12(%rsp), %ecx
@@ -5516,18 +6874,18 @@ _Int_Physics_Obj__incSpd:
 	setl	%cl
 	andb	%cl, %al
 	testb	$1, %al
-	jne	.LBB81_4
-	jmp	.LBB81_5
-.LBB81_3:
+	jne	.LBB102_4
+	jmp	.LBB102_5
+.LBB102_3:
 	movl	8(%rsp), %eax
 	addq	$16, %rsp
 	retq
-.LBB81_4:
+.LBB102_4:
 	movl	8(%rsp), %eax
 	subl	4(%rsp), %eax
 	addq	$16, %rsp
 	retq
-.LBB81_5:
+.LBB102_5:
 	cmpl	$0, 12(%rsp)
 	setg	%al
 	movl	12(%rsp), %ecx
@@ -5535,18 +6893,18 @@ _Int_Physics_Obj__incSpd:
 	setg	%cl
 	xorb	%cl, %al
 	testb	$1, %al
-	jne	.LBB81_7
-	jmp	.LBB81_8
-.LBB81_6:
-	jmp	.LBB81_3
-.LBB81_7:
+	jne	.LBB102_7
+	jmp	.LBB102_8
+.LBB102_6:
+	jmp	.LBB102_3
+.LBB102_7:
 	movl	12(%rsp), %eax
 	addq	$16, %rsp
 	retq
-.LBB81_8:
-	jmp	.LBB81_9
-.LBB81_9:
-	jmp	.LBB81_6
+.LBB102_8:
+	jmp	.LBB102_9
+.LBB102_9:
+	jmp	.LBB102_6
 	.seh_endproc
 
 	.def	__Physics_Obj_MoveObj_Physics_Obj__accSpd;
@@ -5563,7 +6921,7 @@ __Physics_Obj_MoveObj_Physics_Obj__accSpd:
 	movq	%rcx, 64(%rsp)
 	movq	64(%rsp), %rax
 	cmpl	$0, 24(%rax)
-	jne	.LBB82_2
+	jne	.LBB103_2
 	movq	64(%rsp), %rax
 	movq	%rax, 56(%rsp)
 	movq	64(%rsp), %rax
@@ -5574,8 +6932,8 @@ __Physics_Obj_MoveObj_Physics_Obj__accSpd:
 	movl	%eax, %ecx
 	movq	56(%rsp), %rax
 	movl	%ecx, 16(%rax)
-	jmp	.LBB82_3
-.LBB82_2:
+	jmp	.LBB103_3
+.LBB103_2:
 	movq	64(%rsp), %rax
 	movq	%rax, 48(%rsp)
 	movq	64(%rsp), %rax
@@ -5588,7 +6946,7 @@ __Physics_Obj_MoveObj_Physics_Obj__accSpd:
 	movl	%eax, %ecx
 	movq	48(%rsp), %rax
 	movl	%ecx, 16(%rax)
-.LBB82_3:
+.LBB103_3:
 	movq	64(%rsp), %rax
 	movq	%rax, 40(%rsp)
 	movq	64(%rsp), %rax
@@ -5619,9 +6977,14 @@ __Physics_Obj_MoveObj_Physics_Obj_updateSpd:
 	movq	48(%rsp), %rax
 	movw	(%rax), %ax
 	movw	%ax, 46(%rsp)
+	cmpw	$0, 46(%rsp)
+	jne	.LBB104_2
 	movq	48(%rsp), %rcx
 	callq	__Physics_Obj_MoveObj_Physics_Obj__accSpd
-	nop
+	jmp	.LBB104_3
+.LBB104_2:
+	jmp	.LBB104_3
+.LBB104_3:
 	addq	$56, %rsp
 	retq
 	.seh_endproc
@@ -5680,6 +7043,85 @@ __Physics_Room_BaseTile_Project_Globals_draw:
 	callq	_Int_Project_Globals_drawSprite
 	nop
 	addq	$72, %rsp
+	retq
+	.seh_endproc
+
+	.def	_Int_Physics_Room_ttLookup;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_Int_Physics_Room_ttLookup
+	.p2align	4, 0x90
+_Int_Physics_Room_ttLookup:
+.seh_proc _Int_Physics_Room_ttLookup
+	subq	$24, %rsp
+	.seh_stackalloc 24
+	.seh_endprologue
+	movl	%ecx, 20(%rsp)
+	movl	$0, 16(%rsp)
+	movl	$3, 12(%rsp)
+.LBB107_1:
+	movl	12(%rsp), %eax
+	movl	16(%rsp), %ecx
+	addl	$1, %ecx
+	cmpl	%ecx, %eax
+	jle	.LBB107_3
+	movl	16(%rsp), %eax
+	movl	%eax, (%rsp)
+	movl	12(%rsp), %eax
+	subl	16(%rsp), %eax
+	movl	$2, %ecx
+	cltd
+	idivl	%ecx
+	movl	%eax, %ecx
+	movl	(%rsp), %eax
+	addl	%ecx, %eax
+	movl	%eax, 8(%rsp)
+	movq	ATTR_Physics_Room_TType_canonId(%rip), %rax
+	movl	8(%rsp), %ecx
+	movq	16(%rax), %rax
+	movswq	%cx, %rdx
+	movl	(%rax,%rdx,4), %eax
+	movswq	%cx, %rcx
+	movl	%eax, 4(%rsp)
+	movl	4(%rsp), %eax
+	cmpl	20(%rsp), %eax
+	je	.LBB107_4
+	jmp	.LBB107_5
+.LBB107_3:
+	cmpl	$3, 16(%rsp)
+	jl	.LBB107_10
+	jmp	.LBB107_11
+.LBB107_4:
+	movl	8(%rsp), %eax
+	addq	$24, %rsp
+	retq
+.LBB107_5:
+	movl	4(%rsp), %eax
+	cmpl	20(%rsp), %eax
+	jl	.LBB107_7
+	jmp	.LBB107_8
+.LBB107_6:
+	jmp	.LBB107_1
+.LBB107_7:
+	movl	8(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 16(%rsp)
+	jmp	.LBB107_9
+.LBB107_8:
+	movl	8(%rsp), %eax
+	movl	%eax, 12(%rsp)
+.LBB107_9:
+	jmp	.LBB107_6
+.LBB107_10:
+	movl	16(%rsp), %eax
+	addq	$24, %rsp
+	retq
+.LBB107_11:
+	jmp	.LBB107_12
+.LBB107_12:
+	xorl	%eax, %eax
+	addq	$24, %rsp
 	retq
 	.seh_endproc
 
@@ -5758,6 +7200,99 @@ _any_Physics_Room_newEndlessGrid:
 	retq
 	.seh_endproc
 
+	.def	__Physics_Room_EndlessGrid_Physics_Room_lookupSector;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	.p2align	4, 0x90
+__Physics_Room_EndlessGrid_Physics_Room_lookupSector:
+.seh_proc __Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	subq	$80, %rsp
+	.seh_stackalloc 80
+	.seh_endprologue
+	movq	%rcx, (%rsp)
+	movq	%rdx, 72(%rsp)
+	movl	%r8d, 68(%rsp)
+	movl	%r9d, 64(%rsp)
+	movl	68(%rsp), %eax
+	movq	72(%rsp), %rcx
+	subl	(%rcx), %eax
+	movl	%eax, 60(%rsp)
+	movl	64(%rsp), %eax
+	movq	72(%rsp), %rcx
+	subl	4(%rcx), %eax
+	movl	%eax, 56(%rsp)
+	movq	72(%rsp), %rax
+	movq	8(%rax), %rax
+	addq	$24, %rax
+	movq	%rax, 48(%rsp)
+	movq	48(%rsp), %rax
+	movl	(%rax), %eax
+	movl	%eax, 44(%rsp)
+	movq	48(%rsp), %rax
+	movl	4(%rax), %eax
+	movl	%eax, 40(%rsp)
+	cmpl	$0, 60(%rsp)
+	setl	%al
+	cmpl	$0, 56(%rsp)
+	setl	%cl
+	orb	%cl, %al
+	movl	60(%rsp), %ecx
+	cmpl	44(%rsp), %ecx
+	setge	%cl
+	orb	%cl, %al
+	movl	56(%rsp), %ecx
+	cmpl	40(%rsp), %ecx
+	setge	%cl
+	orb	%cl, %al
+	testb	$1, %al
+	jne	.LBB110_1
+	jmp	.LBB110_2
+.LBB110_1:
+	movq	(%rsp), %rax
+	movl	60(%rsp), %ecx
+	movl	56(%rsp), %edx
+	movl	%edx, 36(%rsp)
+	movl	%ecx, 32(%rsp)
+	movq	$0, 24(%rsp)
+	movq	24(%rsp), %rcx
+	movl	32(%rsp), %edx
+	movl	36(%rsp), %r8d
+	movl	%r8d, 12(%rax)
+	movl	%edx, 8(%rax)
+	movq	%rcx, (%rax)
+	addq	$80, %rsp
+	retq
+.LBB110_2:
+	jmp	.LBB110_3
+.LBB110_3:
+	movq	(%rsp), %rax
+	movq	72(%rsp), %rcx
+	movq	8(%rcx), %rcx
+	movl	60(%rsp), %edx
+	movl	56(%rsp), %r8d
+	movl	24(%rcx), %r9d
+	movl	%r8d, %r10d
+	imull	%r9d, %r10d
+	movl	%edx, %r9d
+	addl	%r10d, %r9d
+	movq	16(%rcx), %rcx
+	movslq	%r9d, %r9
+	movq	(%rcx,%r9,8), %rcx
+	movl	%r8d, 20(%rsp)
+	movl	%edx, 16(%rsp)
+	movq	%rcx, 8(%rsp)
+	movq	8(%rsp), %rcx
+	movl	16(%rsp), %edx
+	movl	20(%rsp), %r8d
+	movl	%r8d, 12(%rax)
+	movl	%edx, 8(%rax)
+	movq	%rcx, (%rax)
+	addq	$80, %rsp
+	retq
+	.seh_endproc
+
 	.def	__Physics_Room_EndlessGrid_builtin_lookup;
 	.scl	2;
 	.type	32;
@@ -5766,84 +7301,47 @@ _any_Physics_Room_newEndlessGrid:
 	.p2align	4, 0x90
 __Physics_Room_EndlessGrid_builtin_lookup:
 .seh_proc __Physics_Room_EndlessGrid_builtin_lookup
-	subq	$104, %rsp
-	.seh_stackalloc 104
+	subq	$120, %rsp
+	.seh_stackalloc 120
 	.seh_endprologue
-	movq	%rcx, 96(%rsp)
-	movl	%edx, 92(%rsp)
-	movl	%r8d, 88(%rsp)
-	movl	92(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_adiv
-	movq	96(%rsp), %rcx
-	subl	(%rcx), %eax
-	movl	%eax, 84(%rsp)
-	movl	88(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_adiv
-	movq	96(%rsp), %rcx
-	subl	4(%rcx), %eax
-	movl	%eax, 80(%rsp)
-	movq	96(%rsp), %rax
-	movq	8(%rax), %rax
-	addq	$24, %rax
-	movq	%rax, 72(%rsp)
-	movq	72(%rsp), %rax
-	movl	(%rax), %eax
-	movl	%eax, 68(%rsp)
-	movq	72(%rsp), %rax
-	movl	4(%rax), %eax
-	movl	%eax, 64(%rsp)
-	cmpl	$0, 84(%rsp)
-	setl	%al
-	cmpl	$0, 80(%rsp)
-	setl	%cl
-	orb	%cl, %al
-	movl	84(%rsp), %ecx
-	cmpl	68(%rsp), %ecx
-	setge	%cl
-	orb	%cl, %al
-	movl	80(%rsp), %ecx
-	cmpl	64(%rsp), %ecx
-	setge	%cl
-	orb	%cl, %al
-	testb	$1, %al
-	jne	.LBB88_1
-	jmp	.LBB88_2
-.LBB88_1:
-	xorl	%eax, %eax
-	addq	$104, %rsp
-	retq
-.LBB88_2:
-	jmp	.LBB88_3
-.LBB88_3:
-	movq	96(%rsp), %rax
-	movq	8(%rax), %rax
-	movl	84(%rsp), %ecx
-	movl	80(%rsp), %edx
-	imull	24(%rax), %edx
-	addl	%edx, %ecx
-	movq	16(%rax), %rax
-	movslq	%ecx, %rdx
-	movq	(%rax,%rdx,8), %rax
-	movslq	%ecx, %rcx
+	movq	%rcx, 112(%rsp)
+	movl	%edx, 108(%rsp)
+	movl	%r8d, 104(%rsp)
+	movq	112(%rsp), %rax
 	movq	%rax, 56(%rsp)
-	cmpq	$0, 56(%rsp)
-	jne	.LBB88_5
-	xorl	%eax, %eax
-	addq	$104, %rsp
-	retq
-.LBB88_5:
-	jmp	.LBB88_6
-.LBB88_6:
-	movq	56(%rsp), %rax
+	movl	108(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movl	%eax, 68(%rsp)
+	movl	104(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movq	56(%rsp), %rdx
+	movl	68(%rsp), %r8d
+	movl	%eax, %r9d
+	leaq	72(%rsp), %rcx
+	callq	__Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	leaq	72(%rsp), %rax
+	movq	%rax, 96(%rsp)
+	movq	96(%rsp), %rax
 	movq	(%rax), %rax
+	movq	%rax, 88(%rsp)
+	cmpq	$0, 88(%rsp)
+	jne	.LBB111_2
+	xorl	%eax, %eax
+	addq	$120, %rsp
+	retq
+.LBB111_2:
+	jmp	.LBB111_3
+.LBB111_3:
+	movq	88(%rsp), %rax
+	movq	8(%rax), %rax
 	movq	%rax, 48(%rsp)
-	movl	92(%rsp), %ecx
+	movl	108(%rsp), %ecx
 	movl	_Physics_Room__SEC_SIZE(%rip), %edx
 	callq	_Int_Commons_Core_amod
 	movl	%eax, 44(%rsp)
-	movl	88(%rsp), %ecx
+	movl	104(%rsp), %ecx
 	movl	_Physics_Room__SEC_SIZE(%rip), %edx
 	callq	_Int_Commons_Core_amod
 	movl	44(%rsp), %ecx
@@ -5855,7 +7353,7 @@ __Physics_Room_EndlessGrid_builtin_lookup:
 	movslq	%ecx, %rdx
 	movq	(%rax,%rdx,8), %rax
 	movslq	%ecx, %rcx
-	addq	$104, %rsp
+	addq	$120, %rsp
 	retq
 	.seh_endproc
 
@@ -5867,127 +7365,228 @@ __Physics_Room_EndlessGrid_builtin_lookup:
 	.p2align	4, 0x90
 __Physics_Room_EndlessGrid_builtin_update:
 .seh_proc __Physics_Room_EndlessGrid_builtin_update
+	subq	$168, %rsp
+	.seh_stackalloc 168
+	.seh_endprologue
+	movq	%rcx, 160(%rsp)
+	movq	%rdx, 152(%rsp)
+	movl	%r8d, 148(%rsp)
+	movl	%r9d, 144(%rsp)
+	movq	160(%rsp), %rax
+	movq	%rax, 80(%rsp)
+	movl	148(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movl	%eax, 92(%rsp)
+	movl	144(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movq	80(%rsp), %rdx
+	movl	92(%rsp), %r8d
+	movl	%eax, %r9d
+	leaq	96(%rsp), %rcx
+	callq	__Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	leaq	96(%rsp), %rax
+	movq	%rax, 136(%rsp)
+	movq	136(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 128(%rsp)
+	movq	136(%rsp), %rax
+	movl	8(%rax), %eax
+	movl	%eax, 124(%rsp)
+	movq	136(%rsp), %rax
+	movl	12(%rax), %eax
+	movl	%eax, 120(%rsp)
+	cmpq	$0, 128(%rsp)
+	jne	.LBB112_2
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	movl	%edx, 68(%rsp)
+	imull	%edx, %edx
+	movq	%rsp, %rax
+	movq	$0, 32(%rax)
+	movl	$8, %r8d
+	movb	$1, %r9b
+	movl	%r8d, %ecx
+	callq	gc_alloc_array
+	movl	68(%rsp), %ecx
+	movl	%ecx, 24(%rax)
+	movl	%ecx, 28(%rax)
+	movq	%rax, 112(%rsp)
+	movq	112(%rsp), %rax
+	movq	%rax, 72(%rsp)
+	leaq	tc__Physics_Room_Sector(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	72(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, 8(%rcx)
+	movb	$1, 2(%rcx)
+	movb	$0, 1(%rcx)
+	movb	$0, (%rcx)
+	movq	%rax, 128(%rsp)
+	movq	160(%rsp), %rax
+	movq	8(%rax), %rax
+	movl	124(%rsp), %ecx
+	movl	120(%rsp), %edx
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movq	128(%rsp), %rdx
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	jmp	.LBB112_3
+.LBB112_2:
+	jmp	.LBB112_3
+.LBB112_3:
+	movq	128(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 56(%rsp)
+	movl	148(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_amod
+	movl	%eax, 52(%rsp)
+	movl	144(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_amod
+	movl	52(%rsp), %ecx
+	movl	%eax, %edx
+	movq	56(%rsp), %rax
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movq	152(%rsp), %rdx
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movq	128(%rsp), %rax
+	movb	$0, 1(%rax)
+	movq	128(%rsp), %rax
+	movb	$1, 2(%rax)
+	addq	$168, %rsp
+	retq
+	.seh_endproc
+
+	.def	__Physics_Room_EndlessGrid_Physics_Room_updateEmpty;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_EndlessGrid_Physics_Room_updateEmpty
+	.p2align	4, 0x90
+__Physics_Room_EndlessGrid_Physics_Room_updateEmpty:
+.seh_proc __Physics_Room_EndlessGrid_Physics_Room_updateEmpty
 	subq	$136, %rsp
 	.seh_stackalloc 136
 	.seh_endprologue
 	movq	%rcx, 128(%rsp)
-	movq	%rdx, 120(%rsp)
-	movl	%r8d, 116(%rsp)
-	movl	%r9d, 112(%rsp)
-	movl	116(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_adiv
-	movq	128(%rsp), %rcx
-	subl	(%rcx), %eax
-	movl	%eax, 108(%rsp)
-	movl	112(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_adiv
-	movq	128(%rsp), %rcx
-	subl	4(%rcx), %eax
-	movl	%eax, 104(%rsp)
+	movl	%edx, 124(%rsp)
+	movl	%r8d, 120(%rsp)
 	movq	128(%rsp), %rax
-	movq	8(%rax), %rax
-	addq	$24, %rax
-	movq	%rax, 96(%rsp)
-	movq	96(%rsp), %rax
-	movl	(%rax), %eax
-	movl	%eax, 92(%rsp)
-	movq	96(%rsp), %rax
-	movl	4(%rax), %eax
-	movl	%eax, 88(%rsp)
-	cmpl	$0, 108(%rsp)
-	setl	%al
-	cmpl	$0, 104(%rsp)
-	setl	%cl
-	orb	%cl, %al
-	movl	108(%rsp), %ecx
-	cmpl	92(%rsp), %ecx
-	setge	%cl
-	orb	%cl, %al
-	movl	104(%rsp), %ecx
-	cmpl	88(%rsp), %ecx
-	setge	%cl
-	orb	%cl, %al
-	testb	$1, %al
-	jne	.LBB89_1
-	jmp	.LBB89_2
-.LBB89_1:
+	movq	%rax, 40(%rsp)
+	movl	124(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movl	%eax, 52(%rsp)
+	movl	120(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movq	40(%rsp), %rdx
+	movl	52(%rsp), %r8d
+	movl	%eax, %r9d
+	leaq	56(%rsp), %rcx
+	callq	__Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	leaq	56(%rsp), %rax
+	movq	%rax, 112(%rsp)
+	movq	112(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 104(%rsp)
+	movq	112(%rsp), %rax
+	movl	8(%rax), %eax
+	movl	%eax, 100(%rsp)
+	movq	112(%rsp), %rax
+	movl	12(%rax), %eax
+	movl	%eax, 96(%rsp)
+	cmpq	$0, 104(%rsp)
+	jne	.LBB113_2
 	addq	$136, %rsp
 	retq
-.LBB89_2:
-	jmp	.LBB89_3
-.LBB89_3:
-	movq	128(%rsp), %rax
+.LBB113_2:
+	jmp	.LBB113_3
+.LBB113_3:
+	movb	$1, 95(%rsp)
+	movl	$0, 88(%rsp)
+.LBB113_4:
+	movl	88(%rsp), %eax
+	cmpl	_Physics_Room__SEC_SIZE(%rip), %eax
+	jge	.LBB113_6
+	movl	$0, 84(%rsp)
+	jmp	.LBB113_7
+.LBB113_6:
+	testb	$1, 95(%rsp)
+	jne	.LBB113_13
+	jmp	.LBB113_14
+.LBB113_7:
+	movl	84(%rsp), %eax
+	cmpl	_Physics_Room__SEC_SIZE(%rip), %eax
+	jge	.LBB113_9
+	movq	104(%rsp), %rax
 	movq	8(%rax), %rax
-	movl	108(%rsp), %ecx
-	movl	104(%rsp), %edx
+	movl	84(%rsp), %ecx
+	movl	88(%rsp), %edx
 	imull	24(%rax), %edx
 	addl	%edx, %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rdx
 	movq	(%rax,%rdx,8), %rax
 	movslq	%ecx, %rcx
-	movq	%rax, 80(%rsp)
-	cmpq	$0, 80(%rsp)
-	jne	.LBB89_5
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	movl	%edx, 56(%rsp)
-	imull	%edx, %edx
-	movq	%rsp, %rax
-	movq	$0, 32(%rax)
-	movl	$8, %r8d
-	movl	%r8d, 60(%rsp)
-	movb	$1, %r9b
-	movl	%r8d, %ecx
-	callq	gc_alloc_array
-	movl	56(%rsp), %edx
-	movl	60(%rsp), %ecx
-	movl	%edx, 24(%rax)
-	movl	%edx, 28(%rax)
 	movq	%rax, 72(%rsp)
-	movq	72(%rsp), %rax
-	movq	%rax, 64(%rsp)
-	leaq	tc__Physics_Room_Sector(%rip), %rdx
-	callq	gc_alloc
-	movq	64(%rsp), %rdx
-	movq	%rax, %rcx
-	movq	%rcx, %rax
-	movq	%rdx, (%rcx)
-	movq	%rax, 80(%rsp)
+	cmpq	$0, 72(%rsp)
+	jne	.LBB113_10
+	jmp	.LBB113_11
+.LBB113_9:
+	movl	88(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 88(%rsp)
+	jmp	.LBB113_4
+.LBB113_10:
+	movb	$0, 95(%rsp)
+	jmp	.LBB113_12
+.LBB113_11:
+	jmp	.LBB113_12
+.LBB113_12:
+	movl	84(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 84(%rsp)
+	jmp	.LBB113_7
+.LBB113_13:
+	movq	104(%rsp), %rax
+	movb	$1, 1(%rax)
+	jmp	.LBB113_15
+.LBB113_14:
+	jmp	.LBB113_15
+.LBB113_15:
+	movq	104(%rsp), %rax
+	movb	1(%rax), %al
+	movq	104(%rsp), %rcx
+	movb	(%rcx), %cl
+	xorb	$-1, %cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB113_16
+	jmp	.LBB113_17
+.LBB113_16:
 	movq	128(%rsp), %rax
 	movq	8(%rax), %rax
-	movl	108(%rsp), %ecx
-	movl	104(%rsp), %edx
+	movl	100(%rsp), %ecx
+	movl	96(%rsp), %edx
 	imull	24(%rax), %edx
 	addl	%edx, %ecx
 	movq	16(%rax), %rax
-	movq	80(%rsp), %rdx
 	movslq	%ecx, %rcx
-	movq	%rdx, (%rax,%rcx,8)
-	jmp	.LBB89_6
-.LBB89_5:
-	jmp	.LBB89_6
-.LBB89_6:
-	movq	80(%rsp), %rax
-	movq	(%rax), %rax
-	movq	%rax, 48(%rsp)
-	movl	116(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_amod
-	movl	%eax, 44(%rsp)
-	movl	112(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_amod
-	movl	44(%rsp), %ecx
-	movl	%eax, %edx
-	movq	48(%rsp), %rax
-	imull	24(%rax), %edx
-	addl	%edx, %ecx
-	movq	16(%rax), %rax
-	movq	120(%rsp), %rdx
-	movslq	%ecx, %rcx
-	movq	%rdx, (%rax,%rcx,8)
+	movq	$0, (%rax,%rcx,8)
+	jmp	.LBB113_18
+.LBB113_17:
+	jmp	.LBB113_18
+.LBB113_18:
 	addq	$136, %rsp
 	retq
 	.seh_endproc
@@ -6000,82 +7599,46 @@ __Physics_Room_EndlessGrid_builtin_update:
 	.p2align	4, 0x90
 __Physics_Room_EndlessGrid_Physics_Room_delete:
 .seh_proc __Physics_Room_EndlessGrid_Physics_Room_delete
-	subq	$104, %rsp
-	.seh_stackalloc 104
+	subq	$120, %rsp
+	.seh_stackalloc 120
 	.seh_endprologue
-	movq	%rcx, 96(%rsp)
-	movl	%edx, 92(%rsp)
-	movl	%r8d, 88(%rsp)
-	movl	92(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_adiv
-	movq	96(%rsp), %rcx
-	subl	(%rcx), %eax
-	movl	%eax, 84(%rsp)
-	movl	88(%rsp), %ecx
-	movl	_Physics_Room__SEC_SIZE(%rip), %edx
-	callq	_Int_Commons_Core_adiv
-	movq	96(%rsp), %rcx
-	subl	4(%rcx), %eax
-	movl	%eax, 80(%rsp)
-	movq	96(%rsp), %rax
-	movq	8(%rax), %rax
-	addq	$24, %rax
-	movq	%rax, 72(%rsp)
-	movq	72(%rsp), %rax
-	movl	(%rax), %eax
-	movl	%eax, 68(%rsp)
-	movq	72(%rsp), %rax
-	movl	4(%rax), %eax
-	movl	%eax, 64(%rsp)
-	cmpl	$0, 84(%rsp)
-	setl	%al
-	cmpl	$0, 80(%rsp)
-	setl	%cl
-	orb	%cl, %al
-	movl	84(%rsp), %ecx
-	cmpl	68(%rsp), %ecx
-	setge	%cl
-	orb	%cl, %al
-	movl	80(%rsp), %ecx
-	cmpl	64(%rsp), %ecx
-	setge	%cl
-	orb	%cl, %al
-	testb	$1, %al
-	jne	.LBB90_1
-	jmp	.LBB90_2
-.LBB90_1:
-	addq	$104, %rsp
-	retq
-.LBB90_2:
-	jmp	.LBB90_3
-.LBB90_3:
-	movq	96(%rsp), %rax
-	movq	8(%rax), %rax
-	movl	84(%rsp), %ecx
-	movl	80(%rsp), %edx
-	imull	24(%rax), %edx
-	addl	%edx, %ecx
-	movq	16(%rax), %rax
-	movslq	%ecx, %rdx
-	movq	(%rax,%rdx,8), %rax
-	movslq	%ecx, %rcx
+	movq	%rcx, 112(%rsp)
+	movl	%edx, 108(%rsp)
+	movl	%r8d, 104(%rsp)
+	movq	112(%rsp), %rax
 	movq	%rax, 56(%rsp)
-	cmpq	$0, 56(%rsp)
-	jne	.LBB90_5
-	addq	$104, %rsp
-	retq
-.LBB90_5:
-	jmp	.LBB90_6
-.LBB90_6:
-	movq	56(%rsp), %rax
+	movl	108(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movl	%eax, 68(%rsp)
+	movl	104(%rsp), %ecx
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	callq	_Int_Commons_Core_adiv
+	movq	56(%rsp), %rdx
+	movl	68(%rsp), %r8d
+	movl	%eax, %r9d
+	leaq	72(%rsp), %rcx
+	callq	__Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	leaq	72(%rsp), %rax
+	movq	%rax, 96(%rsp)
+	movq	96(%rsp), %rax
 	movq	(%rax), %rax
+	movq	%rax, 88(%rsp)
+	cmpq	$0, 88(%rsp)
+	jne	.LBB114_2
+	addq	$120, %rsp
+	retq
+.LBB114_2:
+	jmp	.LBB114_3
+.LBB114_3:
+	movq	88(%rsp), %rax
+	movq	8(%rax), %rax
 	movq	%rax, 48(%rsp)
-	movl	92(%rsp), %ecx
+	movl	108(%rsp), %ecx
 	movl	_Physics_Room__SEC_SIZE(%rip), %edx
 	callq	_Int_Commons_Core_amod
 	movl	%eax, 44(%rsp)
-	movl	88(%rsp), %ecx
+	movl	104(%rsp), %ecx
 	movl	_Physics_Room__SEC_SIZE(%rip), %edx
 	callq	_Int_Commons_Core_amod
 	movl	44(%rsp), %ecx
@@ -6086,7 +7649,9 @@ __Physics_Room_EndlessGrid_Physics_Room_delete:
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	movq	$0, (%rax,%rcx,8)
-	addq	$104, %rsp
+	movq	88(%rsp), %rax
+	movb	$1, 2(%rax)
+	addq	$120, %rsp
 	retq
 	.seh_endproc
 
@@ -6156,13 +7721,13 @@ __Physics_Room_Room_Physics_Room_solid:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 32(%rsp)
 	cmpq	$0, 32(%rsp)
-	je	.LBB92_2
+	je	.LBB116_2
 	movb	$1, %al
 	addq	$56, %rsp
 	retq
-.LBB92_2:
-	jmp	.LBB92_3
-.LBB92_3:
+.LBB116_2:
+	jmp	.LBB116_3
+.LBB116_3:
 	xorl	%eax, %eax
 	addq	$56, %rsp
 	retq
@@ -6239,13 +7804,13 @@ __Physics_Room_Room_Physics_Room__sameMat:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 40(%rsp)
 	cmpq	$0, 40(%rsp)
-	jne	.LBB95_2
+	jne	.LBB119_2
 	xorl	%eax, %eax
 	addq	$72, %rsp
 	retq
-.LBB95_2:
-	jmp	.LBB95_3
-.LBB95_3:
+.LBB119_2:
+	jmp	.LBB119_3
+.LBB119_3:
 	movb	$1, %al
 	addq	$72, %rsp
 	retq
@@ -6272,12 +7837,12 @@ __Physics_Room_Room_Physics_Room__reifyTile:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 64(%rsp)
 	cmpq	$0, 64(%rsp)
-	jne	.LBB96_2
+	jne	.LBB120_2
 	addq	$88, %rsp
 	retq
-.LBB96_2:
-	jmp	.LBB96_3
-.LBB96_3:
+.LBB120_2:
+	jmp	.LBB120_3
+.LBB120_3:
 	movq	80(%rsp), %rcx
 	movq	64(%rsp), %rax
 	movw	(%rax), %dx
@@ -6323,18 +7888,18 @@ __Physics_Room_Room_Physics_Room__reifyTile:
 	movswq	%cx, %rcx
 	movw	%ax, 58(%rsp)
 	cmpw	$0, 58(%rsp)
-	jne	.LBB96_5
+	jne	.LBB120_5
 	movq	64(%rsp), %rax
 	movl	$0, 4(%rax)
-	jmp	.LBB96_6
-.LBB96_5:
+	jmp	.LBB120_6
+.LBB120_5:
 	cmpw	$1, 58(%rsp)
-	je	.LBB96_7
-	jmp	.LBB96_8
-.LBB96_6:
+	je	.LBB120_7
+	jmp	.LBB120_8
+.LBB120_6:
 	addq	$88, %rsp
 	retq
-.LBB96_7:
+.LBB120_7:
 	movb	63(%rsp), %al
 	xorb	$-1, %al
 	movb	62(%rsp), %cl
@@ -6347,128 +7912,136 @@ __Physics_Room_Room_Physics_Room__reifyTile:
 	andb	%dl, %cl
 	orb	%cl, %al
 	testb	$1, %al
-	jne	.LBB96_10
-	jmp	.LBB96_11
-.LBB96_8:
-	movb	63(%rsp), %al
-	xorb	$-1, %al
-	movb	62(%rsp), %cl
-	xorb	$-1, %cl
-	andb	%cl, %al
-	movb	61(%rsp), %cl
-	xorb	$-1, %cl
-	movb	60(%rsp), %dl
-	xorb	$-1, %dl
-	andb	%dl, %cl
-	orb	%cl, %al
-	testb	$1, %al
-	jne	.LBB96_22
-	jmp	.LBB96_23
-.LBB96_9:
-	jmp	.LBB96_6
-.LBB96_10:
+	jne	.LBB120_10
+	jmp	.LBB120_11
+.LBB120_8:
+	cmpw	$2, 58(%rsp)
+	je	.LBB120_22
+	jmp	.LBB120_23
+.LBB120_9:
+	jmp	.LBB120_6
+.LBB120_10:
 	movq	64(%rsp), %rax
 	movl	$0, 4(%rax)
 	addq	$88, %rsp
 	retq
-.LBB96_11:
-	jmp	.LBB96_12
-.LBB96_12:
+.LBB120_11:
+	jmp	.LBB120_12
+.LBB120_12:
 	movl	$0, 44(%rsp)
 	movl	$0, 40(%rsp)
 	movb	63(%rsp), %al
 	andb	62(%rsp), %al
 	testb	$1, %al
-	jne	.LBB96_13
-	jmp	.LBB96_14
-.LBB96_13:
+	jne	.LBB120_13
+	jmp	.LBB120_14
+.LBB120_13:
 	movl	$1, 44(%rsp)
-	jmp	.LBB96_15
-.LBB96_14:
+	jmp	.LBB120_15
+.LBB120_14:
 	testb	$1, 63(%rsp)
-	jne	.LBB96_16
-	jmp	.LBB96_17
-.LBB96_15:
+	jne	.LBB120_16
+	jmp	.LBB120_17
+.LBB120_15:
 	testb	$1, 61(%rsp)
-	jne	.LBB96_19
-	jmp	.LBB96_20
-.LBB96_16:
+	jne	.LBB120_19
+	jmp	.LBB120_20
+.LBB120_16:
 	movl	$2, 44(%rsp)
-	jmp	.LBB96_18
-.LBB96_17:
-	jmp	.LBB96_18
-.LBB96_18:
-	jmp	.LBB96_15
-.LBB96_19:
+	jmp	.LBB120_18
+.LBB120_17:
+	jmp	.LBB120_18
+.LBB120_18:
+	jmp	.LBB120_15
+.LBB120_19:
 	movl	$1, 40(%rsp)
-	jmp	.LBB96_21
-.LBB96_20:
-	jmp	.LBB96_21
-.LBB96_21:
+	jmp	.LBB120_21
+.LBB120_20:
+	jmp	.LBB120_21
+.LBB120_21:
 	movq	64(%rsp), %rax
 	movl	44(%rsp), %ecx
 	addl	$1, %ecx
 	imull	$3, 40(%rsp), %edx
 	addl	%edx, %ecx
 	movl	%ecx, 4(%rax)
-	jmp	.LBB96_9
-.LBB96_22:
+	jmp	.LBB120_9
+.LBB120_22:
+	movb	63(%rsp), %al
+	xorb	$-1, %al
+	movb	62(%rsp), %cl
+	xorb	$-1, %cl
+	andb	%cl, %al
+	movb	61(%rsp), %cl
+	xorb	$-1, %cl
+	movb	60(%rsp), %dl
+	xorb	$-1, %dl
+	andb	%dl, %cl
+	orb	%cl, %al
+	testb	$1, %al
+	jne	.LBB120_25
+	jmp	.LBB120_26
+.LBB120_23:
+	jmp	.LBB120_24
+.LBB120_24:
+	jmp	.LBB120_9
+.LBB120_25:
 	movq	64(%rsp), %rax
 	movl	$0, 4(%rax)
 	addq	$88, %rsp
 	retq
-.LBB96_23:
-	jmp	.LBB96_24
-.LBB96_24:
+.LBB120_26:
+	jmp	.LBB120_27
+.LBB120_27:
 	movl	$0, 44(%rsp)
 	movl	$0, 40(%rsp)
 	movb	63(%rsp), %al
 	andb	62(%rsp), %al
 	testb	$1, %al
-	jne	.LBB96_25
-	jmp	.LBB96_26
-.LBB96_25:
+	jne	.LBB120_28
+	jmp	.LBB120_29
+.LBB120_28:
 	movl	$1, 44(%rsp)
-	jmp	.LBB96_27
-.LBB96_26:
+	jmp	.LBB120_30
+.LBB120_29:
 	testb	$1, 63(%rsp)
-	jne	.LBB96_28
-	jmp	.LBB96_29
-.LBB96_27:
+	jne	.LBB120_31
+	jmp	.LBB120_32
+.LBB120_30:
 	movb	61(%rsp), %al
 	andb	60(%rsp), %al
 	testb	$1, %al
-	jne	.LBB96_31
-	jmp	.LBB96_32
-.LBB96_28:
+	jne	.LBB120_34
+	jmp	.LBB120_35
+.LBB120_31:
 	movl	$2, 44(%rsp)
-	jmp	.LBB96_30
-.LBB96_29:
-	jmp	.LBB96_30
-.LBB96_30:
-	jmp	.LBB96_27
-.LBB96_31:
+	jmp	.LBB120_33
+.LBB120_32:
+	jmp	.LBB120_33
+.LBB120_33:
+	jmp	.LBB120_30
+.LBB120_34:
 	movl	$1, 40(%rsp)
-	jmp	.LBB96_33
-.LBB96_32:
+	jmp	.LBB120_36
+.LBB120_35:
 	testb	$1, 61(%rsp)
-	jne	.LBB96_34
-	jmp	.LBB96_35
-.LBB96_33:
+	jne	.LBB120_37
+	jmp	.LBB120_38
+.LBB120_36:
 	movq	64(%rsp), %rax
 	movl	44(%rsp), %ecx
 	addl	$1, %ecx
 	imull	$3, 40(%rsp), %edx
 	addl	%edx, %ecx
 	movl	%ecx, 4(%rax)
-	jmp	.LBB96_9
-.LBB96_34:
+	jmp	.LBB120_24
+.LBB120_37:
 	movl	$2, 40(%rsp)
-	jmp	.LBB96_36
-.LBB96_35:
-	jmp	.LBB96_36
-.LBB96_36:
-	jmp	.LBB96_33
+	jmp	.LBB120_39
+.LBB120_38:
+	jmp	.LBB120_39
+.LBB120_39:
+	jmp	.LBB120_36
 	.seh_endproc
 
 	.def	__Physics_Room_Room_Physics_Room_reify;
@@ -6522,67 +8095,65 @@ __Physics_Room_Room_Physics_Room_reify:
 	.p2align	4, 0x90
 _pair_Physics_Room__diffTile:
 .seh_proc _pair_Physics_Room__diffTile
-	subq	$136, %rsp
-	.seh_stackalloc 136
+	subq	$120, %rsp
+	.seh_stackalloc 120
 	.seh_endprologue
-	movq	%rcx, 72(%rsp)
-	movl	184(%rsp), %eax
-	movl	176(%rsp), %eax
-	movq	%rdx, 128(%rsp)
-	movw	%r8w, 126(%rsp)
-	movl	%r9d, 120(%rsp)
-	movw	126(%rsp), %ax
-	movw	%ax, 118(%rsp)
-	cmpw	$0, 118(%rsp)
-	jne	.LBB98_2
-	movq	128(%rsp), %rax
-	movq	%rax, 56(%rsp)
-	movl	176(%rsp), %ecx
+	movq	%rcx, 64(%rsp)
+	movl	168(%rsp), %eax
+	movl	160(%rsp), %eax
+	movq	%rdx, 112(%rsp)
+	movw	%r8w, 110(%rsp)
+	movl	%r9d, 104(%rsp)
+	cmpw	$0, 110(%rsp)
+	jne	.LBB122_2
+	movq	112(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	movl	160(%rsp), %ecx
 	callq	_Int_Commons_Project_fromTile
-	movl	%eax, 68(%rsp)
-	movl	176(%rsp), %ecx
+	movl	%eax, 60(%rsp)
+	movl	160(%rsp), %ecx
 	incl	%ecx
 	callq	_Int_Commons_Project_fromTile
-	movq	56(%rsp), %rdx
+	movq	48(%rsp), %rdx
 	movl	%eax, %ecx
-	movl	68(%rsp), %eax
-	movl	%ecx, 100(%rsp)
-	movl	%eax, 96(%rsp)
-	movl	120(%rsp), %r9d
-	leaq	104(%rsp), %rcx
-	leaq	96(%rsp), %r8
+	movl	60(%rsp), %eax
+	movl	%ecx, 92(%rsp)
+	movl	%eax, 88(%rsp)
+	movl	104(%rsp), %r9d
+	leaq	96(%rsp), %rcx
+	leaq	88(%rsp), %r8
 	callq	_pair_Commons_Core_diff
-	movq	72(%rsp), %rax
-	movl	104(%rsp), %ecx
-	movl	108(%rsp), %edx
+	movq	64(%rsp), %rax
+	movl	96(%rsp), %ecx
+	movl	100(%rsp), %edx
 	movl	%edx, 4(%rax)
 	movl	%ecx, (%rax)
-	addq	$136, %rsp
+	addq	$120, %rsp
 	retq
-.LBB98_2:
-	movq	128(%rsp), %rax
-	movq	%rax, 40(%rsp)
-	movl	184(%rsp), %ecx
+.LBB122_2:
+	movq	112(%rsp), %rax
+	movq	%rax, 32(%rsp)
+	movl	168(%rsp), %ecx
 	callq	_Int_Commons_Project_fromTile
-	movl	%eax, 52(%rsp)
-	movl	184(%rsp), %ecx
+	movl	%eax, 44(%rsp)
+	movl	168(%rsp), %ecx
 	incl	%ecx
 	callq	_Int_Commons_Project_fromTile
-	movq	40(%rsp), %rdx
+	movq	32(%rsp), %rdx
 	movl	%eax, %ecx
-	movl	52(%rsp), %eax
-	movl	%ecx, 84(%rsp)
-	movl	%eax, 80(%rsp)
-	movl	120(%rsp), %r9d
-	leaq	88(%rsp), %rcx
-	leaq	80(%rsp), %r8
+	movl	44(%rsp), %eax
+	movl	%ecx, 76(%rsp)
+	movl	%eax, 72(%rsp)
+	movl	104(%rsp), %r9d
+	leaq	80(%rsp), %rcx
+	leaq	72(%rsp), %r8
 	callq	_pair_Commons_Core_diff
-	movq	72(%rsp), %rax
-	movl	88(%rsp), %ecx
-	movl	92(%rsp), %edx
+	movq	64(%rsp), %rax
+	movl	80(%rsp), %ecx
+	movl	84(%rsp), %edx
 	movl	%edx, 4(%rax)
 	movl	%ecx, (%rax)
-	addq	$136, %rsp
+	addq	$120, %rsp
 	retq
 	.seh_endproc
 
@@ -6625,7 +8196,7 @@ __Physics_Room_Room_Physics_Room_calcPush:
 	movl	4(%rax), %ecx
 	callq	_Int_Commons_Project_toTile
 	movl	%eax, 84(%rsp)
-.LBB99_1:
+.LBB123_1:
 	movl	84(%rsp), %eax
 	movl	%eax, 52(%rsp)
 	movq	88(%rsp), %rcx
@@ -6636,17 +8207,17 @@ __Physics_Room_Room_Physics_Room_calcPush:
 	movl	%eax, %ecx
 	movl	52(%rsp), %eax
 	cmpl	%ecx, %eax
-	jg	.LBB99_3
+	jg	.LBB123_3
 	movq	88(%rsp), %rax
 	movl	(%rax), %ecx
 	callq	_Int_Commons_Project_toTile
 	movl	%eax, 80(%rsp)
-	jmp	.LBB99_4
-.LBB99_3:
+	jmp	.LBB123_4
+.LBB123_3:
 	cmpl	$0, 112(%rsp)
-	jg	.LBB99_10
-	jmp	.LBB99_11
-.LBB99_4:
+	jg	.LBB123_10
+	jmp	.LBB123_11
+.LBB123_4:
 	movl	80(%rsp), %eax
 	movl	%eax, 48(%rsp)
 	movq	88(%rsp), %rcx
@@ -6657,20 +8228,20 @@ __Physics_Room_Room_Physics_Room_calcPush:
 	movl	%eax, %ecx
 	movl	48(%rsp), %eax
 	cmpl	%ecx, %eax
-	jg	.LBB99_6
+	jg	.LBB123_6
 	movq	128(%rsp), %rcx
 	movl	80(%rsp), %edx
 	movl	84(%rsp), %r8d
 	callq	__Physics_Room_Room_Physics_Room_solid
 	testb	$1, %al
-	jne	.LBB99_7
-	jmp	.LBB99_8
-.LBB99_6:
+	jne	.LBB123_7
+	jmp	.LBB123_8
+.LBB123_6:
 	movl	84(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 84(%rsp)
-	jmp	.LBB99_1
-.LBB99_7:
+	jmp	.LBB123_1
+.LBB123_7:
 	movq	96(%rsp), %rdx
 	movw	118(%rsp), %r8w
 	movl	112(%rsp), %r9d
@@ -6682,23 +8253,23 @@ __Physics_Room_Room_Physics_Room_calcPush:
 	callq	_pair_Physics_Room__diffTile
 	leaq	56(%rsp), %rax
 	movq	%rax, 96(%rsp)
-	jmp	.LBB99_9
-.LBB99_8:
-	jmp	.LBB99_9
-.LBB99_9:
+	jmp	.LBB123_9
+.LBB123_8:
+	jmp	.LBB123_9
+.LBB123_9:
 	movl	80(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 80(%rsp)
-	jmp	.LBB99_4
-.LBB99_10:
+	jmp	.LBB123_4
+.LBB123_10:
 	movq	96(%rsp), %rcx
 	callq	_pair_Commons_Core_size
 	nop
 	addq	$136, %rsp
 	retq
-.LBB99_11:
-	jmp	.LBB99_12
-.LBB99_12:
+.LBB123_11:
+	jmp	.LBB123_12
+.LBB123_12:
 	movq	96(%rsp), %rcx
 	callq	_pair_Commons_Core_size
 	movl	%eax, %ecx
@@ -6716,34 +8287,32 @@ __Physics_Room_Room_Physics_Room_calcPush:
 	.p2align	4, 0x90
 __Physics_Room_Room_Physics_Room_push:
 .seh_proc __Physics_Room_Room_Physics_Room_push
-	subq	$40, %rsp
-	.seh_stackalloc 40
+	subq	$32, %rsp
+	.seh_stackalloc 32
 	.seh_endprologue
-	movq	%rcx, 32(%rsp)
-	movq	%rdx, 24(%rsp)
-	movw	%r8w, 22(%rsp)
-	movl	%r9d, 16(%rsp)
-	movq	24(%rsp), %rax
+	movq	%rcx, 24(%rsp)
+	movq	%rdx, 16(%rsp)
+	movw	%r8w, 14(%rsp)
+	movl	%r9d, 8(%rsp)
+	movq	16(%rsp), %rax
 	movq	8(%rax), %rax
-	movq	%rax, 8(%rsp)
-	movw	22(%rsp), %ax
-	movw	%ax, 6(%rsp)
-	cmpw	$0, 6(%rsp)
-	jne	.LBB100_2
-	movq	8(%rsp), %rax
-	movq	8(%rsp), %rcx
+	movq	%rax, (%rsp)
+	cmpw	$0, 14(%rsp)
+	jne	.LBB124_2
+	movq	(%rsp), %rax
+	movq	(%rsp), %rcx
 	movl	(%rcx), %ecx
-	addl	16(%rsp), %ecx
+	addl	8(%rsp), %ecx
 	movl	%ecx, (%rax)
-	jmp	.LBB100_3
-.LBB100_2:
-	movq	8(%rsp), %rax
-	movq	8(%rsp), %rcx
+	jmp	.LBB124_3
+.LBB124_2:
+	movq	(%rsp), %rax
+	movq	(%rsp), %rcx
 	movl	4(%rcx), %ecx
-	addl	16(%rsp), %ecx
+	addl	8(%rsp), %ecx
 	movl	%ecx, 4(%rax)
-.LBB100_3:
-	addq	$40, %rsp
+.LBB124_3:
+	addq	$32, %rsp
 	retq
 	.seh_endproc
 
@@ -6833,11 +8402,11 @@ __Physics_Room_Room_builtin_update:
 	movq	16(%rax), %rax
 	movq	%rax, 56(%rsp)
 	movl	$0, 52(%rsp)
-.LBB103_1:
+.LBB127_1:
 	movl	52(%rsp), %eax
 	movq	56(%rsp), %rcx
 	cmpl	8(%rcx), %eax
-	jge	.LBB103_3
+	jge	.LBB127_3
 	movq	56(%rsp), %rax
 	movl	52(%rsp), %ecx
 	movq	16(%rax), %rax
@@ -6853,25 +8422,9 @@ __Physics_Room_Room_builtin_update:
 	movl	52(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 52(%rsp)
-	jmp	.LBB103_1
-.LBB103_3:
+	jmp	.LBB127_1
+.LBB127_3:
 	addq	$72, %rsp
-	retq
-	.seh_endproc
-
-	.def	__Physics_Room_Room_Physics_Room_save;
-	.scl	2;
-	.type	32;
-	.endef
-	.globl	__Physics_Room_Room_Physics_Room_save
-	.p2align	4, 0x90
-__Physics_Room_Room_Physics_Room_save:
-.seh_proc __Physics_Room_Room_Physics_Room_save
-	pushq	%rax
-	.seh_stackalloc 8
-	.seh_endprologue
-	movq	%rcx, (%rsp)
-	popq	%rax
 	retq
 	.seh_endproc
 
@@ -6923,20 +8476,20 @@ __Physics_Room_Room_Project_Globals_draw:
 	callq	__Project_Rom_SpriteDef_Project_Globals_lookupSprite
 	movq	%rax, 96(%rsp)
 	cmpq	$0, 96(%rsp)
-	jne	.LBB105_2
+	jne	.LBB128_2
 	addq	$152, %rsp
 	retq
-.LBB105_2:
-	jmp	.LBB105_3
-.LBB105_3:
+.LBB128_2:
+	jmp	.LBB128_3
+.LBB128_3:
 	movl	$0, 92(%rsp)
-.LBB105_4:
+.LBB128_4:
 	movl	92(%rsp), %eax
 	cmpl	104(%rsp), %eax
-	jge	.LBB105_6
+	jge	.LBB128_6
 	movl	$0, 88(%rsp)
-	jmp	.LBB105_7
-.LBB105_6:
+	jmp	.LBB128_7
+.LBB128_6:
 	movl	124(%rsp), %ecx
 	callq	_Int_Commons_Project_tilePixel
 	movl	%eax, 60(%rsp)
@@ -6951,10 +8504,10 @@ __Physics_Room_Room_Project_Globals_draw:
 	nop
 	addq	$152, %rsp
 	retq
-.LBB105_7:
+.LBB128_7:
 	movl	88(%rsp), %eax
 	cmpl	108(%rsp), %eax
-	jge	.LBB105_9
+	jge	.LBB128_9
 	movl	116(%rsp), %eax
 	addl	88(%rsp), %eax
 	movl	%eax, 84(%rsp)
@@ -6968,14 +8521,14 @@ __Physics_Room_Room_Project_Globals_draw:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 72(%rsp)
 	cmpq	$0, 72(%rsp)
-	jne	.LBB105_10
-	jmp	.LBB105_11
-.LBB105_9:
+	jne	.LBB128_10
+	jmp	.LBB128_11
+.LBB128_9:
 	movl	92(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 92(%rsp)
-	jmp	.LBB105_4
-.LBB105_10:
+	jmp	.LBB128_4
+.LBB128_10:
 	movq	72(%rsp), %rax
 	movq	%rax, 40(%rsp)
 	movq	96(%rsp), %rax
@@ -6990,14 +8543,1022 @@ __Physics_Room_Room_Project_Globals_draw:
 	movl	56(%rsp), %r8d
 	movl	%eax, %r9d
 	callq	__Physics_Room_BaseTile_Project_Globals_draw
-	jmp	.LBB105_12
-.LBB105_11:
-	jmp	.LBB105_12
-.LBB105_12:
+	jmp	.LBB128_12
+.LBB128_11:
+	jmp	.LBB128_12
+.LBB128_12:
 	movl	88(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 88(%rsp)
-	jmp	.LBB105_7
+	jmp	.LBB128_7
+	.seh_endproc
+
+	.def	_Int_Physics_Room__serialNum;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_Int_Physics_Room__serialNum
+	.p2align	4, 0x90
+_Int_Physics_Room__serialNum:
+.seh_proc _Int_Physics_Room__serialNum
+	subq	$40, %rsp
+	.seh_stackalloc 40
+	.seh_endprologue
+	movl	%ecx, 36(%rsp)
+	cmpl	$0, 36(%rsp)
+	jge	.LBB129_2
+	xorl	%ecx, %ecx
+	subl	36(%rsp), %ecx
+	callq	_Int_builtin_toString
+	movq	%rax, %rdx
+	leaq	_sz49(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	nop
+	addq	$40, %rsp
+	retq
+.LBB129_2:
+	movl	36(%rsp), %ecx
+	callq	_Int_builtin_toString
+	nop
+	addq	$40, %rsp
+	retq
+	.seh_endproc
+
+	.def	_a2_Physics_Room__jsonSector;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_a2_Physics_Room__jsonSector
+	.p2align	4, 0x90
+_a2_Physics_Room__jsonSector:
+.seh_proc _a2_Physics_Room__jsonSector
+	subq	$152, %rsp
+	.seh_stackalloc 152
+	.seh_endprologue
+	movq	%rcx, 144(%rsp)
+	movl	$8, %ecx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %edx
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 136(%rsp)
+	movl	$0, 132(%rsp)
+.LBB130_1:
+	movl	132(%rsp), %eax
+	cmpl	_Physics_Room__SEC_SIZE(%rip), %eax
+	jge	.LBB130_3
+	movl	$0, 128(%rsp)
+	jmp	.LBB130_4
+.LBB130_3:
+	movq	136(%rsp), %rax
+	addq	$152, %rsp
+	retq
+.LBB130_4:
+	movl	128(%rsp), %eax
+	cmpl	_Physics_Room__SEC_SIZE(%rip), %eax
+	jge	.LBB130_6
+	movq	144(%rsp), %rax
+	movl	128(%rsp), %ecx
+	movl	132(%rsp), %edx
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movslq	%ecx, %rdx
+	movq	(%rax,%rdx,8), %rax
+	movslq	%ecx, %rcx
+	movq	%rax, 120(%rsp)
+	cmpq	$0, 120(%rsp)
+	jne	.LBB130_7
+	jmp	.LBB130_8
+.LBB130_6:
+	movl	132(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 132(%rsp)
+	jmp	.LBB130_1
+.LBB130_7:
+	movq	136(%rsp), %rcx
+	movq	%rcx, 48(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 60(%rsp)
+	callq	array_grow
+	movq	48(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 64(%rsp)
+	movl	128(%rsp), %ecx
+	callq	_Int_Project_Json_jINT
+	movl	60(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	64(%rsp), %rax
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movq	136(%rsp), %rcx
+	movq	%rcx, 72(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 84(%rsp)
+	callq	array_grow
+	movq	72(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 88(%rsp)
+	movl	132(%rsp), %ecx
+	callq	_Int_Project_Json_jINT
+	movl	84(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	88(%rsp), %rax
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movq	136(%rsp), %rcx
+	movq	%rcx, 96(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 108(%rsp)
+	callq	array_grow
+	movq	96(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 112(%rsp)
+	movq	ATTR_Physics_Room_TType_canonId(%rip), %rcx
+	movq	120(%rsp), %rax
+	movw	(%rax), %ax
+	movq	16(%rcx), %rcx
+	movswq	%ax, %rdx
+	movl	(%rcx,%rdx,4), %ecx
+	movswq	%ax, %rax
+	callq	_Int_Project_Json_jINT
+	movl	108(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	112(%rsp), %rax
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	jmp	.LBB130_9
+.LBB130_8:
+	jmp	.LBB130_9
+.LBB130_9:
+	movl	128(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 128(%rsp)
+	jmp	.LBB130_4
+	.seh_endproc
+
+	.def	__Physics_Room_EndlessGrid_Physics_Room__json;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_EndlessGrid_Physics_Room__json
+	.p2align	4, 0x90
+__Physics_Room_EndlessGrid_Physics_Room__json:
+.seh_proc __Physics_Room_EndlessGrid_Physics_Room__json
+	subq	$216, %rsp
+	.seh_stackalloc 216
+	.seh_endprologue
+	movq	%rcx, 208(%rsp)
+	movq	%rdx, 200(%rsp)
+	movq	208(%rsp), %rax
+	movq	8(%rax), %rax
+	addq	$24, %rax
+	movq	%rax, 192(%rsp)
+	movq	192(%rsp), %rax
+	movl	(%rax), %eax
+	movl	%eax, 188(%rsp)
+	movq	192(%rsp), %rax
+	movl	4(%rax), %eax
+	movl	%eax, 184(%rsp)
+	movl	$0, 180(%rsp)
+.LBB131_1:
+	movl	180(%rsp), %eax
+	cmpl	184(%rsp), %eax
+	jge	.LBB131_3
+	movl	$0, 176(%rsp)
+	jmp	.LBB131_4
+.LBB131_3:
+	addq	$216, %rsp
+	retq
+.LBB131_4:
+	movl	176(%rsp), %eax
+	cmpl	188(%rsp), %eax
+	jge	.LBB131_6
+	movq	208(%rsp), %rax
+	movq	8(%rax), %rax
+	movl	176(%rsp), %ecx
+	movl	180(%rsp), %edx
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movslq	%ecx, %rdx
+	movq	(%rax,%rdx,8), %rax
+	movslq	%ecx, %rcx
+	movq	%rax, 168(%rsp)
+	cmpq	$0, 168(%rsp)
+	jne	.LBB131_7
+	jmp	.LBB131_8
+.LBB131_6:
+	movl	180(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 180(%rsp)
+	jmp	.LBB131_1
+.LBB131_7:
+	movl	176(%rsp), %ecx
+	movq	208(%rsp), %rax
+	movl	(%rax), %eax
+	addl	%eax, %ecx
+	callq	_Int_Physics_Room__serialNum
+	movq	%rax, %rdx
+	leaq	_sz50+32(%rip), %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz51+32(%rip), %rdx
+	callq	_String_builtin_add
+	movq	%rax, 48(%rsp)
+	movl	180(%rsp), %ecx
+	movq	208(%rsp), %rax
+	movl	4(%rax), %eax
+	addl	%eax, %ecx
+	callq	_Int_Physics_Room__serialNum
+	movq	48(%rsp), %rcx
+	movq	%rax, %rdx
+	callq	_String_builtin_add
+	movq	%rax, 160(%rsp)
+	movq	200(%rsp), %rcx
+	movq	%rcx, 56(%rsp)
+	movslq	8(%rcx), %rax
+	movq	%rax, 64(%rsp)
+	callq	array_grow
+	movq	56(%rsp), %rcx
+	movq	64(%rsp), %rax
+	movq	16(%rcx), %rcx
+	movq	%rcx, 104(%rsp)
+	shlq	$4, %rax
+	movq	%rax, 96(%rsp)
+	movq	160(%rsp), %rax
+	movq	%rax, 88(%rsp)
+	leaq	tc_tup.22(%rip), %rcx
+	movq	%rsp, %rax
+	movq	%rcx, 32(%rax)
+	movl	$16, %ecx
+	movl	$2, %edx
+	xorl	%r8d, %r8d
+	movb	$1, %r9b
+	callq	gc_alloc_array
+	movq	%rax, 72(%rsp)
+	movq	16(%rax), %rax
+	movq	%rax, 80(%rsp)
+	leaq	_sz53+32(%rip), %rcx
+	callq	_String_Project_Json_jSTRING
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	leaq	_sz52+32(%rip), %rcx
+	movq	%rdx, 136(%rsp)
+	movq	%rcx, 128(%rsp)
+	movq	128(%rsp), %rcx
+	movq	136(%rsp), %rdx
+	movq	%rdx, 8(%rax)
+	movq	%rcx, (%rax)
+	movq	168(%rsp), %rax
+	movq	8(%rax), %rcx
+	callq	_a2_Physics_Room__jsonSector
+	movq	%rax, %rcx
+	callq	_a1_Project_Json_jLIST
+	movq	72(%rsp), %rcx
+	movq	%rax, %r8
+	movq	80(%rsp), %rax
+	leaq	_sz54+32(%rip), %rdx
+	movq	%r8, 120(%rsp)
+	movq	%rdx, 112(%rsp)
+	movq	112(%rsp), %rdx
+	movq	120(%rsp), %r8
+	movq	%r8, 24(%rax)
+	movq	%rdx, 16(%rax)
+	callq	_a1_Project_Json_jDICT
+	movq	88(%rsp), %rdx
+	movq	96(%rsp), %rcx
+	movq	%rax, %r8
+	movq	104(%rsp), %rax
+	movq	%r8, 152(%rsp)
+	movq	%rdx, 144(%rsp)
+	movq	144(%rsp), %rdx
+	movq	152(%rsp), %r8
+	movq	%r8, 8(%rax,%rcx)
+	movq	%rdx, (%rax,%rcx)
+	jmp	.LBB131_9
+.LBB131_8:
+	jmp	.LBB131_9
+.LBB131_9:
+	movl	176(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 176(%rsp)
+	jmp	.LBB131_4
+	.seh_endproc
+
+	.def	__Physics_Room_Room_Physics_Room__jsonSecCoords;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_Room_Physics_Room__jsonSecCoords
+	.p2align	4, 0x90
+__Physics_Room_Room_Physics_Room__jsonSecCoords:
+.seh_proc __Physics_Room_Room_Physics_Room__jsonSecCoords
+	subq	$136, %rsp
+	.seh_stackalloc 136
+	.seh_endprologue
+	movq	%rcx, 128(%rsp)
+	movq	128(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	8(%rax), %rax
+	addq	$24, %rax
+	movq	%rax, 120(%rsp)
+	movq	120(%rsp), %rax
+	movl	(%rax), %eax
+	movl	%eax, 116(%rsp)
+	movq	120(%rsp), %rax
+	movl	4(%rax), %eax
+	movl	%eax, 112(%rsp)
+	movl	$8, %ecx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %edx
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 104(%rsp)
+	movl	$0, 100(%rsp)
+.LBB132_1:
+	movl	100(%rsp), %eax
+	cmpl	112(%rsp), %eax
+	jge	.LBB132_3
+	movl	$0, 96(%rsp)
+	jmp	.LBB132_4
+.LBB132_3:
+	movq	104(%rsp), %rcx
+	callq	_a1_Project_Json_jLIST
+	nop
+	addq	$136, %rsp
+	retq
+.LBB132_4:
+	movl	96(%rsp), %eax
+	cmpl	116(%rsp), %eax
+	jge	.LBB132_6
+	movq	128(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	8(%rax), %rax
+	movl	96(%rsp), %ecx
+	movl	100(%rsp), %edx
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movslq	%ecx, %rdx
+	movq	(%rax,%rdx,8), %rax
+	movslq	%ecx, %rcx
+	movq	%rax, 88(%rsp)
+	cmpq	$0, 88(%rsp)
+	jne	.LBB132_7
+	jmp	.LBB132_8
+.LBB132_6:
+	movl	100(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 100(%rsp)
+	jmp	.LBB132_1
+.LBB132_7:
+	movq	104(%rsp), %rcx
+	movq	%rcx, 48(%rsp)
+	movl	8(%rcx), %eax
+	movl	%eax, 76(%rsp)
+	callq	array_grow
+	movq	48(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, 80(%rsp)
+	movl	$8, %ecx
+	movl	$2, %edx
+	xorl	%r9d, %r9d
+	xorl	%eax, %eax
+	movl	%r9d, %r8d
+	movq	$0, 32(%rsp)
+	callq	gc_alloc_array
+	movq	%rax, 56(%rsp)
+	movq	16(%rax), %rax
+	movq	%rax, 64(%rsp)
+	movl	96(%rsp), %ecx
+	movq	128(%rsp), %rax
+	movq	8(%rax), %rax
+	addl	(%rax), %ecx
+	callq	_Int_Project_Json_jINT
+	movq	%rax, %rcx
+	movq	64(%rsp), %rax
+	movq	%rcx, (%rax)
+	movl	100(%rsp), %ecx
+	movq	128(%rsp), %rax
+	movq	8(%rax), %rax
+	addl	4(%rax), %ecx
+	callq	_Int_Project_Json_jINT
+	movq	56(%rsp), %rcx
+	movq	%rax, %rdx
+	movq	64(%rsp), %rax
+	movq	%rdx, 8(%rax)
+	callq	_a1_Project_Json_jLIST
+	movl	76(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	jmp	.LBB132_9
+.LBB132_8:
+	jmp	.LBB132_9
+.LBB132_9:
+	movl	96(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 96(%rsp)
+	jmp	.LBB132_4
+	.seh_endproc
+
+	.def	__Physics_Room_Room_Physics_Room_json;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_Room_Physics_Room_json
+	.p2align	4, 0x90
+__Physics_Room_Room_Physics_Room_json:
+.seh_proc __Physics_Room_Room_Physics_Room_json
+	subq	$248, %rsp
+	.seh_stackalloc 248
+	.seh_endprologue
+	movq	%rcx, 240(%rsp)
+	leaq	tc_tup.24(%rip), %rcx
+	movq	%rcx, 48(%rsp)
+	movq	%rsp, %rax
+	movq	%rcx, 32(%rax)
+	movl	$16, %ecx
+	movl	%ecx, 60(%rsp)
+	xorl	%r8d, %r8d
+	movl	%r8d, 64(%rsp)
+	movb	$1, %r9b
+	movb	%r9b, 71(%rsp)
+	movl	%r8d, %edx
+	callq	gc_alloc_array
+	movq	48(%rsp), %rdx
+	movl	60(%rsp), %ecx
+	movl	64(%rsp), %r8d
+	movb	71(%rsp), %r9b
+	movq	%rax, 232(%rsp)
+	movq	240(%rsp), %r10
+	movl	(%r10), %eax
+	movl	4(%r10), %r10d
+	movl	%r10d, 204(%rsp)
+	movl	%eax, 200(%rsp)
+	leaq	200(%rsp), %rax
+	movq	%rax, 224(%rsp)
+	movq	224(%rsp), %rax
+	movl	(%rax), %eax
+	movl	%eax, 220(%rsp)
+	movq	224(%rsp), %rax
+	movl	4(%rax), %eax
+	movl	%eax, 216(%rsp)
+	movq	%rsp, %rax
+	movq	%rdx, 32(%rax)
+	movl	$5, %edx
+	callq	gc_alloc_array
+	movq	%rax, 72(%rsp)
+	movq	16(%rax), %rax
+	movq	%rax, 80(%rsp)
+	movl	220(%rsp), %ecx
+	callq	_Int_Project_Json_jINT
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	leaq	_sz55+32(%rip), %rcx
+	movq	%rdx, 192(%rsp)
+	movq	%rcx, 184(%rsp)
+	movq	184(%rsp), %rcx
+	movq	192(%rsp), %rdx
+	movq	%rdx, 8(%rax)
+	movq	%rcx, (%rax)
+	movl	216(%rsp), %ecx
+	callq	_Int_Project_Json_jINT
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	leaq	_sz56+32(%rip), %rcx
+	movq	%rdx, 176(%rsp)
+	movq	%rcx, 168(%rsp)
+	movq	168(%rsp), %rcx
+	movq	176(%rsp), %rdx
+	movq	%rdx, 24(%rax)
+	movq	%rcx, 16(%rax)
+	movq	240(%rsp), %rax
+	movq	8(%rax), %rax
+	movl	(%rax), %ecx
+	callq	_Int_Project_Json_jINT
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	leaq	_sz57+32(%rip), %rcx
+	movq	%rdx, 160(%rsp)
+	movq	%rcx, 152(%rsp)
+	movq	152(%rsp), %rcx
+	movq	160(%rsp), %rdx
+	movq	%rdx, 40(%rax)
+	movq	%rcx, 32(%rax)
+	movq	240(%rsp), %rax
+	movq	8(%rax), %rax
+	movl	4(%rax), %ecx
+	callq	_Int_Project_Json_jINT
+	movq	%rax, %rdx
+	movq	80(%rsp), %rax
+	leaq	_sz58+32(%rip), %rcx
+	movq	%rdx, 144(%rsp)
+	movq	%rcx, 136(%rsp)
+	movq	136(%rsp), %rcx
+	movq	144(%rsp), %rdx
+	movq	%rdx, 56(%rax)
+	movq	%rcx, 48(%rax)
+	movq	240(%rsp), %rcx
+	callq	__Physics_Room_Room_Physics_Room__jsonSecCoords
+	movq	72(%rsp), %rcx
+	movq	%rax, %r8
+	movq	80(%rsp), %rax
+	leaq	_sz59+32(%rip), %rdx
+	movq	%r8, 128(%rsp)
+	movq	%rdx, 120(%rsp)
+	movq	120(%rsp), %rdx
+	movq	128(%rsp), %r8
+	movq	%r8, 72(%rax)
+	movq	%rdx, 64(%rax)
+	callq	_a1_Project_Json_jDICT
+	movq	%rax, 208(%rsp)
+	movq	232(%rsp), %rcx
+	movq	%rcx, 96(%rsp)
+	movslq	8(%rcx), %rax
+	movq	%rax, 88(%rsp)
+	callq	array_grow
+	movq	88(%rsp), %rcx
+	movq	96(%rsp), %rax
+	movq	16(%rax), %rax
+	shlq	$4, %rcx
+	movq	208(%rsp), %r8
+	leaq	_sz60+32(%rip), %rdx
+	movq	%r8, 112(%rsp)
+	movq	%rdx, 104(%rsp)
+	movq	104(%rsp), %rdx
+	movq	112(%rsp), %r8
+	movq	%r8, 8(%rax,%rcx)
+	movq	%rdx, (%rax,%rcx)
+	movq	240(%rsp), %rax
+	movq	8(%rax), %rcx
+	movq	232(%rsp), %rdx
+	callq	__Physics_Room_EndlessGrid_Physics_Room__json
+	movq	232(%rsp), %rax
+	addq	$248, %rsp
+	retq
+	.seh_endproc
+
+	.def	__Physics_Room_Room_Physics_Room_save;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_Room_Physics_Room_save
+	.p2align	4, 0x90
+__Physics_Room_Room_Physics_Room_save:
+.seh_proc __Physics_Room_Room_Physics_Room_save
+	subq	$104, %rsp
+	.seh_stackalloc 104
+	.seh_endprologue
+	movq	%rcx, 96(%rsp)
+	movq	96(%rsp), %rcx
+	callq	__Physics_Room_Room_Physics_Room_json
+	movq	%rax, 88(%rsp)
+	movl	$0, 84(%rsp)
+.LBB134_1:
+	movl	84(%rsp), %eax
+	movq	88(%rsp), %rcx
+	cmpl	8(%rcx), %eax
+	jge	.LBB134_3
+	movq	88(%rsp), %rax
+	movslq	84(%rsp), %rdx
+	movq	16(%rax), %rcx
+	shlq	$4, %rdx
+	movq	(%rcx,%rdx), %rax
+	movq	8(%rcx,%rdx), %rcx
+	movq	%rcx, 40(%rsp)
+	movq	%rax, 32(%rsp)
+	leaq	32(%rsp), %rax
+	movq	%rax, 72(%rsp)
+	movq	72(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 64(%rsp)
+	movq	72(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 56(%rsp)
+	movq	64(%rsp), %rdx
+	leaq	_sz61(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	xorl	%edx, %edx
+	callq	_String_Sys_Os_newFileWriter
+	movq	%rax, 48(%rsp)
+	cmpq	$0, 48(%rsp)
+	jne	.LBB134_4
+	jmp	.LBB134_5
+.LBB134_3:
+	addq	$104, %rsp
+	retq
+.LBB134_4:
+	movq	48(%rsp), %rcx
+	movq	56(%rsp), %rdx
+	callq	_FileWriter_Project_Json_writeJson
+	movq	48(%rsp), %rcx
+	callq	_FileWriter_Sys_Os_close
+	jmp	.LBB134_6
+.LBB134_5:
+	jmp	.LBB134_6
+.LBB134_6:
+	movl	84(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 84(%rsp)
+	jmp	.LBB134_1
+	.seh_endproc
+
+	.def	__Physics_Room_Room_Physics_Room__readJsonSector;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_Room_Physics_Room__readJsonSector
+	.p2align	4, 0x90
+__Physics_Room_Room_Physics_Room__readJsonSector:
+.seh_proc __Physics_Room_Room_Physics_Room__readJsonSector
+	subq	$200, %rsp
+	.seh_stackalloc 200
+	.seh_endprologue
+	movq	%rcx, 192(%rsp)
+	movl	%edx, 188(%rsp)
+	movl	%r8d, 184(%rsp)
+	movl	188(%rsp), %ecx
+	callq	_Int_Physics_Room__serialNum
+	movq	%rax, %rdx
+	leaq	_sz62(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz63(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, 80(%rsp)
+	movl	184(%rsp), %ecx
+	callq	_Int_Physics_Room__serialNum
+	movq	80(%rsp), %rcx
+	movq	%rax, %rdx
+	callq	_String_builtin_add
+	movq	%rax, 176(%rsp)
+	movq	176(%rsp), %rdx
+	leaq	_sz64(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_Sys_Os_newFileReader
+	movq	%rax, 168(%rsp)
+	cmpq	$0, 168(%rsp)
+	jne	.LBB135_2
+	movq	176(%rsp), %rdx
+	leaq	_sz65(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB135_2:
+	jmp	.LBB135_3
+.LBB135_3:
+	movq	168(%rsp), %rcx
+	callq	_FileReader_Project_Json_readJson
+	movq	%rax, 56(%rsp)
+	movq	176(%rsp), %rdx
+	leaq	_sz66+32(%rip), %rcx
+	callq	_String_builtin_add
+	movq	56(%rsp), %rcx
+	movq	%rax, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asDICT
+	movq	%rax, 160(%rsp)
+	movq	168(%rsp), %rcx
+	callq	_FileReader_Sys_Os_close
+	movq	160(%rsp), %rcx
+	leaq	_sz67+32(%rip), %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	%rax, %rcx
+	leaq	_sz68+32(%rip), %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asSTRING
+	movq	%rax, 152(%rsp)
+	movq	152(%rsp), %rdx
+	leaq	_sz69+32(%rip), %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_Sys_Os_print
+	movl	_Physics_Room__SEC_SIZE(%rip), %edx
+	movl	%edx, 68(%rsp)
+	imull	%edx, %edx
+	movq	%rsp, %rax
+	movq	$0, 32(%rax)
+	movl	$8, %r8d
+	movb	$1, %r9b
+	movl	%r8d, %ecx
+	callq	gc_alloc_array
+	movl	68(%rsp), %ecx
+	movl	%ecx, 24(%rax)
+	movl	%ecx, 28(%rax)
+	movq	%rax, 144(%rsp)
+	movq	144(%rsp), %rax
+	movq	%rax, 72(%rsp)
+	leaq	tc__Physics_Room_Sector(%rip), %rdx
+	movl	$16, %ecx
+	callq	gc_alloc
+	movq	72(%rsp), %rdx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%rdx, 8(%rcx)
+	movb	$0, 2(%rcx)
+	movb	$0, 1(%rcx)
+	movb	$1, (%rcx)
+	movq	%rax, 136(%rsp)
+	movq	160(%rsp), %rcx
+	leaq	_sz70(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	%rax, %rcx
+	leaq	_sz71(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asLIST
+	movq	%rax, 128(%rsp)
+	movq	152(%rsp), %rcx
+	leaq	_sz72(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_eq
+	testb	$1, %al
+	jne	.LBB135_4
+	jmp	.LBB135_5
+.LBB135_4:
+	movq	128(%rsp), %rax
+	movl	8(%rax), %eax
+	movl	$3, %ecx
+	cltd
+	idivl	%ecx
+	movl	%eax, 124(%rsp)
+	movl	$0, 88(%rsp)
+	jmp	.LBB135_7
+.LBB135_5:
+	movq	152(%rsp), %rdx
+	leaq	_sz76(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	leaq	_sz77(%rip), %rdx
+	addq	$32, %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	movq	176(%rsp), %rdx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	callq	_String_builtin_panic
+.LBB135_6:
+	movq	192(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	8(%rax), %rax
+	movl	188(%rsp), %ecx
+	movq	192(%rsp), %rdx
+	movq	8(%rdx), %rdx
+	subl	(%rdx), %ecx
+	movl	184(%rsp), %edx
+	movq	192(%rsp), %r8
+	movq	8(%r8), %r8
+	subl	4(%r8), %edx
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movq	136(%rsp), %rdx
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movl	$-1, 92(%rsp)
+	jmp	.LBB135_10
+.LBB135_7:
+	movl	88(%rsp), %eax
+	cmpl	124(%rsp), %eax
+	jge	.LBB135_9
+	movq	128(%rsp), %rcx
+	imull	$3, 88(%rsp), %eax
+	movq	16(%rcx), %rcx
+	movslq	%eax, %rdx
+	movq	(%rcx,%rdx,8), %rcx
+	leaq	_sz73(%rip), %rdx
+	addq	$32, %rdx
+	cltq
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, 116(%rsp)
+	movq	128(%rsp), %rcx
+	imull	$3, 88(%rsp), %eax
+	addl	$1, %eax
+	movq	16(%rcx), %rcx
+	movslq	%eax, %rdx
+	movq	(%rcx,%rdx,8), %rcx
+	leaq	_sz74(%rip), %rdx
+	addq	$32, %rdx
+	cltq
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, 112(%rsp)
+	movq	128(%rsp), %rcx
+	imull	$3, 88(%rsp), %eax
+	addl	$2, %eax
+	movq	16(%rcx), %rcx
+	movslq	%eax, %rdx
+	movq	(%rcx,%rdx,8), %rcx
+	leaq	_sz75(%rip), %rdx
+	addq	$32, %rdx
+	cltq
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, 108(%rsp)
+	callq	_none_Physics_Room_newBaseTile
+	movq	%rax, 96(%rsp)
+	movq	96(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	movl	108(%rsp), %ecx
+	callq	_Int_Physics_Room_ttLookup
+	movw	%ax, %cx
+	movq	48(%rsp), %rax
+	movw	%cx, (%rax)
+	movq	136(%rsp), %rax
+	movq	8(%rax), %rax
+	movl	116(%rsp), %ecx
+	movl	112(%rsp), %edx
+	imull	24(%rax), %edx
+	addl	%edx, %ecx
+	movq	16(%rax), %rax
+	movq	96(%rsp), %rdx
+	movslq	%ecx, %rcx
+	movq	%rdx, (%rax,%rcx,8)
+	movl	88(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 88(%rsp)
+	jmp	.LBB135_7
+.LBB135_9:
+	jmp	.LBB135_6
+.LBB135_10:
+	movl	92(%rsp), %eax
+	cmpl	_Physics_Room__SEC_SIZE(%rip), %eax
+	jg	.LBB135_12
+	movl	$-1, 88(%rsp)
+	jmp	.LBB135_13
+.LBB135_12:
+	addq	$200, %rsp
+	retq
+.LBB135_13:
+	movl	88(%rsp), %eax
+	cmpl	_Physics_Room__SEC_SIZE(%rip), %eax
+	jg	.LBB135_15
+	movq	192(%rsp), %rcx
+	movl	188(%rsp), %edx
+	imull	_Physics_Room__SEC_SIZE(%rip), %edx
+	addl	88(%rsp), %edx
+	movl	184(%rsp), %r8d
+	imull	_Physics_Room__SEC_SIZE(%rip), %r8d
+	addl	92(%rsp), %r8d
+	callq	__Physics_Room_Room_Physics_Room__reifyTile
+	movl	88(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 88(%rsp)
+	jmp	.LBB135_13
+.LBB135_15:
+	movl	92(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 92(%rsp)
+	jmp	.LBB135_10
+	.seh_endproc
+
+	.def	__Physics_Room_Room_Physics_Room_load;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Physics_Room_Room_Physics_Room_load
+	.p2align	4, 0x90
+__Physics_Room_Room_Physics_Room_load:
+.seh_proc __Physics_Room_Room_Physics_Room_load
+	subq	$152, %rsp
+	.seh_stackalloc 152
+	.seh_endprologue
+	movq	%rcx, 144(%rsp)
+	leaq	_sz78(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_Sys_Os_newFileReader
+	movq	%rax, 136(%rsp)
+	cmpq	$0, 136(%rsp)
+	jne	.LBB136_2
+	addq	$152, %rsp
+	retq
+.LBB136_2:
+	jmp	.LBB136_3
+.LBB136_3:
+	movq	136(%rsp), %rcx
+	callq	_FileReader_Project_Json_readJson
+	movq	%rax, %rcx
+	leaq	_sz79+32(%rip), %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asDICT
+	movq	%rax, 128(%rsp)
+	movq	136(%rsp), %rcx
+	callq	_FileReader_Sys_Os_close
+	movq	144(%rsp), %rax
+	movq	%rax, 72(%rsp)
+	movq	128(%rsp), %rcx
+	leaq	_sz80+32(%rip), %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	%rax, %rcx
+	leaq	_sz81+32(%rip), %rdx
+	movq	%rdx, 56(%rsp)
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, 68(%rsp)
+	movq	128(%rsp), %rcx
+	leaq	_sz82+32(%rip), %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	56(%rsp), %rdx
+	movq	%rax, %rcx
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	68(%rsp), %ecx
+	movl	%eax, %edx
+	movq	72(%rsp), %rax
+	movl	%edx, 100(%rsp)
+	movl	%ecx, 96(%rsp)
+	movl	96(%rsp), %ecx
+	movl	100(%rsp), %edx
+	movl	%edx, 4(%rax)
+	movl	%ecx, (%rax)
+	movq	144(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 80(%rsp)
+	movq	128(%rsp), %rcx
+	leaq	_sz83(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	%rax, %rcx
+	leaq	_sz84(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, %ecx
+	movq	80(%rsp), %rax
+	movl	%ecx, (%rax)
+	movq	144(%rsp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, 88(%rsp)
+	movq	128(%rsp), %rcx
+	leaq	_sz85(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	%rax, %rcx
+	leaq	_sz86(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, %ecx
+	movq	88(%rsp), %rax
+	movl	%ecx, 4(%rax)
+	movq	128(%rsp), %rcx
+	leaq	_sz87(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JDict_builtin_lookup
+	movq	%rax, %rcx
+	leaq	_sz88(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asLIST
+	movq	%rax, 120(%rsp)
+	movl	$0, 116(%rsp)
+.LBB136_4:
+	movl	116(%rsp), %eax
+	movq	120(%rsp), %rcx
+	cmpl	8(%rcx), %eax
+	jge	.LBB136_6
+	movq	120(%rsp), %rcx
+	movl	116(%rsp), %eax
+	movq	16(%rcx), %rcx
+	movslq	%eax, %rdx
+	movq	(%rcx,%rdx,8), %rcx
+	leaq	_sz89(%rip), %rdx
+	addq	$32, %rdx
+	cltq
+	callq	__Project_Json_JsonObj_Project_Json_asLIST
+	movq	%rax, 104(%rsp)
+	movq	144(%rsp), %rax
+	movq	%rax, 40(%rsp)
+	movq	104(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	(%rax), %rcx
+	leaq	_sz90(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movl	%eax, 52(%rsp)
+	movq	104(%rsp), %rax
+	movq	16(%rax), %rax
+	movq	8(%rax), %rcx
+	leaq	_sz91(%rip), %rdx
+	addq	$32, %rdx
+	callq	__Project_Json_JsonObj_Project_Json_asINT
+	movq	40(%rsp), %rcx
+	movl	52(%rsp), %edx
+	movl	%eax, %r8d
+	callq	__Physics_Room_Room_Physics_Room__readJsonSector
+	movl	116(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 116(%rsp)
+	jmp	.LBB136_4
+.LBB136_6:
+	addq	$152, %rsp
+	retq
 	.seh_endproc
 
 	.def	_a1_Editor_GUI_newElemState;
@@ -7562,12 +10123,12 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movl	4(%rax), %eax
 	movl	%eax, 216(%rsp)
 	movl	$0, 184(%rsp)
-.LBB117_1:
+.LBB148_1:
 	movl	184(%rsp), %eax
 	movq	256(%rsp), %rcx
 	movq	8(%rcx), %rcx
 	cmpl	8(%rcx), %eax
-	jge	.LBB117_3
+	jge	.LBB148_3
 	movq	256(%rsp), %rax
 	movq	8(%rax), %rax
 	movl	184(%rsp), %ecx
@@ -7596,12 +10157,12 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movw	2(%rax), %ax
 	movw	%ax, 190(%rsp)
 	cmpw	$0, 190(%rsp)
-	je	.LBB117_4
-	jmp	.LBB117_5
-.LBB117_3:
+	je	.LBB148_4
+	jmp	.LBB148_5
+.LBB148_3:
 	movl	$0, 184(%rsp)
-	jmp	.LBB117_19
-.LBB117_4:
+	jmp	.LBB148_19
+.LBB148_4:
 	movl	240(%rsp), %eax
 	movq	192(%rsp), %rcx
 	movq	8(%rcx), %rcx
@@ -7613,9 +10174,9 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movl	8(%rcx), %ecx
 	subl	$1, %ecx
 	cmpl	%ecx, %eax
-	jne	.LBB117_7
-	jmp	.LBB117_8
-.LBB117_5:
+	jne	.LBB148_7
+	jmp	.LBB148_8
+.LBB148_5:
 	movl	236(%rsp), %eax
 	movq	192(%rsp), %rcx
 	movq	8(%rcx), %rcx
@@ -7627,67 +10188,67 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movl	8(%rcx), %ecx
 	subl	$1, %ecx
 	cmpl	%ecx, %eax
-	jne	.LBB117_10
-	jmp	.LBB117_11
-.LBB117_6:
+	jne	.LBB148_10
+	jmp	.LBB148_11
+.LBB148_6:
 	movq	192(%rsp), %rax
 	movq	8(%rax), %rax
 	movl	(%rax), %eax
 	cmpl	220(%rsp), %eax
-	jg	.LBB117_13
-	jmp	.LBB117_14
-.LBB117_7:
+	jg	.LBB148_13
+	jmp	.LBB148_14
+.LBB148_7:
 	movl	240(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	24(%rcx), %eax
 	movl	%eax, 240(%rsp)
-	jmp	.LBB117_9
-.LBB117_8:
-	jmp	.LBB117_9
-.LBB117_9:
-	jmp	.LBB117_6
-.LBB117_10:
+	jmp	.LBB148_9
+.LBB148_8:
+	jmp	.LBB148_9
+.LBB148_9:
+	jmp	.LBB148_6
+.LBB148_10:
 	movl	236(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	24(%rcx), %eax
 	movl	%eax, 236(%rsp)
-	jmp	.LBB117_12
-.LBB117_11:
-	jmp	.LBB117_12
-.LBB117_12:
-	jmp	.LBB117_6
-.LBB117_13:
+	jmp	.LBB148_12
+.LBB148_11:
+	jmp	.LBB148_12
+.LBB148_12:
+	jmp	.LBB148_6
+.LBB148_13:
 	movq	192(%rsp), %rax
 	movq	8(%rax), %rax
 	movl	(%rax), %eax
 	movl	%eax, 220(%rsp)
-	jmp	.LBB117_15
-.LBB117_14:
-	jmp	.LBB117_15
-.LBB117_15:
+	jmp	.LBB148_15
+.LBB148_14:
+	jmp	.LBB148_15
+.LBB148_15:
 	movq	192(%rsp), %rax
 	movq	8(%rax), %rax
 	movl	4(%rax), %eax
 	cmpl	216(%rsp), %eax
-	jle	.LBB117_17
+	jle	.LBB148_17
 	movq	192(%rsp), %rax
 	movq	8(%rax), %rax
 	movl	4(%rax), %eax
 	movl	%eax, 216(%rsp)
-	jmp	.LBB117_18
-.LBB117_17:
-	jmp	.LBB117_18
-.LBB117_18:
+	jmp	.LBB148_18
+.LBB148_17:
+	jmp	.LBB148_18
+.LBB148_18:
 	movl	184(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 184(%rsp)
-	jmp	.LBB117_1
-.LBB117_19:
+	jmp	.LBB148_1
+.LBB148_19:
 	movl	184(%rsp), %eax
 	movq	256(%rsp), %rcx
 	movq	16(%rcx), %rcx
 	cmpl	8(%rcx), %eax
-	jge	.LBB117_21
+	jge	.LBB148_21
 	movq	256(%rsp), %rax
 	movq	16(%rax), %rax
 	movl	184(%rsp), %ecx
@@ -7715,9 +10276,9 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movw	2(%rax), %ax
 	movw	%ax, 158(%rsp)
 	cmpw	$0, 158(%rsp)
-	je	.LBB117_22
-	jmp	.LBB117_23
-.LBB117_21:
+	je	.LBB148_22
+	jmp	.LBB148_23
+.LBB148_21:
 	movl	240(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	28(%rcx), %eax
@@ -7732,9 +10293,9 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movw	2(%rax), %ax
 	movw	%ax, 146(%rsp)
 	cmpw	$0, 146(%rsp)
-	je	.LBB117_37
-	jmp	.LBB117_38
-.LBB117_22:
+	je	.LBB148_37
+	jmp	.LBB148_38
+.LBB148_22:
 	movl	240(%rsp), %eax
 	addl	164(%rsp), %eax
 	movl	%eax, 240(%rsp)
@@ -7744,9 +10305,9 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movl	8(%rcx), %ecx
 	subl	$1, %ecx
 	cmpl	%ecx, %eax
-	jne	.LBB117_25
-	jmp	.LBB117_26
-.LBB117_23:
+	jne	.LBB148_25
+	jmp	.LBB148_26
+.LBB148_23:
 	movl	236(%rsp), %eax
 	addl	160(%rsp), %eax
 	movl	%eax, 236(%rsp)
@@ -7756,67 +10317,67 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movl	8(%rcx), %ecx
 	subl	$1, %ecx
 	cmpl	%ecx, %eax
-	jne	.LBB117_28
-	jmp	.LBB117_29
-.LBB117_24:
+	jne	.LBB148_28
+	jmp	.LBB148_29
+.LBB148_24:
 	movl	164(%rsp), %eax
 	cmpl	220(%rsp), %eax
-	jg	.LBB117_31
-	jmp	.LBB117_32
-.LBB117_25:
+	jg	.LBB148_31
+	jmp	.LBB148_32
+.LBB148_25:
 	movl	240(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	24(%rcx), %eax
 	movl	%eax, 240(%rsp)
-	jmp	.LBB117_27
-.LBB117_26:
-	jmp	.LBB117_27
-.LBB117_27:
-	jmp	.LBB117_24
-.LBB117_28:
+	jmp	.LBB148_27
+.LBB148_26:
+	jmp	.LBB148_27
+.LBB148_27:
+	jmp	.LBB148_24
+.LBB148_28:
 	movl	236(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	24(%rcx), %eax
 	movl	%eax, 236(%rsp)
-	jmp	.LBB117_30
-.LBB117_29:
-	jmp	.LBB117_30
-.LBB117_30:
-	jmp	.LBB117_24
-.LBB117_31:
+	jmp	.LBB148_30
+.LBB148_29:
+	jmp	.LBB148_30
+.LBB148_30:
+	jmp	.LBB148_24
+.LBB148_31:
 	movl	164(%rsp), %eax
 	movl	%eax, 220(%rsp)
-	jmp	.LBB117_33
-.LBB117_32:
-	jmp	.LBB117_33
-.LBB117_33:
+	jmp	.LBB148_33
+.LBB148_32:
+	jmp	.LBB148_33
+.LBB148_33:
 	movl	160(%rsp), %eax
 	cmpl	216(%rsp), %eax
-	jle	.LBB117_35
+	jle	.LBB148_35
 	movl	160(%rsp), %eax
 	movl	%eax, 216(%rsp)
-	jmp	.LBB117_36
-.LBB117_35:
-	jmp	.LBB117_36
-.LBB117_36:
+	jmp	.LBB148_36
+.LBB148_35:
+	jmp	.LBB148_36
+.LBB148_36:
 	movl	184(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 184(%rsp)
-	jmp	.LBB117_19
-.LBB117_37:
+	jmp	.LBB148_19
+.LBB148_37:
 	movl	236(%rsp), %eax
 	addl	216(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	28(%rcx), %eax
 	movl	%eax, 148(%rsp)
-	jmp	.LBB117_39
-.LBB117_38:
+	jmp	.LBB148_39
+.LBB148_38:
 	movl	240(%rsp), %eax
 	addl	220(%rsp), %eax
 	movq	256(%rsp), %rcx
 	addl	28(%rcx), %eax
 	movl	%eax, 152(%rsp)
-.LBB117_39:
+.LBB148_39:
 	movq	256(%rsp), %rcx
 	movl	32(%rcx), %eax
 	movl	36(%rcx), %ecx
@@ -7832,22 +10393,22 @@ __Editor_GUI_Layout_Editor_GUI__buildLayout:
 	movl	%eax, 128(%rsp)
 	movl	152(%rsp), %eax
 	cmpl	132(%rsp), %eax
-	jge	.LBB117_41
+	jge	.LBB148_41
 	movl	132(%rsp), %eax
 	movl	%eax, 152(%rsp)
-	jmp	.LBB117_42
-.LBB117_41:
-	jmp	.LBB117_42
-.LBB117_42:
+	jmp	.LBB148_42
+.LBB148_41:
+	jmp	.LBB148_42
+.LBB148_42:
 	movl	148(%rsp), %eax
 	cmpl	128(%rsp), %eax
-	jge	.LBB117_44
+	jge	.LBB148_44
 	movl	128(%rsp), %eax
 	movl	%eax, 148(%rsp)
-	jmp	.LBB117_45
-.LBB117_44:
-	jmp	.LBB117_45
-.LBB117_45:
+	jmp	.LBB148_45
+.LBB148_44:
+	jmp	.LBB148_45
+.LBB148_45:
 	movq	248(%rsp), %rcx
 	movq	%rcx, 48(%rsp)
 	movslq	8(%rcx), %rax
@@ -7939,21 +10500,21 @@ _a1_Editor_GUI_updatePanes:
 	movslq	%ecx, %rcx
 	xorb	$-1, %al
 	testb	$1, %al
-	jne	.LBB119_1
-	jmp	.LBB119_2
-.LBB119_1:
+	jne	.LBB150_1
+	jmp	.LBB150_2
+.LBB150_1:
 	xorl	%eax, %eax
 	addq	$88, %rsp
 	retq
-.LBB119_2:
-	jmp	.LBB119_3
-.LBB119_3:
+.LBB150_2:
+	jmp	.LBB150_3
+.LBB150_3:
 	movl	$0, 60(%rsp)
-.LBB119_4:
+.LBB150_4:
 	movl	60(%rsp), %eax
 	movq	80(%rsp), %rcx
 	cmpl	8(%rcx), %eax
-	jge	.LBB119_6
+	jge	.LBB150_6
 	movq	80(%rsp), %rax
 	movl	60(%rsp), %ecx
 	movq	16(%rax), %rax
@@ -7987,13 +10548,13 @@ _a1_Editor_GUI_updatePanes:
 	setl	%cl
 	andb	%cl, %al
 	testb	$1, %al
-	jne	.LBB119_7
-	jmp	.LBB119_8
-.LBB119_6:
+	jne	.LBB150_7
+	jmp	.LBB150_8
+.LBB150_6:
 	xorl	%eax, %eax
 	addq	$88, %rsp
 	retq
-.LBB119_7:
+.LBB150_7:
 	movq	48(%rsp), %rax
 	movq	8(%rax), %rdx
 	movq	16(%rax), %rax
@@ -8005,13 +10566,13 @@ _a1_Editor_GUI_updatePanes:
 	movb	$1, %al
 	addq	$88, %rsp
 	retq
-.LBB119_8:
-	jmp	.LBB119_9
-.LBB119_9:
+.LBB150_8:
+	jmp	.LBB150_9
+.LBB150_9:
 	movl	60(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 60(%rsp)
-	jmp	.LBB119_4
+	jmp	.LBB150_4
 	.seh_endproc
 
 	.def	__Editor_GUI_Pane_Project_Globals_draw;
@@ -8045,26 +10606,40 @@ __Editor_GUI_Pane_Project_Globals_draw:
 	retq
 	.seh_endproc
 
-	.def	_none_Editor_Main_newEState;
+	.def	__Physics_Room_Room_Editor_Main_newEState;
 	.scl	2;
 	.type	32;
 	.endef
-	.globl	_none_Editor_Main_newEState
+	.globl	__Physics_Room_Room_Editor_Main_newEState
 	.p2align	4, 0x90
-_none_Editor_Main_newEState:
-.seh_proc _none_Editor_Main_newEState
-	subq	$40, %rsp
-	.seh_stackalloc 40
+__Physics_Room_Room_Editor_Main_newEState:
+.seh_proc __Physics_Room_Room_Editor_Main_newEState
+	subq	$72, %rsp
+	.seh_stackalloc 72
 	.seh_endprologue
-	xorl	%eax, %eax
-	movl	%eax, %edx
-	movl	$4, %ecx
+	movq	%rcx, 64(%rsp)
+	movq	64(%rsp), %rax
+	movq	%rax, 48(%rsp)
+	movl	$0, 60(%rsp)
+	movl	$0, 56(%rsp)
+	movl	56(%rsp), %eax
+	movl	%eax, 44(%rsp)
+	movl	60(%rsp), %eax
+	movl	%eax, 40(%rsp)
+	leaq	tc__Editor_Main_EState(%rip), %rdx
+	movl	$24, %ecx
 	callq	gc_alloc
+	movl	40(%rsp), %r9d
+	movl	44(%rsp), %r8d
+	movq	48(%rsp), %rdx
 	movq	%rax, %rcx
 	movq	%rcx, %rax
-	movw	$1, 2(%rcx)
-	movw	$1, (%rcx)
-	addq	$40, %rsp
+	movl	%r9d, 16(%rcx)
+	movl	%r8d, 12(%rcx)
+	movq	%rdx, (%rcx)
+	movw	$1, 10(%rcx)
+	movw	$1, 8(%rcx)
+	addq	$72, %rsp
 	retq
 	.seh_endproc
 
@@ -8085,16 +10660,16 @@ __Editor_Main_EState_Editor_Main_drawSel:
 	callq	__Project_Rom_SpriteDef_Project_Globals_lookupSprite
 	movq	%rax, 48(%rsp)
 	cmpq	$0, 48(%rsp)
-	jne	.LBB122_2
+	jne	.LBB153_2
 	addq	$72, %rsp
 	retq
-.LBB122_2:
-	jmp	.LBB122_3
-.LBB122_3:
+.LBB153_2:
+	jmp	.LBB153_3
+.LBB153_3:
 	movq	48(%rsp), %r8
 	movq	ATTR_Physics_Room_TType_dispId(%rip), %rcx
 	movq	64(%rsp), %rax
-	movw	2(%rax), %ax
+	movw	10(%rax), %ax
 	movq	16(%rcx), %rcx
 	movswq	%ax, %rdx
 	movl	(%rcx,%rdx,4), %r9d
@@ -8188,15 +10763,15 @@ __Editor_Main_EState_Editor_Main_clickSel:
 	addl	%ecx, %eax
 	movl	%eax, 32(%rsp)
 	cmpl	$2, 32(%rsp)
-	jge	.LBB124_2
+	jge	.LBB155_2
 	movq	64(%rsp), %rax
 	movl	32(%rsp), %ecx
 	addl	$1, %ecx
-	movw	%cx, 2(%rax)
-	jmp	.LBB124_3
-.LBB124_2:
-	jmp	.LBB124_3
-.LBB124_3:
+	movw	%cx, 10(%rax)
+	jmp	.LBB155_3
+.LBB155_2:
+	jmp	.LBB155_3
+.LBB155_3:
 	addq	$72, %rsp
 	retq
 	.seh_endproc
@@ -8235,40 +10810,40 @@ __Editor_Main_EState_Editor_Main_drawPal:
 	callq	__Project_Rom_SpriteDef_Project_Globals_lookupSprite
 	movq	%rax, 72(%rsp)
 	cmpq	$0, 72(%rsp)
-	jne	.LBB125_2
+	jne	.LBB156_2
 	addq	$104, %rsp
 	retq
-.LBB125_2:
-	jmp	.LBB125_3
-.LBB125_3:
+.LBB156_2:
+	jmp	.LBB156_3
+.LBB156_3:
 	movl	$0, 68(%rsp)
-.LBB125_4:
+.LBB156_4:
 	movl	68(%rsp), %eax
 	cmpl	80(%rsp), %eax
-	jge	.LBB125_6
+	jge	.LBB156_6
 	movl	$0, 64(%rsp)
-	jmp	.LBB125_7
-.LBB125_6:
+	jmp	.LBB156_7
+.LBB156_6:
 	addq	$104, %rsp
 	retq
-.LBB125_7:
+.LBB156_7:
 	movl	64(%rsp), %eax
 	cmpl	84(%rsp), %eax
-	jge	.LBB125_9
+	jge	.LBB156_9
 	movl	64(%rsp), %eax
 	movl	68(%rsp), %ecx
 	imull	84(%rsp), %ecx
 	addl	%ecx, %eax
 	movl	%eax, 60(%rsp)
 	cmpl	$2, 60(%rsp)
-	jl	.LBB125_10
-	jmp	.LBB125_11
-.LBB125_9:
+	jl	.LBB156_10
+	jmp	.LBB156_11
+.LBB156_9:
 	movl	68(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 68(%rsp)
-	jmp	.LBB125_4
-.LBB125_10:
+	jmp	.LBB156_4
+.LBB156_10:
 	movl	60(%rsp), %eax
 	addl	$1, %eax
 	movw	%ax, 58(%rsp)
@@ -8289,14 +10864,14 @@ __Editor_Main_EState_Editor_Main_drawPal:
 	movswq	%ax, %rax
 	movl	$0, 32(%rsp)
 	callq	_Int_Project_Globals_drawSprite
-	jmp	.LBB125_12
-.LBB125_11:
-	jmp	.LBB125_12
-.LBB125_12:
+	jmp	.LBB156_12
+.LBB156_11:
+	jmp	.LBB156_12
+.LBB156_12:
 	movl	64(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 64(%rsp)
-	jmp	.LBB125_7
+	jmp	.LBB156_7
 	.seh_endproc
 
 	.def	_Int_Editor_Main_newTilePal;
@@ -8379,7 +10954,7 @@ __Editor_Main_EState_Editor_Main_clickSetMode:
 	movq	24(%rsp), %rax
 	movq	(%rsp), %rcx
 	movw	(%rcx), %cx
-	movw	%cx, (%rax)
+	movw	%cx, 8(%rax)
 	addq	$32, %rsp
 	retq
 	.seh_endproc
@@ -8406,14 +10981,14 @@ __Editor_Main_EState_Editor_Main_drawImageButton:
 	movq	80(%rsp), %rax
 	movswl	(%rax), %eax
 	movq	96(%rsp), %rcx
-	movswl	(%rcx), %ecx
+	movswl	8(%rcx), %ecx
 	cmpl	%ecx, %eax
-	jne	.LBB128_2
+	jne	.LBB159_2
 	movl	$1, 76(%rsp)
-	jmp	.LBB128_3
-.LBB128_2:
-	jmp	.LBB128_3
-.LBB128_3:
+	jmp	.LBB159_3
+.LBB159_2:
+	jmp	.LBB159_3
+.LBB159_3:
 	movq	88(%rsp), %rax
 	movq	8(%rax), %rax
 	movq	16(%rax), %rax
@@ -8429,12 +11004,12 @@ __Editor_Main_EState_Editor_Main_drawImageButton:
 	movslq	%ecx, %rcx
 	movq	%rax, 56(%rsp)
 	cmpq	$0, 56(%rsp)
-	jne	.LBB128_5
+	jne	.LBB159_5
 	addq	$104, %rsp
 	retq
-.LBB128_5:
-	jmp	.LBB128_6
-.LBB128_6:
+.LBB159_5:
+	jmp	.LBB159_6
+.LBB159_6:
 	movq	64(%rsp), %rax
 	movl	4(%rax), %eax
 	movl	%eax, 52(%rsp)
@@ -8535,6 +11110,240 @@ __Project_Rom_SpriteDef_Editor_Main_newImageButton:
 	retq
 	.seh_endproc
 
+	.def	__Editor_Main_EState_Editor_Main_drawDraftPane;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	__Editor_Main_EState_Editor_Main_drawDraftPane
+	.p2align	4, 0x90
+__Editor_Main_EState_Editor_Main_drawDraftPane:
+.seh_proc __Editor_Main_EState_Editor_Main_drawDraftPane
+	subq	$184, %rsp
+	.seh_stackalloc 184
+	.seh_endprologue
+	movq	%rcx, 176(%rsp)
+	movq	%rdx, 168(%rsp)
+	movq	_Project_Globals_iMap(%rip), %rax
+	movq	24(%rax), %rax
+	movq	16(%rax), %rax
+	movq	24(%rax), %rax
+	movq	%rax, 160(%rsp)
+	cmpq	$0, 160(%rsp)
+	jne	.LBB161_2
+	addq	$184, %rsp
+	retq
+.LBB161_2:
+	jmp	.LBB161_3
+.LBB161_3:
+	movq	176(%rsp), %rcx
+	movl	12(%rcx), %eax
+	movl	16(%rcx), %ecx
+	movl	%ecx, 76(%rsp)
+	movl	%eax, 72(%rsp)
+	leaq	72(%rsp), %rax
+	movq	%rax, 152(%rsp)
+	movq	152(%rsp), %rax
+	movl	(%rax), %eax
+	movl	%eax, 148(%rsp)
+	movq	152(%rsp), %rax
+	movl	4(%rax), %eax
+	movl	%eax, 144(%rsp)
+	movq	168(%rsp), %rax
+	movl	(%rax), %ecx
+	callq	_Int_Commons_Project_pixelTile
+	movl	%eax, 140(%rsp)
+	movq	168(%rsp), %rax
+	movl	4(%rax), %ecx
+	callq	_Int_Commons_Project_pixelTile
+	movl	%eax, 136(%rsp)
+	movl	148(%rsp), %eax
+	movl	%eax, 48(%rsp)
+	movl	140(%rsp), %eax
+	movl	$2, %ecx
+	cltd
+	idivl	%ecx
+	movl	%eax, %ecx
+	movl	48(%rsp), %eax
+	subl	%ecx, %eax
+	movl	%eax, 132(%rsp)
+	movl	144(%rsp), %eax
+	movl	%eax, 52(%rsp)
+	movl	136(%rsp), %eax
+	movl	$2, %ecx
+	cltd
+	idivl	%ecx
+	movl	%eax, %ecx
+	movl	52(%rsp), %eax
+	subl	%ecx, %eax
+	movl	%eax, 128(%rsp)
+	movq	176(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 120(%rsp)
+	movl	$0, 116(%rsp)
+.LBB161_4:
+	movl	116(%rsp), %eax
+	cmpl	136(%rsp), %eax
+	jge	.LBB161_6
+	movl	$0, 112(%rsp)
+	jmp	.LBB161_7
+.LBB161_6:
+	addq	$184, %rsp
+	retq
+.LBB161_7:
+	movl	112(%rsp), %eax
+	cmpl	140(%rsp), %eax
+	jge	.LBB161_9
+	movl	132(%rsp), %eax
+	addl	112(%rsp), %eax
+	movl	%eax, 108(%rsp)
+	movl	128(%rsp), %eax
+	addl	116(%rsp), %eax
+	movl	%eax, 104(%rsp)
+	movq	120(%rsp), %rax
+	movq	8(%rax), %rdx
+	movl	108(%rsp), %r8d
+	movl	104(%rsp), %r9d
+	leaq	56(%rsp), %rcx
+	callq	__Physics_Room_EndlessGrid_Physics_Room_lookupSector
+	leaq	56(%rsp), %rax
+	movq	%rax, 96(%rsp)
+	movq	96(%rsp), %rax
+	movq	(%rax), %rax
+	movq	%rax, 88(%rsp)
+	movl	$0, 84(%rsp)
+	cmpq	$0, 88(%rsp)
+	jne	.LBB161_10
+	jmp	.LBB161_11
+.LBB161_9:
+	movl	116(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 116(%rsp)
+	jmp	.LBB161_4
+.LBB161_10:
+	movq	88(%rsp), %rax
+	movb	(%rax), %al
+	xorb	$-1, %al
+	testb	$1, %al
+	jne	.LBB161_13
+	jmp	.LBB161_14
+.LBB161_11:
+	jmp	.LBB161_12
+.LBB161_12:
+	movl	108(%rsp), %eax
+	cmpl	148(%rsp), %eax
+	sete	%al
+	movl	104(%rsp), %ecx
+	cmpl	144(%rsp), %ecx
+	sete	%cl
+	andb	%cl, %al
+	testb	$1, %al
+	jne	.LBB161_22
+	jmp	.LBB161_23
+.LBB161_13:
+	movl	$1, 84(%rsp)
+	jmp	.LBB161_15
+.LBB161_14:
+	movq	88(%rsp), %rax
+	testb	$1, 1(%rax)
+	jne	.LBB161_16
+	jmp	.LBB161_17
+.LBB161_15:
+	jmp	.LBB161_12
+.LBB161_16:
+	movl	$4, 84(%rsp)
+	jmp	.LBB161_18
+.LBB161_17:
+	movq	88(%rsp), %rax
+	testb	$1, 2(%rax)
+	jne	.LBB161_19
+	jmp	.LBB161_20
+.LBB161_18:
+	jmp	.LBB161_15
+.LBB161_19:
+	movl	$3, 84(%rsp)
+	jmp	.LBB161_21
+.LBB161_20:
+	movl	$2, 84(%rsp)
+.LBB161_21:
+	jmp	.LBB161_18
+.LBB161_22:
+	movl	84(%rsp), %eax
+	addl	$5, %eax
+	movl	%eax, 84(%rsp)
+	jmp	.LBB161_24
+.LBB161_23:
+	jmp	.LBB161_24
+.LBB161_24:
+	movl	112(%rsp), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	%eax, 44(%rsp)
+	movl	116(%rsp), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	44(%rsp), %ecx
+	movl	%eax, %edx
+	movq	160(%rsp), %r8
+	movl	84(%rsp), %r9d
+	xorl	%eax, %eax
+	movl	$0, 32(%rsp)
+	callq	_Int_Project_Globals_drawSprite
+	movl	112(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 112(%rsp)
+	jmp	.LBB161_7
+	.seh_endproc
+
+	.def	_Int_Editor_Main_newDraftPane;
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	_Int_Editor_Main_newDraftPane
+	.p2align	4, 0x90
+_Int_Editor_Main_newDraftPane:
+.seh_proc _Int_Editor_Main_newDraftPane
+	subq	$88, %rsp
+	.seh_stackalloc 88
+	.seh_endprologue
+	movl	%ecx, 84(%rsp)
+	movl	%edx, 80(%rsp)
+	movl	84(%rsp), %eax
+	movl	80(%rsp), %ecx
+	movl	%ecx, 76(%rsp)
+	movl	%eax, 72(%rsp)
+	movq	%rsp, %rax
+	movq	$0, 32(%rax)
+	movl	$8, %ecx
+	xorl	%r8d, %r8d
+	movb	$1, %r9b
+	movl	%r8d, %edx
+	callq	gc_alloc_array
+	movq	%rax, 56(%rsp)
+	movl	72(%rsp), %eax
+	movl	%eax, 68(%rsp)
+	movl	76(%rsp), %eax
+	movl	%eax, 64(%rsp)
+	leaq	_bot_Editor_GUI_nopClick(%rip), %rax
+	movq	%rax, 48(%rsp)
+	leaq	__Editor_Main_EState_Editor_Main_drawDraftPane(%rip), %rax
+	movq	%rax, 40(%rsp)
+	leaq	tc__Editor_GUI_Elem(%rip), %rdx
+	movl	$32, %ecx
+	callq	gc_alloc
+	movq	40(%rsp), %r11
+	movq	48(%rsp), %r10
+	movq	56(%rsp), %r9
+	movl	64(%rsp), %r8d
+	movl	68(%rsp), %edx
+	movq	%rax, %rcx
+	movq	%rcx, %rax
+	movq	%r11, 24(%rcx)
+	movq	%r10, 16(%rcx)
+	movq	%r9, 8(%rcx)
+	movl	%r8d, 4(%rcx)
+	movl	%edx, (%rcx)
+	addq	$88, %rsp
+	retq
+	.seh_endproc
+
 	.def	__Editor_Main_EState_Editor_Main_saveAct;
 	.scl	2;
 	.type	32;
@@ -8543,14 +11352,18 @@ __Project_Rom_SpriteDef_Editor_Main_newImageButton:
 	.p2align	4, 0x90
 __Editor_Main_EState_Editor_Main_saveAct:
 .seh_proc __Editor_Main_EState_Editor_Main_saveAct
-	subq	$24, %rsp
-	.seh_stackalloc 24
+	subq	$56, %rsp
+	.seh_stackalloc 56
 	.seh_endprologue
-	movq	%rcx, 16(%rsp)
-	movq	%rdx, 8(%rsp)
-	movl	%r8d, 4(%rsp)
-	movl	%r9d, (%rsp)
-	addq	$24, %rsp
+	movq	%rcx, 48(%rsp)
+	movq	%rdx, 40(%rsp)
+	movl	%r8d, 36(%rsp)
+	movl	%r9d, 32(%rsp)
+	movq	48(%rsp), %rax
+	movq	(%rax), %rcx
+	callq	__Physics_Room_Room_Physics_Room_save
+	nop
+	addq	$56, %rsp
 	retq
 	.seh_endproc
 
@@ -8562,21 +11375,22 @@ __Editor_Main_EState_Editor_Main_saveAct:
 	.p2align	4, 0x90
 _Int_Editor_Main_toolbar:
 .seh_proc _Int_Editor_Main_toolbar
-	subq	$184, %rsp
-	.seh_stackalloc 184
+	subq	$200, %rsp
+	.seh_stackalloc 200
 	.seh_endprologue
-	movl	%ecx, 180(%rsp)
+	movl	%ecx, 196(%rsp)
 	movq	%rsp, %rax
 	movq	$0, 32(%rax)
 	movl	$8, %ecx
-	movl	%ecx, 120(%rsp)
+	movl	%ecx, 132(%rsp)
 	movl	$3, %edx
+	movl	%edx, 136(%rsp)
 	xorl	%r8d, %r8d
-	movl	%r8d, 128(%rsp)
+	movl	%r8d, 140(%rsp)
 	movb	$1, %r9b
-	movb	%r9b, 135(%rsp)
+	movb	%r9b, 147(%rsp)
 	callq	gc_alloc_array
-	movl	128(%rsp), %edx
+	movl	140(%rsp), %edx
 	movq	%rax, 56(%rsp)
 	movq	16(%rax), %rax
 	movq	%rax, 64(%rsp)
@@ -8595,7 +11409,7 @@ _Int_Editor_Main_toolbar:
 	movq	%rsp, %rax
 	movl	%r9d, 32(%rax)
 	movl	$2, %edx
-	movl	%edx, 124(%rsp)
+	movl	%edx, 92(%rsp)
 	movw	$1, %r8w
 	callq	__Project_Rom_SpriteDef_Editor_Main_newImageButton
 	movw	54(%rsp), %r8w
@@ -8606,25 +11420,25 @@ _Int_Editor_Main_toolbar:
 	movq	%rsp, %rax
 	movl	%r9d, 32(%rax)
 	movl	$4, %edx
-	movl	%edx, 108(%rsp)
+	movl	%edx, 116(%rsp)
 	movw	%r8w, %cx
 	callq	__Project_Rom_SpriteDef_Editor_Main_newImageButton
 	movq	56(%rsp), %rcx
-	movl	124(%rsp), %edx
+	movl	92(%rsp), %edx
 	movq	%rax, %r8
 	movq	64(%rsp), %rax
 	movq	%r8, 16(%rax)
 	callq	_a1_Editor_GUI_vertElems
-	movl	120(%rsp), %ecx
-	movl	124(%rsp), %edx
-	movl	128(%rsp), %r8d
-	movb	135(%rsp), %r9b
-	movq	%rax, 168(%rsp)
+	movl	92(%rsp), %edx
+	movl	132(%rsp), %ecx
+	movl	140(%rsp), %r8d
+	movb	147(%rsp), %r9b
+	movq	%rax, 184(%rsp)
 	movq	%rsp, %rax
 	movq	$0, 32(%rax)
 	callq	gc_alloc_array
-	movl	108(%rsp), %edx
-	movl	120(%rsp), %ecx
+	movl	116(%rsp), %edx
+	movl	132(%rsp), %ecx
 	movq	%rax, 72(%rsp)
 	movq	16(%rax), %rax
 	movq	%rax, 80(%rsp)
@@ -8634,69 +11448,83 @@ _Int_Editor_Main_toolbar:
 	movq	%rcx, (%rax)
 	callq	_none_Editor_Main_newTileSel
 	movq	72(%rsp), %rcx
-	movl	108(%rsp), %edx
+	movl	116(%rsp), %edx
 	movq	%rax, %r8
 	movq	80(%rsp), %rax
 	movq	%r8, 8(%rax)
 	callq	_a1_Editor_GUI_vertElems
-	movl	120(%rsp), %ecx
-	movl	128(%rsp), %r8d
-	movb	135(%rsp), %r9b
-	movq	%rax, 160(%rsp)
+	movl	92(%rsp), %edx
+	movl	132(%rsp), %ecx
+	movl	140(%rsp), %r8d
+	movb	147(%rsp), %r9b
+	movq	%rax, 176(%rsp)
 	movq	%rsp, %rax
 	movq	$0, 32(%rax)
-	movl	$1, %edx
 	callq	gc_alloc_array
-	movl	124(%rsp), %ecx
-	movq	%rax, 96(%rsp)
+	movq	%rax, 104(%rsp)
 	movq	16(%rax), %rax
-	movq	%rax, 112(%rsp)
+	movq	%rax, 120(%rsp)
+	movl	$13, %ecx
 	callq	_Int_Commons_Project_tilePixel
-	movl	124(%rsp), %ecx
-	movl	%eax, 92(%rsp)
+	movl	%eax, 96(%rsp)
+	movl	$6, %ecx
+	movl	%ecx, 148(%rsp)
 	callq	_Int_Commons_Project_tilePixel
-	movl	92(%rsp), %edx
+	movl	96(%rsp), %ecx
+	movl	%eax, %edx
+	callq	_Int_Editor_Main_newDraftPane
+	movl	136(%rsp), %ecx
+	movq	%rax, %rdx
+	movq	120(%rsp), %rax
+	movq	%rdx, (%rax)
+	callq	_Int_Commons_Project_tilePixel
+	movl	%eax, 100(%rsp)
+	movl	$1, %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	100(%rsp), %edx
 	movl	%eax, %r8d
-	leaq	_sz16+24(%rip), %rcx
+	leaq	_sz92+32(%rip), %rcx
 	leaq	__Editor_Main_EState_Editor_Main_saveAct(%rip), %r9
 	callq	_String_Editor_GUI_newButton
-	movq	96(%rsp), %rcx
-	movl	108(%rsp), %edx
+	movq	104(%rsp), %rcx
+	movl	116(%rsp), %edx
 	movq	%rax, %r8
-	movq	112(%rsp), %rax
-	movq	%r8, (%rax)
+	movq	120(%rsp), %rax
+	movq	%r8, 8(%rax)
 	callq	_a1_Editor_GUI_vertElems
-	movl	120(%rsp), %ecx
-	movl	124(%rsp), %edx
-	movl	128(%rsp), %r8d
-	movb	135(%rsp), %r9b
-	movq	%rax, 152(%rsp)
+	movl	132(%rsp), %ecx
+	movl	136(%rsp), %edx
+	movl	140(%rsp), %r8d
+	movb	147(%rsp), %r9b
+	movq	%rax, 168(%rsp)
 	movq	%rsp, %rax
 	movq	$0, 32(%rax)
 	callq	gc_alloc_array
+	movl	148(%rsp), %edx
 	movq	%rax, %rcx
 	movq	16(%rcx), %rax
-	movq	168(%rsp), %rdx
-	movq	%rdx, (%rax)
-	movq	160(%rsp), %rdx
-	movq	%rdx, 8(%rax)
-	movl	$6, %edx
+	movq	184(%rsp), %r8
+	movq	%r8, (%rax)
+	movq	176(%rsp), %r8
+	movq	%r8, 8(%rax)
+	movq	168(%rsp), %r8
+	movq	%r8, 16(%rax)
 	callq	_a1_Editor_GUI_horizGroup
-	movq	%rax, 144(%rsp)
-	movq	144(%rsp), %rax
+	movq	%rax, 160(%rsp)
+	movq	160(%rsp), %rax
 	movb	$1, (%rax)
-	movq	144(%rsp), %rax
+	movq	160(%rsp), %rax
 	movl	$8, 28(%rax)
-	movq	144(%rsp), %rax
-	movl	180(%rsp), %ecx
-	movl	%ecx, 136(%rsp)
-	movl	$85, 140(%rsp)
-	movl	136(%rsp), %ecx
-	movl	140(%rsp), %edx
+	movq	160(%rsp), %rax
+	movl	196(%rsp), %ecx
+	movl	%ecx, 152(%rsp)
+	movl	$85, 156(%rsp)
+	movl	152(%rsp), %ecx
+	movl	156(%rsp), %edx
 	movl	%edx, 36(%rax)
 	movl	%ecx, 32(%rax)
-	movq	144(%rsp), %rax
-	addq	$184, %rsp
+	movq	160(%rsp), %rax
+	addq	$200, %rsp
 	retq
 	.seh_endproc
 
@@ -8732,9 +11560,9 @@ __Physics_Room_Camera_Editor_Main_newEditor:
 	movq	%rax, 88(%rsp)
 	movq	112(%rsp), %rax
 	movq	%rax, 72(%rsp)
-	movq	104(%rsp), %rax
-	movq	%rax, 64(%rsp)
-	callq	_none_Editor_Main_newEState
+	movq	104(%rsp), %rcx
+	movq	%rcx, 64(%rsp)
+	callq	__Physics_Room_Room_Editor_Main_newEState
 	movq	%rax, 56(%rsp)
 	movq	96(%rsp), %rax
 	movq	%rax, 48(%rsp)
@@ -8781,7 +11609,7 @@ __Editor_Main_EState_Editor_Main__paintTile:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 40(%rsp)
 	cmpq	$0, 40(%rsp)
-	jne	.LBB133_2
+	jne	.LBB166_2
 	callq	_none_Physics_Room_newBaseTile
 	movq	%rax, 40(%rsp)
 	movq	56(%rsp), %rax
@@ -8790,13 +11618,13 @@ __Editor_Main_EState_Editor_Main__paintTile:
 	movl	52(%rsp), %r8d
 	movl	48(%rsp), %r9d
 	callq	__Physics_Room_EndlessGrid_builtin_update
-	jmp	.LBB133_3
-.LBB133_2:
-	jmp	.LBB133_3
-.LBB133_3:
+	jmp	.LBB166_3
+.LBB166_2:
+	jmp	.LBB166_3
+.LBB166_3:
 	movq	40(%rsp), %rax
 	movq	64(%rsp), %rcx
-	movw	2(%rcx), %cx
+	movw	10(%rcx), %cx
 	movw	%cx, (%rax)
 	movq	56(%rsp), %rcx
 	movl	52(%rsp), %edx
@@ -8828,13 +11656,13 @@ __Physics_Room_Room_Editor_Main__getMatTile:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 32(%rsp)
 	cmpq	$0, 32(%rsp)
-	jne	.LBB134_2
+	jne	.LBB167_2
 	xorl	%eax, %eax
 	addq	$56, %rsp
 	retq
-.LBB134_2:
-	jmp	.LBB134_3
-.LBB134_3:
+.LBB167_2:
+	jmp	.LBB167_3
+.LBB167_3:
 	movq	32(%rsp), %rax
 	movw	(%rax), %ax
 	addq	$56, %rsp
@@ -8874,15 +11702,15 @@ __Physics_Room_Room_Editor_Main__sameMatTile:
 	setne	%cl
 	orb	%cl, %al
 	testb	$1, %al
-	jne	.LBB135_1
-	jmp	.LBB135_2
-.LBB135_1:
+	jne	.LBB168_1
+	jmp	.LBB168_2
+.LBB168_1:
 	xorl	%eax, %eax
 	addq	$72, %rsp
 	retq
-.LBB135_2:
-	jmp	.LBB135_3
-.LBB135_3:
+.LBB168_2:
+	jmp	.LBB168_3
+.LBB168_3:
 	movq	64(%rsp), %rax
 	movq	8(%rax), %rcx
 	movl	60(%rsp), %edx
@@ -8890,15 +11718,15 @@ __Physics_Room_Room_Editor_Main__sameMatTile:
 	callq	__Physics_Room_EndlessGrid_builtin_lookup
 	movq	%rax, 40(%rsp)
 	cmpq	$0, 40(%rsp)
-	jne	.LBB135_5
+	jne	.LBB168_5
 	movw	54(%rsp), %ax
 	testw	%ax, %ax
 	sete	%al
 	addq	$72, %rsp
 	retq
-.LBB135_5:
-	jmp	.LBB135_6
-.LBB135_6:
+.LBB168_5:
+	jmp	.LBB168_6
+.LBB168_6:
 	movq	40(%rsp), %rax
 	movswl	(%rax), %eax
 	movswl	54(%rsp), %ecx
@@ -8936,21 +11764,21 @@ __Editor_Main_EState_Editor_Main__fillTile:
 	callq	__Physics_Room_Room_Editor_Main__sameMatTile
 	xorb	$-1, %al
 	testb	$1, %al
-	jne	.LBB136_1
-	jmp	.LBB136_2
-.LBB136_1:
+	jne	.LBB169_1
+	jmp	.LBB169_2
+.LBB169_1:
 	addq	$88, %rsp
 	retq
-.LBB136_2:
-	jmp	.LBB136_3
-.LBB136_3:
+.LBB169_2:
+	jmp	.LBB169_3
+.LBB169_3:
 	movq	80(%rsp), %rcx
 	movq	72(%rsp), %rdx
 	movl	68(%rsp), %r8d
 	movl	64(%rsp), %r9d
 	callq	__Editor_Main_EState_Editor_Main__paintTile
 	cmpl	$2, 144(%rsp)
-	je	.LBB136_5
+	je	.LBB169_5
 	movq	80(%rsp), %rcx
 	movq	72(%rsp), %rdx
 	movl	68(%rsp), %r8d
@@ -8965,12 +11793,12 @@ __Editor_Main_EState_Editor_Main__fillTile:
 	movl	$1, 48(%rsp)
 	movl	%eax, 56(%rsp)
 	callq	__Editor_Main_EState_Editor_Main__fillTile
-	jmp	.LBB136_6
-.LBB136_5:
-	jmp	.LBB136_6
-.LBB136_6:
+	jmp	.LBB169_6
+.LBB169_5:
+	jmp	.LBB169_6
+.LBB169_6:
 	cmpl	$1, 144(%rsp)
-	je	.LBB136_8
+	je	.LBB169_8
 	movq	80(%rsp), %rcx
 	movq	72(%rsp), %rdx
 	movl	68(%rsp), %r8d
@@ -8985,12 +11813,12 @@ __Editor_Main_EState_Editor_Main__fillTile:
 	movl	$2, 48(%rsp)
 	movl	%eax, 56(%rsp)
 	callq	__Editor_Main_EState_Editor_Main__fillTile
-	jmp	.LBB136_9
-.LBB136_8:
-	jmp	.LBB136_9
-.LBB136_9:
+	jmp	.LBB169_9
+.LBB169_8:
+	jmp	.LBB169_9
+.LBB169_9:
 	cmpl	$4, 144(%rsp)
-	je	.LBB136_11
+	je	.LBB169_11
 	movq	80(%rsp), %rcx
 	movq	72(%rsp), %rdx
 	movl	68(%rsp), %r8d
@@ -9005,12 +11833,12 @@ __Editor_Main_EState_Editor_Main__fillTile:
 	movl	$3, 48(%rsp)
 	movl	%eax, 56(%rsp)
 	callq	__Editor_Main_EState_Editor_Main__fillTile
-	jmp	.LBB136_12
-.LBB136_11:
-	jmp	.LBB136_12
-.LBB136_12:
+	jmp	.LBB169_12
+.LBB169_11:
+	jmp	.LBB169_12
+.LBB169_12:
 	cmpl	$3, 144(%rsp)
-	je	.LBB136_14
+	je	.LBB169_14
 	movq	80(%rsp), %rcx
 	movq	72(%rsp), %rdx
 	movl	68(%rsp), %r8d
@@ -9025,10 +11853,10 @@ __Editor_Main_EState_Editor_Main__fillTile:
 	movl	$4, 48(%rsp)
 	movl	%eax, 56(%rsp)
 	callq	__Editor_Main_EState_Editor_Main__fillTile
-	jmp	.LBB136_15
-.LBB136_14:
-	jmp	.LBB136_15
-.LBB136_15:
+	jmp	.LBB169_15
+.LBB169_14:
+	jmp	.LBB169_15
+.LBB169_15:
 	addq	$88, %rsp
 	retq
 	.seh_endproc
@@ -9041,295 +11869,352 @@ __Editor_Main_EState_Editor_Main__fillTile:
 	.p2align	4, 0x90
 __Editor_Main_Editor_builtin_update:
 .seh_proc __Editor_Main_Editor_builtin_update
-	subq	$216, %rsp
-	.seh_stackalloc 216
+	subq	$248, %rsp
+	.seh_stackalloc 248
 	.seh_endprologue
-	movq	%rcx, 208(%rsp)
-	movq	208(%rsp), %rax
+	movq	%rcx, 240(%rsp)
+	movq	240(%rsp), %rax
 	movq	(%rax), %rax
-	movq	%rax, 200(%rsp)
-	movq	208(%rsp), %rax
+	movq	%rax, 232(%rsp)
+	movq	240(%rsp), %rax
 	movq	8(%rax), %rax
-	movq	%rax, 192(%rsp)
-	movq	208(%rsp), %rax
+	movq	%rax, 224(%rsp)
+	movq	240(%rsp), %rax
 	movq	16(%rax), %rax
-	movq	%rax, 184(%rsp)
+	movq	%rax, 216(%rsp)
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
 	movl	_GLFW_Main__GLFW_KEY_W(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_1
-	jmp	.LBB137_2
-.LBB137_1:
-	movq	200(%rsp), %rax
-	movq	200(%rsp), %rcx
+	jne	.LBB170_1
+	jmp	.LBB170_2
+.LBB170_1:
+	movq	232(%rsp), %rax
+	movq	232(%rsp), %rcx
 	movl	16(%rcx), %ecx
 	subl	$2, %ecx
 	movl	%ecx, 16(%rax)
-	jmp	.LBB137_3
-.LBB137_2:
+	jmp	.LBB170_3
+.LBB170_2:
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
 	movl	_GLFW_Main__GLFW_KEY_S(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_4
-	jmp	.LBB137_5
-.LBB137_3:
+	jne	.LBB170_4
+	jmp	.LBB170_5
+.LBB170_3:
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
 	movl	_GLFW_Main__GLFW_KEY_A(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_7
-	jmp	.LBB137_8
-.LBB137_4:
-	movq	200(%rsp), %rax
-	movq	200(%rsp), %rcx
+	jne	.LBB170_7
+	jmp	.LBB170_8
+.LBB170_4:
+	movq	232(%rsp), %rax
+	movq	232(%rsp), %rcx
 	movl	16(%rcx), %ecx
 	addl	$2, %ecx
 	movl	%ecx, 16(%rax)
-	jmp	.LBB137_6
-.LBB137_5:
-	jmp	.LBB137_6
-.LBB137_6:
-	jmp	.LBB137_3
-.LBB137_7:
-	movq	200(%rsp), %rax
-	movq	200(%rsp), %rcx
+	jmp	.LBB170_6
+.LBB170_5:
+	jmp	.LBB170_6
+.LBB170_6:
+	jmp	.LBB170_3
+.LBB170_7:
+	movq	232(%rsp), %rax
+	movq	232(%rsp), %rcx
 	movl	12(%rcx), %ecx
 	subl	$2, %ecx
 	movl	%ecx, 12(%rax)
-	jmp	.LBB137_9
-.LBB137_8:
+	jmp	.LBB170_9
+.LBB170_8:
 	movq	_Project_Globals_input(%rip), %rax
 	movq	8(%rax), %rax
 	movl	_GLFW_Main__GLFW_KEY_D(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_10
-	jmp	.LBB137_11
-.LBB137_9:
+	jne	.LBB170_10
+	jmp	.LBB170_11
+.LBB170_9:
+	movq	232(%rsp), %rax
+	movl	4(%rax), %ecx
+	movl	12(%rax), %eax
+	movl	%ecx, %edx
+	shrl	$31, %edx
+	addl	%edx, %ecx
+	sarl	%ecx
+	addl	%ecx, %eax
+	movl	%eax, 196(%rsp)
+	movq	232(%rsp), %rax
+	movl	4(%rax), %ecx
+	movl	16(%rax), %eax
+	movl	%ecx, %edx
+	shrl	$31, %edx
+	addl	%edx, %ecx
+	sarl	%ecx
+	addl	%ecx, %eax
+	movl	%eax, 192(%rsp)
+	movq	216(%rsp), %rax
+	movq	%rax, 88(%rsp)
+	movl	196(%rsp), %eax
+	movl	%eax, 76(%rsp)
+	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	76(%rsp), %ecx
+	movl	%eax, %edx
+	callq	_Int_Commons_Core_adiv
+	movl	%eax, 84(%rsp)
+	movl	192(%rsp), %eax
+	movl	%eax, 80(%rsp)
+	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	80(%rsp), %ecx
+	movl	%eax, %edx
+	callq	_Int_Commons_Core_adiv
+	movl	84(%rsp), %ecx
+	movl	%eax, %edx
+	movq	88(%rsp), %rax
+	movl	%edx, 140(%rsp)
+	movl	%ecx, 136(%rsp)
+	movl	136(%rsp), %ecx
+	movl	140(%rsp), %edx
+	movl	%edx, 16(%rax)
+	movl	%ecx, 12(%rax)
 	movq	_Project_Globals_input(%rip), %rdx
-	leaq	112(%rsp), %rcx
-	movq	%rcx, 80(%rsp)
+	leaq	128(%rsp), %rcx
+	movq	%rcx, 96(%rsp)
 	callq	__Sulfur_Input_Input_Sulfur_Input_mousePos
-	movq	80(%rsp), %rax
-	movq	%rax, 176(%rsp)
-	movq	176(%rsp), %rax
+	movq	96(%rsp), %rax
+	movq	%rax, 200(%rsp)
+	movq	200(%rsp), %rax
 	movl	(%rax), %eax
-	movl	%eax, 172(%rsp)
-	movq	176(%rsp), %rax
+	movl	%eax, 196(%rsp)
+	movq	200(%rsp), %rax
 	movl	4(%rax), %eax
-	movl	%eax, 168(%rsp)
-	movl	172(%rsp), %eax
-	movq	200(%rsp), %rcx
+	movl	%eax, 192(%rsp)
+	movl	196(%rsp), %eax
+	movq	232(%rsp), %rcx
 	movl	(%rcx), %ecx
 	cltd
 	idivl	%ecx
-	movl	%eax, 172(%rsp)
-	movl	168(%rsp), %eax
-	movq	200(%rsp), %rcx
+	movl	%eax, 196(%rsp)
+	movl	192(%rsp), %eax
+	movq	232(%rsp), %rcx
 	movl	(%rcx), %ecx
 	cltd
 	idivl	%ecx
-	movl	%eax, 168(%rsp)
-	movl	172(%rsp), %eax
-	movq	200(%rsp), %rdx
+	movl	%eax, 192(%rsp)
+	movl	196(%rsp), %eax
+	movq	232(%rsp), %rdx
 	movl	12(%rdx), %ecx
 	movl	16(%rdx), %edx
 	addl	%ecx, %eax
-	movl	168(%rsp), %ecx
+	movl	192(%rsp), %ecx
 	addl	%edx, %ecx
-	movl	%ecx, 108(%rsp)
-	movl	%eax, 104(%rsp)
-	leaq	104(%rsp), %rax
-	movq	%rax, 160(%rsp)
-	movq	160(%rsp), %rax
+	movl	%ecx, 124(%rsp)
+	movl	%eax, 120(%rsp)
+	leaq	120(%rsp), %rax
+	movq	%rax, 184(%rsp)
+	movq	184(%rsp), %rax
 	movl	(%rax), %eax
-	movl	%eax, 156(%rsp)
-	movq	160(%rsp), %rax
+	movl	%eax, 180(%rsp)
+	movq	184(%rsp), %rax
 	movl	4(%rax), %eax
-	movl	%eax, 152(%rsp)
-	movq	208(%rsp), %rax
+	movl	%eax, 176(%rsp)
+	movq	240(%rsp), %rax
 	movq	32(%rax), %rcx
-	movq	184(%rsp), %rdx
-	movl	172(%rsp), %r8d
-	movl	168(%rsp), %r9d
+	movq	216(%rsp), %rdx
+	movl	196(%rsp), %r8d
+	movl	192(%rsp), %r9d
 	callq	_a1_Editor_GUI_updatePanes
 	andb	$1, %al
-	movb	%al, 151(%rsp)
-	testb	$1, 151(%rsp)
-	jne	.LBB137_13
-	jmp	.LBB137_14
-.LBB137_10:
-	movq	200(%rsp), %rax
-	movq	200(%rsp), %rcx
+	movb	%al, 175(%rsp)
+	testb	$1, 175(%rsp)
+	jne	.LBB170_13
+	jmp	.LBB170_14
+.LBB170_10:
+	movq	232(%rsp), %rax
+	movq	232(%rsp), %rcx
 	movl	12(%rcx), %ecx
 	addl	$2, %ecx
 	movl	%ecx, 12(%rax)
-	jmp	.LBB137_12
-.LBB137_11:
-	jmp	.LBB137_12
-.LBB137_12:
-	jmp	.LBB137_9
-.LBB137_13:
-	addq	$216, %rsp
+	jmp	.LBB170_12
+.LBB170_11:
+	jmp	.LBB170_12
+.LBB170_12:
+	jmp	.LBB170_9
+.LBB170_13:
+	addq	$248, %rsp
 	retq
-.LBB137_14:
-	jmp	.LBB137_15
-.LBB137_15:
-	movl	156(%rsp), %ecx
+.LBB170_14:
+	jmp	.LBB170_15
+.LBB170_15:
+	movl	180(%rsp), %ecx
 	callq	_Int_Commons_Project_pixelTile
-	movl	%eax, 144(%rsp)
-	movl	152(%rsp), %ecx
+	movl	%eax, 168(%rsp)
+	movl	176(%rsp), %ecx
 	callq	_Int_Commons_Project_pixelTile
-	movl	%eax, 140(%rsp)
+	movl	%eax, 164(%rsp)
 	movq	_Project_Globals_input(%rip), %rax
 	movq	24(%rax), %rax
 	movl	_GLFW_Main__GLFW_MOUSE_BUTTON_1(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_16
-	jmp	.LBB137_17
-.LBB137_16:
-	movq	184(%rsp), %rax
-	movw	(%rax), %ax
-	movw	%ax, 138(%rsp)
-	cmpw	$1, 138(%rsp)
-	je	.LBB137_19
-	jmp	.LBB137_20
-.LBB137_17:
+	jne	.LBB170_16
+	jmp	.LBB170_17
+.LBB170_16:
+	movq	216(%rsp), %rax
+	movw	8(%rax), %ax
+	movw	%ax, 162(%rsp)
+	cmpw	$1, 162(%rsp)
+	je	.LBB170_19
+	jmp	.LBB170_20
+.LBB170_17:
 	movq	_Project_Globals_input(%rip), %rax
 	movq	24(%rax), %rax
 	movl	_GLFW_Main__GLFW_MOUSE_BUTTON_2(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_25
-	jmp	.LBB137_26
-.LBB137_18:
+	jne	.LBB170_25
+	jmp	.LBB170_26
+.LBB170_18:
 	movq	_Project_Globals_input(%rip), %rax
 	movq	32(%rax), %rax
 	movl	_GLFW_Main__GLFW_MOUSE_BUTTON_1(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB137_28
-	jmp	.LBB137_29
-.LBB137_19:
-	movq	184(%rsp), %rcx
-	movq	192(%rsp), %rdx
-	movl	144(%rsp), %r8d
-	movl	140(%rsp), %r9d
+	jne	.LBB170_31
+	jmp	.LBB170_32
+.LBB170_19:
+	movq	216(%rsp), %rcx
+	movq	224(%rsp), %rdx
+	movl	168(%rsp), %r8d
+	movl	164(%rsp), %r9d
 	callq	__Editor_Main_EState_Editor_Main__paintTile
-	jmp	.LBB137_21
-.LBB137_20:
-	cmpw	$0, 138(%rsp)
-	je	.LBB137_22
-	jmp	.LBB137_23
-.LBB137_21:
-	jmp	.LBB137_18
-.LBB137_22:
-	movq	192(%rsp), %rax
-	movl	144(%rsp), %ecx
-	movl	140(%rsp), %edx
-	movl	%edx, 100(%rsp)
-	movl	%ecx, 96(%rsp)
-	movl	96(%rsp), %ecx
-	movl	100(%rsp), %edx
+	jmp	.LBB170_21
+.LBB170_20:
+	cmpw	$0, 162(%rsp)
+	je	.LBB170_22
+	jmp	.LBB170_23
+.LBB170_21:
+	jmp	.LBB170_18
+.LBB170_22:
+	movq	224(%rsp), %rax
+	movl	168(%rsp), %ecx
+	movl	164(%rsp), %edx
+	movl	%edx, 116(%rsp)
+	movl	%ecx, 112(%rsp)
+	movl	112(%rsp), %ecx
+	movl	116(%rsp), %edx
 	movl	%edx, 4(%rax)
 	movl	%ecx, (%rax)
-	jmp	.LBB137_24
-.LBB137_23:
-	jmp	.LBB137_24
-.LBB137_24:
-	jmp	.LBB137_21
-.LBB137_25:
-	movq	184(%rsp), %rax
-	movw	(%rax), %ax
-	movw	%ax, 136(%rsp)
-	movq	192(%rsp), %rax
+	jmp	.LBB170_24
+.LBB170_23:
+	jmp	.LBB170_24
+.LBB170_24:
+	jmp	.LBB170_21
+.LBB170_25:
+	movq	216(%rsp), %rax
+	movw	8(%rax), %ax
+	movw	%ax, 160(%rsp)
+	cmpw	$1, 160(%rsp)
+	je	.LBB170_28
+	jmp	.LBB170_29
+.LBB170_26:
+	jmp	.LBB170_27
+.LBB170_27:
+	jmp	.LBB170_18
+.LBB170_28:
+	movq	224(%rsp), %rax
 	movq	8(%rax), %rcx
-	movl	144(%rsp), %edx
-	movl	140(%rsp), %r8d
+	movl	168(%rsp), %edx
+	movl	164(%rsp), %r8d
 	callq	__Physics_Room_EndlessGrid_Physics_Room_delete
-	movq	192(%rsp), %rcx
-	movl	144(%rsp), %edx
-	movl	140(%rsp), %r8d
+	movq	224(%rsp), %rcx
+	movl	168(%rsp), %edx
+	movl	164(%rsp), %r8d
 	callq	__Physics_Room_Room_Physics_Room_reify
-	jmp	.LBB137_27
-.LBB137_26:
-	jmp	.LBB137_27
-.LBB137_27:
-	jmp	.LBB137_18
-.LBB137_28:
-	movq	184(%rsp), %rax
-	movw	(%rax), %ax
-	movw	%ax, 134(%rsp)
-	cmpw	$2, 134(%rsp)
-	je	.LBB137_31
-	jmp	.LBB137_32
-.LBB137_29:
-	jmp	.LBB137_30
-.LBB137_30:
-	addq	$216, %rsp
+	movq	224(%rsp), %rax
+	movq	8(%rax), %rcx
+	movl	168(%rsp), %edx
+	movl	164(%rsp), %r8d
+	callq	__Physics_Room_EndlessGrid_Physics_Room_updateEmpty
+	jmp	.LBB170_30
+.LBB170_29:
+	jmp	.LBB170_30
+.LBB170_30:
+	jmp	.LBB170_27
+.LBB170_31:
+	movq	216(%rsp), %rax
+	movw	8(%rax), %ax
+	movw	%ax, 158(%rsp)
+	cmpw	$2, 158(%rsp)
+	je	.LBB170_34
+	jmp	.LBB170_35
+.LBB170_32:
+	jmp	.LBB170_33
+.LBB170_33:
+	addq	$248, %rsp
 	retq
-.LBB137_31:
-	movq	192(%rsp), %rcx
-	movl	144(%rsp), %edx
-	movl	140(%rsp), %r8d
+.LBB170_34:
+	movq	224(%rsp), %rcx
+	movl	168(%rsp), %edx
+	movl	164(%rsp), %r8d
 	callq	__Physics_Room_Room_Editor_Main__getMatTile
-	movw	%ax, 132(%rsp)
-	movswl	132(%rsp), %eax
-	movq	184(%rsp), %rcx
-	movswl	2(%rcx), %ecx
+	movw	%ax, 156(%rsp)
+	movswl	156(%rsp), %eax
+	movq	216(%rsp), %rcx
+	movswl	10(%rcx), %ecx
 	cmpl	%ecx, %eax
-	jne	.LBB137_34
-	jmp	.LBB137_35
-.LBB137_32:
-	jmp	.LBB137_33
-.LBB137_33:
-	jmp	.LBB137_30
-.LBB137_34:
-	movl	144(%rsp), %ecx
+	jne	.LBB170_37
+	jmp	.LBB170_38
+.LBB170_35:
+	jmp	.LBB170_36
+.LBB170_36:
+	jmp	.LBB170_33
+.LBB170_37:
+	movl	168(%rsp), %ecx
 	movl	_Physics_Room__SEC_SIZE(%rip), %edx
 	callq	_Int_Commons_Core_adiv
-	movl	%eax, 76(%rsp)
-	movl	140(%rsp), %ecx
+	movl	%eax, 72(%rsp)
+	movl	164(%rsp), %ecx
 	movl	_Physics_Room__SEC_SIZE(%rip), %edx
 	callq	_Int_Commons_Core_adiv
 	movl	%eax, %ecx
-	movl	76(%rsp), %eax
-	movl	%ecx, 92(%rsp)
-	movl	%eax, 88(%rsp)
-	leaq	88(%rsp), %rax
-	movq	%rax, 120(%rsp)
-	movq	184(%rsp), %rcx
-	movq	192(%rsp), %rdx
-	movl	144(%rsp), %r8d
-	movl	140(%rsp), %r9d
-	movw	132(%rsp), %r10w
-	movq	120(%rsp), %rax
+	movl	72(%rsp), %eax
+	movl	%ecx, 108(%rsp)
+	movl	%eax, 104(%rsp)
+	leaq	104(%rsp), %rax
+	movq	%rax, 144(%rsp)
+	movq	216(%rsp), %rcx
+	movq	224(%rsp), %rdx
+	movl	168(%rsp), %r8d
+	movl	164(%rsp), %r9d
+	movw	156(%rsp), %r10w
+	movq	144(%rsp), %rax
 	xorl	%r11d, %r11d
 	movw	%r10w, 32(%rsp)
 	movq	%rax, 40(%rsp)
 	movl	$0, 48(%rsp)
 	movl	$0, 56(%rsp)
 	callq	__Editor_Main_EState_Editor_Main__fillTile
-	jmp	.LBB137_36
-.LBB137_35:
-	jmp	.LBB137_36
-.LBB137_36:
-	movq	184(%rsp), %rax
-	movw	$1, (%rax)
-	jmp	.LBB137_33
+	jmp	.LBB170_39
+.LBB170_38:
+	jmp	.LBB170_39
+.LBB170_39:
+	movq	216(%rsp), %rax
+	movw	$1, 8(%rax)
+	jmp	.LBB170_36
 	.seh_endproc
 
 	.def	__Editor_Main_Editor_Editor_Main_drawBack;
@@ -9340,131 +12225,105 @@ __Editor_Main_Editor_builtin_update:
 	.p2align	4, 0x90
 __Editor_Main_Editor_Editor_Main_drawBack:
 .seh_proc __Editor_Main_Editor_Editor_Main_drawBack
-	subq	$152, %rsp
-	.seh_stackalloc 152
+	subq	$136, %rsp
+	.seh_stackalloc 136
 	.seh_endprologue
-	movq	%rcx, 144(%rsp)
-	movq	144(%rsp), %rax
+	movq	%rcx, 128(%rsp)
+	movq	128(%rsp), %rax
 	movq	(%rax), %rax
-	movq	%rax, 136(%rsp)
-	movq	136(%rsp), %rax
-	movl	12(%rax), %eax
+	movq	%rax, 120(%rsp)
+	movq	128(%rsp), %rax
+	movq	16(%rax), %rcx
+	movl	12(%rcx), %eax
+	movl	16(%rcx), %ecx
+	movl	%ecx, 92(%rsp)
+	movl	%eax, 88(%rsp)
+	leaq	88(%rsp), %rax
+	movq	%rax, 112(%rsp)
+	movq	112(%rsp), %rax
+	movl	(%rax), %eax
+	movl	%eax, 108(%rsp)
+	movq	112(%rsp), %rax
+	movl	4(%rax), %eax
+	movl	%eax, 104(%rsp)
+	movl	108(%rsp), %eax
+	movl	%eax, 40(%rsp)
+	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	%eax, %ecx
+	movl	40(%rsp), %eax
+	imull	%ecx, %eax
+	movl	%eax, 100(%rsp)
+	movl	104(%rsp), %eax
+	movl	%eax, 44(%rsp)
+	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	%eax, %ecx
+	movl	44(%rsp), %eax
+	imull	%ecx, %eax
+	movl	%eax, 96(%rsp)
+	movl	100(%rsp), %eax
 	movl	%eax, 48(%rsp)
-	movq	136(%rsp), %rax
-	movl	4(%rax), %eax
-	movl	$2, %ecx
-	cltd
-	idivl	%ecx
-	movl	%eax, %ecx
-	movl	48(%rsp), %eax
-	addl	%ecx, %eax
-	movl	%eax, 132(%rsp)
-	movq	136(%rsp), %rax
-	movl	16(%rax), %eax
+	movl	96(%rsp), %eax
 	movl	%eax, 52(%rsp)
-	movq	136(%rsp), %rax
-	movl	4(%rax), %eax
-	movl	$2, %ecx
-	cltd
-	idivl	%ecx
-	movl	%eax, %ecx
-	movl	52(%rsp), %eax
-	addl	%ecx, %eax
-	movl	%eax, 128(%rsp)
-	movl	132(%rsp), %eax
+	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
+	callq	_Int_Commons_Project_tilePixel
+	movl	48(%rsp), %edx
+	movl	52(%rsp), %r8d
+	movl	%eax, %r9d
+	movl	$3503357888, %ecx
+	movl	$1, 32(%rsp)
+	callq	_U32_Project_Globals_drawBox
+	movl	100(%rsp), %eax
+	movl	%eax, 60(%rsp)
+	movl	96(%rsp), %eax
 	movl	%eax, 56(%rsp)
 	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
 	callq	_Int_Commons_Project_tilePixel
-	movl	56(%rsp), %ecx
-	movl	%eax, %edx
-	callq	_Int_Commons_Core_adiv
-	movl	%eax, 124(%rsp)
-	movl	128(%rsp), %eax
-	movl	%eax, 60(%rsp)
-	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
-	callq	_Int_Commons_Project_tilePixel
-	movl	60(%rsp), %ecx
-	movl	%eax, %edx
-	callq	_Int_Commons_Core_adiv
-	movl	%eax, 120(%rsp)
-	movl	124(%rsp), %eax
+	movl	%eax, %ecx
+	movl	56(%rsp), %eax
+	addl	%ecx, %eax
 	movl	%eax, 64(%rsp)
 	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
 	callq	_Int_Commons_Project_tilePixel
-	movl	%eax, %ecx
-	movl	64(%rsp), %eax
-	imull	%ecx, %eax
-	movl	%eax, 116(%rsp)
-	movl	120(%rsp), %eax
+	movl	60(%rsp), %edx
+	movl	64(%rsp), %r8d
+	movl	%eax, %r9d
+	movl	$3503357888, %ecx
+	movl	$1, 32(%rsp)
+	callq	_U32_Project_Globals_drawBox
+	movl	100(%rsp), %eax
 	movl	%eax, 68(%rsp)
-	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
-	callq	_Int_Commons_Project_tilePixel
-	movl	%eax, %ecx
-	movl	68(%rsp), %eax
-	imull	%ecx, %eax
-	movl	%eax, 112(%rsp)
-	movl	116(%rsp), %eax
+	movl	96(%rsp), %eax
 	movl	%eax, 72(%rsp)
-	movl	112(%rsp), %eax
-	movl	%eax, 76(%rsp)
 	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
 	callq	_Int_Commons_Project_tilePixel
-	movl	72(%rsp), %edx
-	movl	76(%rsp), %r8d
-	movl	%eax, %r9d
-	movl	$3503357888, %ecx
-	movl	$1, 32(%rsp)
-	callq	_U32_Project_Globals_drawBox
-	movl	116(%rsp), %eax
-	movl	%eax, 84(%rsp)
-	movl	112(%rsp), %eax
-	movl	%eax, 80(%rsp)
-	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
-	callq	_Int_Commons_Project_tilePixel
-	movl	%eax, %ecx
-	movl	80(%rsp), %eax
-	addl	%ecx, %eax
-	movl	%eax, 88(%rsp)
-	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
-	callq	_Int_Commons_Project_tilePixel
-	movl	84(%rsp), %edx
-	movl	88(%rsp), %r8d
-	movl	%eax, %r9d
-	movl	$3503357888, %ecx
-	movl	$1, 32(%rsp)
-	callq	_U32_Project_Globals_drawBox
-	movl	116(%rsp), %eax
-	movl	%eax, 92(%rsp)
-	movl	112(%rsp), %eax
-	movl	%eax, 96(%rsp)
-	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
-	callq	_Int_Commons_Project_tilePixel
-	movl	92(%rsp), %edx
-	movl	96(%rsp), %r8d
+	movl	68(%rsp), %edx
+	movl	72(%rsp), %r8d
 	movl	$3503357888, %ecx
 	movl	$1, %r9d
 	movl	%eax, 32(%rsp)
 	callq	_U32_Project_Globals_drawBox
-	movl	116(%rsp), %eax
-	movl	%eax, 100(%rsp)
+	movl	100(%rsp), %eax
+	movl	%eax, 76(%rsp)
 	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
 	callq	_Int_Commons_Project_tilePixel
 	movl	%eax, %ecx
-	movl	100(%rsp), %eax
+	movl	76(%rsp), %eax
 	addl	%ecx, %eax
-	movl	%eax, 104(%rsp)
-	movl	112(%rsp), %eax
-	movl	%eax, 108(%rsp)
+	movl	%eax, 80(%rsp)
+	movl	96(%rsp), %eax
+	movl	%eax, 84(%rsp)
 	movl	_Physics_Room__SEC_SIZE(%rip), %ecx
 	callq	_Int_Commons_Project_tilePixel
-	movl	104(%rsp), %edx
-	movl	108(%rsp), %r8d
+	movl	80(%rsp), %edx
+	movl	84(%rsp), %r8d
 	movl	$3503357888, %ecx
 	movl	$1, %r9d
 	movl	%eax, 32(%rsp)
 	callq	_U32_Project_Globals_drawBox
 	nop
-	addq	$152, %rsp
+	addq	$136, %rsp
 	retq
 	.seh_endproc
 
@@ -9487,9 +12346,9 @@ __Editor_Main_Editor_Editor_Main_drawFore:
 	movl	8(%rax), %eax
 	subl	$1, %eax
 	movl	%eax, 36(%rsp)
-.LBB139_1:
+.LBB172_1:
 	cmpl	$0, 36(%rsp)
-	jl	.LBB139_3
+	jl	.LBB172_3
 	movq	40(%rsp), %rax
 	movl	36(%rsp), %ecx
 	movq	16(%rax), %rax
@@ -9501,8 +12360,8 @@ __Editor_Main_Editor_Editor_Main_drawFore:
 	movl	36(%rsp), %eax
 	subl	$1, %eax
 	movl	%eax, 36(%rsp)
-	jmp	.LBB139_1
-.LBB139_3:
+	jmp	.LBB172_1
+.LBB172_3:
 	addq	$56, %rsp
 	retq
 	.seh_endproc
@@ -9619,12 +12478,12 @@ __Game_GameObj_GameObj_Project_Globals_draw:
 	movslq	%ecx, %rcx
 	movq	%rax, 56(%rsp)
 	cmpq	$0, 56(%rsp)
-	jne	.LBB142_2
+	jne	.LBB175_2
 	addq	$88, %rsp
 	retq
-.LBB142_2:
-	jmp	.LBB142_3
-.LBB142_3:
+.LBB175_2:
+	jmp	.LBB175_3
+.LBB175_3:
 	movq	64(%rsp), %rax
 	movq	8(%rax), %rax
 	movl	(%rax), %ecx
@@ -9804,52 +12663,52 @@ __Game_Game_Game_Project_Globals_input:
 	movq	16(%rax), %rax
 	movq	%rax, 56(%rsp)
 	cmpq	$0, 56(%rsp)
-	jne	.LBB146_2
+	jne	.LBB179_2
 	addq	$72, %rsp
 	retq
-.LBB146_2:
-	jmp	.LBB146_3
-.LBB146_3:
+.LBB179_2:
+	jmp	.LBB179_3
+.LBB179_3:
 	movq	56(%rsp), %rax
 	movq	8(%rax), %rax
 	movq	%rax, 48(%rsp)
 	xorl	%ecx, %ecx
 	callq	__Project_Globals_KeyType_Project_Globals_inputDown
 	testb	$1, %al
-	jne	.LBB146_4
-	jmp	.LBB146_5
-.LBB146_4:
+	jne	.LBB179_4
+	jmp	.LBB179_5
+.LBB179_4:
 	movq	48(%rsp), %rax
 	movl	$-896, 24(%rax)
 	movq	48(%rsp), %rax
 	movb	$0, 2(%rax)
-	jmp	.LBB146_6
-.LBB146_5:
+	jmp	.LBB179_6
+.LBB179_5:
 	movl	$1, %ecx
 	callq	__Project_Globals_KeyType_Project_Globals_inputDown
 	testb	$1, %al
-	jne	.LBB146_7
-	jmp	.LBB146_8
-.LBB146_6:
+	jne	.LBB179_7
+	jmp	.LBB179_8
+.LBB179_6:
 	movq	48(%rsp), %rax
 	movl	$128, 28(%rax)
 	movl	$2, %ecx
 	callq	__Project_Globals_KeyType_Project_Globals_inputPress
 	testb	$1, %al
-	jne	.LBB146_10
-	jmp	.LBB146_11
-.LBB146_7:
+	jne	.LBB179_10
+	jmp	.LBB179_11
+.LBB179_7:
 	movq	48(%rsp), %rax
 	movl	$896, 24(%rax)
 	movq	48(%rsp), %rax
 	movb	$1, 2(%rax)
-	jmp	.LBB146_9
-.LBB146_8:
+	jmp	.LBB179_9
+.LBB179_8:
 	movq	48(%rsp), %rax
 	movl	$0, 24(%rax)
-.LBB146_9:
-	jmp	.LBB146_6
-.LBB146_10:
+.LBB179_9:
+	jmp	.LBB179_6
+.LBB179_10:
 	movq	48(%rsp), %rax
 	movq	%rax, 40(%rsp)
 	movq	48(%rsp), %rax
@@ -9864,10 +12723,10 @@ __Game_Game_Game_Project_Globals_input:
 	movl	$4294965760, %ecx
 	subl	%edx, %ecx
 	movl	%ecx, 20(%rax)
-	jmp	.LBB146_12
-.LBB146_11:
-	jmp	.LBB146_12
-.LBB146_12:
+	jmp	.LBB179_12
+.LBB179_11:
+	jmp	.LBB179_12
+.LBB179_12:
 	movl	$2, %ecx
 	callq	__Project_Globals_KeyType_Project_Globals_inputDown
 	movq	48(%rsp), %rcx
@@ -9875,17 +12734,17 @@ __Game_Game_Game_Project_Globals_input:
 	setl	%cl
 	andb	%cl, %al
 	testb	$1, %al
-	jne	.LBB146_13
-	jmp	.LBB146_14
-.LBB146_13:
+	jne	.LBB179_13
+	jmp	.LBB179_14
+.LBB179_13:
 	movq	48(%rsp), %rax
 	movl	$80, 32(%rax)
-	jmp	.LBB146_15
-.LBB146_14:
+	jmp	.LBB179_15
+.LBB179_14:
 	movq	48(%rsp), %rax
 	movl	_Physics_Obj__GRAV_CONST(%rip), %ecx
 	movl	%ecx, 32(%rax)
-.LBB146_15:
+.LBB179_15:
 	addq	$72, %rsp
 	retq
 	.seh_endproc
@@ -9906,12 +12765,12 @@ __Game_Game_Game_builtin_update:
 	movq	8(%rax), %rcx
 	callq	__Physics_Room_Room_builtin_update
 	movl	$0, 44(%rsp)
-.LBB147_1:
+.LBB180_1:
 	movl	44(%rsp), %eax
 	movq	48(%rsp), %rcx
 	movq	24(%rcx), %rcx
 	cmpl	8(%rcx), %eax
-	jge	.LBB147_3
+	jge	.LBB180_3
 	movq	48(%rsp), %rax
 	movq	24(%rax), %rax
 	movl	44(%rsp), %ecx
@@ -9925,8 +12784,8 @@ __Game_Game_Game_builtin_update:
 	movl	44(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 44(%rsp)
-	jmp	.LBB147_1
-.LBB147_3:
+	jmp	.LBB180_1
+.LBB180_3:
 	addq	$56, %rsp
 	retq
 	.seh_endproc
@@ -9947,12 +12806,12 @@ __Game_Game_Game_Project_Globals_draw:
 	movq	(%rax), %rax
 	movq	%rax, 56(%rsp)
 	movl	$0, 52(%rsp)
-.LBB148_1:
+.LBB181_1:
 	movl	52(%rsp), %eax
 	movq	64(%rsp), %rcx
 	movq	24(%rcx), %rcx
 	cmpl	8(%rcx), %eax
-	jge	.LBB148_3
+	jge	.LBB181_3
 	movq	64(%rsp), %rax
 	movq	24(%rax), %rax
 	movl	52(%rsp), %ecx
@@ -9966,8 +12825,8 @@ __Game_Game_Game_Project_Globals_draw:
 	movl	52(%rsp), %eax
 	addl	$1, %eax
 	movl	%eax, 52(%rsp)
-	jmp	.LBB148_1
-.LBB148_3:
+	jmp	.LBB181_1
+.LBB181_3:
 	movq	64(%rsp), %rax
 	movq	8(%rax), %rcx
 	movq	56(%rsp), %rdx
@@ -9991,13 +12850,13 @@ _none_main:
 	callq	init_globals
 	callq	glfwInit
 	cmpl	$0, %eax
-	jne	.LBB149_2
-	leaq	_sz17(%rip), %rcx
-	addq	$24, %rcx
+	jne	.LBB182_2
+	leaq	_sz93(%rip), %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
-.LBB149_2:
-	jmp	.LBB149_3
-.LBB149_3:
+.LBB182_2:
+	jmp	.LBB182_3
+.LBB182_3:
 	movl	_GLFW_Main__GLFW_CONTEXT_VERSION_MAJOR(%rip), %ecx
 	movl	$3, %edx
 	callq	glfwWindowHint
@@ -10020,8 +12879,8 @@ _none_main:
 	movl	%eax, 96(%rsp)
 	movl	__WH(%rip), %eax
 	movl	%eax, 100(%rsp)
-	leaq	_sz18(%rip), %rcx
-	addq	$24, %rcx
+	leaq	_sz94(%rip), %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_cString
 	movl	96(%rsp), %ecx
 	movl	100(%rsp), %edx
@@ -10032,14 +12891,14 @@ _none_main:
 	callq	glfwCreateWindow
 	movq	%rax, 192(%rsp)
 	cmpq	$0, 192(%rsp)
-	jne	.LBB149_5
+	jne	.LBB182_5
 	callq	glfwTerminate
-	leaq	_sz19(%rip), %rcx
-	addq	$24, %rcx
+	leaq	_sz95(%rip), %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
-.LBB149_5:
-	jmp	.LBB149_6
-.LBB149_6:
+.LBB182_5:
+	jmp	.LBB182_6
+.LBB182_6:
 	movq	192(%rsp), %rcx
 	callq	glfwMakeContextCurrent
 	movl	$1, %ecx
@@ -10047,27 +12906,27 @@ _none_main:
 	leaq	glfwGetProcAddress(%rip), %rcx
 	callq	_fn_OpenGL_Main_initOpenGL
 	cmpl	$0, %eax
-	jne	.LBB149_8
+	jne	.LBB182_8
 	callq	glfwTerminate
-	leaq	_sz20(%rip), %rcx
-	addq	$24, %rcx
+	leaq	_sz96(%rip), %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
-.LBB149_8:
-	jmp	.LBB149_9
-.LBB149_9:
+.LBB182_8:
+	jmp	.LBB182_9
+.LBB182_9:
 	movl	_OpenGL_Main__GL_VERSION(%rip), %ecx
 	callq	glGetString
 	movq	%rax, 184(%rsp)
 	cmpq	$0, 184(%rsp)
-	je	.LBB149_11
+	je	.LBB182_11
 	movq	184(%rsp), %rcx
 	callq	_ptr_Sys_Os_print
-	jmp	.LBB149_12
-.LBB149_11:
-	leaq	_sz21(%rip), %rcx
-	addq	$24, %rcx
+	jmp	.LBB182_12
+.LBB182_11:
+	leaq	_sz97(%rip), %rcx
+	addq	$32, %rcx
 	callq	_String_builtin_panic
-.LBB149_12:
+.LBB182_12:
 	movl	__WW(%rip), %ecx
 	movl	__WH(%rip), %edx
 	callq	_Int_Sulfur_Main_initSulfur
@@ -10094,6 +12953,8 @@ _none_main:
 	callq	gc_new_root
 	movq	64(%rsp), %rax
 	movq	%rax, 160(%rsp)
+	movq	160(%rsp), %rcx
+	callq	__Physics_Room_Room_Physics_Room_load
 	movl	__SW(%rip), %ecx
 	movl	__SH(%rip), %edx
 	movl	__ZOOM(%rip), %r8d
@@ -10123,11 +12984,11 @@ _none_main:
 	callq	_none_Sys_Os_time
 	movq	%rax, 120(%rsp)
 	movq	$0, 112(%rsp)
-.LBB149_13:
+.LBB182_13:
 	movq	192(%rsp), %rcx
 	callq	glfwWindowShouldClose
 	cmpl	$0, %eax
-	jne	.LBB149_15
+	jne	.LBB182_15
 	callq	_none_Sys_Os_time
 	movq	%rax, 104(%rsp)
 	movq	112(%rsp), %rax
@@ -10137,25 +12998,25 @@ _none_main:
 	movq	%rax, 112(%rsp)
 	movq	104(%rsp), %rax
 	movq	%rax, 120(%rsp)
-	jmp	.LBB149_16
-.LBB149_15:
+	jmp	.LBB182_16
+.LBB182_15:
 	movq	192(%rsp), %rcx
 	callq	glfwDestroyWindow
 	callq	glfwTerminate
 	nop
 	addq	$200, %rsp
 	retq
-.LBB149_16:
+.LBB182_16:
 	movq	112(%rsp), %rax
 	cmpq	__DELAY(%rip), %rax
-	jb	.LBB149_18
+	jb	.LBB182_18
 	movq	112(%rsp), %rax
 	subq	__DELAY(%rip), %rax
 	movq	%rax, 112(%rsp)
 	cmpq	$1000, 112(%rsp)
-	jae	.LBB149_19
-	jmp	.LBB149_20
-.LBB149_18:
+	jae	.LBB182_19
+	jmp	.LBB182_20
+.LBB182_18:
 	movq	176(%rsp), %rcx
 	xorl	%edx, %edx
 	callq	__Sulfur_Main_Sulfur_builtin_clear
@@ -10165,60 +13026,60 @@ _none_main:
 	movb	135(%rsp), %al
 	xorb	$-1, %al
 	testb	$1, %al
-	jne	.LBB149_31
-	jmp	.LBB149_32
-.LBB149_19:
+	jne	.LBB182_31
+	jmp	.LBB182_32
+.LBB182_19:
 	movq	$0, 112(%rsp)
-	jmp	.LBB149_21
-.LBB149_20:
-	jmp	.LBB149_21
-.LBB149_21:
+	jmp	.LBB182_21
+.LBB182_20:
+	jmp	.LBB182_21
+.LBB182_21:
 	movq	_Project_Globals_input(%rip), %rcx
 	callq	__Sulfur_Input_Input_builtin_update
 	movb	135(%rsp), %al
 	xorb	$-1, %al
 	testb	$1, %al
-	jne	.LBB149_22
-	jmp	.LBB149_23
-.LBB149_22:
+	jne	.LBB182_22
+	jmp	.LBB182_23
+.LBB182_22:
 	movq	144(%rsp), %rcx
 	callq	__Editor_Main_Editor_builtin_update
-	jmp	.LBB149_24
-.LBB149_23:
+	jmp	.LBB182_24
+.LBB182_23:
 	movq	136(%rsp), %rcx
 	callq	__Game_Game_Game_Project_Globals_input
 	movq	136(%rsp), %rcx
 	callq	__Game_Game_Game_builtin_update
-.LBB149_24:
+.LBB182_24:
 	movq	_Project_Globals_input(%rip), %rax
 	movq	16(%rax), %rax
 	movl	_GLFW_Main__GLFW_KEY_0(%rip), %ecx
 	movq	16(%rax), %rax
 	movslq	%ecx, %rcx
 	testb	$1, (%rax,%rcx)
-	jne	.LBB149_25
-	jmp	.LBB149_26
-.LBB149_25:
+	jne	.LBB182_25
+	jmp	.LBB182_26
+.LBB182_25:
 	movb	135(%rsp), %al
 	xorb	$-1, %al
 	andb	$1, %al
 	movb	%al, 135(%rsp)
 	testb	$1, 135(%rsp)
-	jne	.LBB149_28
-	jmp	.LBB149_29
-.LBB149_26:
-	jmp	.LBB149_27
-.LBB149_27:
-	jmp	.LBB149_16
-.LBB149_28:
+	jne	.LBB182_28
+	jmp	.LBB182_29
+.LBB182_26:
+	jmp	.LBB182_27
+.LBB182_27:
+	jmp	.LBB182_16
+.LBB182_28:
 	movq	136(%rsp), %rcx
 	callq	__Game_Game_Game_Game_Game_reset
-	jmp	.LBB149_30
-.LBB149_29:
-	jmp	.LBB149_30
-.LBB149_30:
-	jmp	.LBB149_27
-.LBB149_31:
+	jmp	.LBB182_30
+.LBB182_29:
+	jmp	.LBB182_30
+.LBB182_30:
+	jmp	.LBB182_27
+.LBB182_31:
 	movq	152(%rsp), %rax
 	xorl	%ecx, %ecx
 	subl	12(%rax), %ecx
@@ -10234,8 +13095,8 @@ _none_main:
 	callq	_none_Project_Globals_popOffset
 	movq	144(%rsp), %rcx
 	callq	__Editor_Main_Editor_Editor_Main_drawFore
-	jmp	.LBB149_33
-.LBB149_32:
+	jmp	.LBB182_33
+.LBB182_32:
 	movq	152(%rsp), %rax
 	xorl	%ecx, %ecx
 	subl	12(%rax), %ecx
@@ -10246,7 +13107,7 @@ _none_main:
 	movq	136(%rsp), %rcx
 	callq	__Game_Game_Game_Project_Globals_draw
 	callq	_none_Project_Globals_popOffset
-.LBB149_33:
+.LBB182_33:
 	movq	176(%rsp), %rcx
 	callq	__Sulfur_Main_Sulfur_Sulfur_Main_render
 	movq	168(%rsp), %rcx
@@ -10264,7 +13125,7 @@ _none_main:
 	movq	192(%rsp), %rcx
 	callq	glfwSwapBuffers
 	callq	gc_collect
-	jmp	.LBB149_13
+	jmp	.LBB182_13
 	.seh_endproc
 
 	.section	.rdata,"dr"
@@ -24486,6 +27347,7 @@ _sz0:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	47
 	.asciz	"TexArray.sm - Could not generate texture array."
 	.zero	4
@@ -24540,6 +27402,7 @@ _sz1:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	39
 	.asciz	"Shader.sm - Could not compile shaders.\n"
 	.zero	4
@@ -24552,6 +27415,7 @@ _sz2:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	44
 	.asciz	"Shader.sm - Could not create shader program."
 	.zero	3
@@ -24565,6 +27429,7 @@ _sz3:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	36
 	.asciz	"Shader.sm - Could not link shaders.\n"
 	.zero	3
@@ -24578,6 +27443,7 @@ _sz4:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	42
 	.asciz	"Shader.sm - Could not load shader uniform "
 	.zero	1
@@ -24620,6 +27486,7 @@ _sz5:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	8
 	.asciz	"uSampler"
 	.zero	3
@@ -24632,6 +27499,7 @@ _sz6:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	5
 	.asciz	"uPMat"
 	.zero	2
@@ -24645,6 +27513,7 @@ _sz7:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	890
 	.asciz	"#version 330\r\nprecision highp float;\r\n\r\nlayout (location = 0) in vec3 aPos;\r\nlayout (location = 1) in vec2 aTex;\r\nlayout (location = 2) in vec3 iPos;\r\nlayout (location = 3) in vec2 iSize;\r\nlayout (location = 4) in uint iColor;\r\nlayout (location = 5) in float iTexId;\r\nlayout (location = 6) in vec2 iUVPos;\r\nlayout (location = 7) in vec2 iUVSize;\r\n\r\nuniform mat4 uPMat;\r\n//uniform int uTotal;\r\nout vec2 vTex;\r\nout float vTexId;\r\nout vec3 vColor;\r\n\r\nvec3 unpackRGB(uint c)\r\n{\r\n\tfloat r = float((c >> 24) & 0xFFu) / 255.0;\r\n\tfloat g = float((c >> 16) & 0xFFu) / 255.0;\r\n\tfloat b = float((c >> 8) & 0xFFu) / 255.0;\r\n\treturn vec3(r, g, b);\r\n}\r\n\r\nvoid main(void) {\r\n\tvec2 pos = (aPos.xy * iSize) + iPos.xy;\r\n\tgl_Position = uPMat * vec4(pos, 0.0, 1.0);\r\n\tgl_Position.z = iPos.z / 65536.0; /// float(uTotal);\r\n\tvTex = (aTex * iUVSize) + iUVPos;\r\n\tvTexId = iTexId;\r\n\tvColor = unpackRGB(iColor);\r\n}\r\n"
 	.zero	1
@@ -24657,6 +27526,7 @@ _sz8:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	380
 	.asciz	"#version 330\r\nprecision mediump float;\r\nprecision mediump sampler2DArray;\r\n\r\nin vec2 vTex;\r\nin float vTexId;\r\nin vec3 vColor;\r\n\r\nuniform sampler2DArray uSampler;\r\nout vec4 FragColor;\r\n\r\nvoid main(void) {\r\n\tvec4 texColor = texture(uSampler, vec3(vTex, vTexId));\r\n\tif (texColor.a == 0.0) discard;\r\n\tvec3 mColor = texColor.rgb * vColor.rgb;\r\n\tFragColor = vec4(mColor, texColor.a);\r\n}"
 	.zero	3
@@ -24698,6 +27568,7 @@ _sz9:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	4
 	.asciz	"text"
 	.zero	3
@@ -24711,6 +27582,7 @@ _sz10:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	4
 	.asciz	"tset"
 	.zero	3
@@ -24724,6 +27596,7 @@ _sz11:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	2
 	.asciz	"x1"
 	.zero	1
@@ -24732,9 +27605,9 @@ _sz11:
 	.globl	_rawC.1
 	.p2align	4, 0x0
 _rawC.1:
-	.quad	_sz9+24
-	.quad	_sz10+24
-	.quad	_sz11+24
+	.quad	_sz9+32
+	.quad	_sz10+32
+	.quad	_sz11+32
 
 	.globl	_arrC.2
 	.p2align	4, 0x0
@@ -24760,17 +27633,18 @@ _rawC.3:
 	.short	0
 	.short	1
 	.short	1
+	.short	1
 	.short	2
 
 	.globl	_arrC.4
 	.p2align	4, 0x0
 _arrC.4:
 	.long	2
-	.long	4
-	.long	4
+	.long	5
+	.long	5
 	.zero	4
 	.quad	_rawC.3
-	.long	4
+	.long	5
 	.zero	4
 
 	.section	.rdata,"dr"
@@ -24786,18 +27660,20 @@ _rawC.5:
 	.zero	8
 	.zero	8
 	.long	0
-	.long	20
+	.long	30
+	.long	0
+	.long	40
 	.zero	8
 
 	.globl	_arrC.6
 	.p2align	4, 0x0
 _arrC.6:
 	.long	8
-	.long	4
-	.long	4
+	.long	5
+	.long	5
 	.zero	4
 	.quad	_rawC.5
-	.long	4
+	.long	5
 	.zero	4
 
 	.section	.rdata,"dr"
@@ -24816,6 +27692,8 @@ _rawC.7:
 	.long	1
 	.long	1
 	.long	1
+	.long	1
+	.long	1
 	.long	2
 	.long	2
 
@@ -24823,11 +27701,11 @@ _rawC.7:
 	.p2align	4, 0x0
 _arrC.8:
 	.long	8
-	.long	4
-	.long	4
+	.long	5
+	.long	5
 	.zero	4
 	.quad	_rawC.7
-	.long	4
+	.long	5
 	.zero	4
 
 	.section	.rdata,"dr"
@@ -24838,9 +27716,10 @@ ATTR_Project_Rom_SpriteDef_tSize:
 
 	.data
 	.globl	_rawC.9
-	.p2align	2, 0x0
+	.p2align	4, 0x0
 _rawC.9:
 	.long	13
+	.long	20
 	.long	20
 	.long	20
 	.long	20
@@ -24849,11 +27728,11 @@ _rawC.9:
 	.p2align	4, 0x0
 _arrC.10:
 	.long	4
-	.long	4
-	.long	4
+	.long	5
+	.long	5
 	.zero	4
 	.quad	_rawC.9
-	.long	4
+	.long	5
 	.zero	4
 
 	.section	.rdata,"dr"
@@ -24886,6 +27765,7 @@ _sz12:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	4
 	.asciz	"rom/"
 	.zero	3
@@ -24899,6 +27779,7 @@ _sz13:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	4
 	.asciz	".png"
 	.zero	3
@@ -24912,6 +27793,7 @@ _sz14:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	22
 	.asciz	"Failed to load image: "
 	.zero	1
@@ -24925,6 +27807,7 @@ _sz15:
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	46
 	.asciz	"BUG: ImageMap.sm - Sprite loaded before image."
 	.zero	1
@@ -24979,7 +27862,501 @@ tc__Project_Serial_SerialObj:
 	.zero	4
 	.quad	tc_offs__Project_Serial_SerialObj
 
+	.globl	tc_offs__Project_Json_STRING
+	.p2align	2, 0x0
+tc_offs__Project_Json_STRING:
+	.long	8
+
+	.globl	tc__Project_Json_STRING
+	.p2align	3, 0x0
+tc__Project_Json_STRING:
+	.long	1
+	.zero	4
+	.quad	tc_offs__Project_Json_STRING
+
+	.globl	tc_offs__Project_Json_LIST
+	.p2align	2, 0x0
+tc_offs__Project_Json_LIST:
+	.long	8
+
+	.globl	tc__Project_Json_LIST
+	.p2align	3, 0x0
+tc__Project_Json_LIST:
+	.long	1
+	.zero	4
+	.quad	tc_offs__Project_Json_LIST
+
+	.globl	tc_offs__Project_Json_DICT
+	.p2align	2, 0x0
+tc_offs__Project_Json_DICT:
+	.long	8
+
+	.globl	tc__Project_Json_DICT
+	.p2align	3, 0x0
+tc__Project_Json_DICT:
+	.long	1
+	.zero	4
+	.quad	tc_offs__Project_Json_DICT
+
 	.section	.rdata,"dr"
+	.globl	_sz16
+	.p2align	4, 0x0
+_sz16:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	65
+	.asciz	"JsonObj.sm - Received unexpected Json value when expecting INT. ("
+	.zero	2
+
+	.globl	_sz17
+	.p2align	4, 0x0
+_sz17:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	")"
+	.zero	2
+
+	.globl	_sz18
+	.p2align	4, 0x0
+_sz18:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	68
+	.asciz	"JsonObj.sm - Received unexpected Json value when expecting STRING. ("
+	.zero	3
+	.zero	4
+
+	.globl	_sz19
+	.p2align	4, 0x0
+_sz19:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	")"
+	.zero	2
+
+	.globl	_sz20
+	.p2align	4, 0x0
+_sz20:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	67
+	.asciz	"JsonObj.sm - Received unexpected Json value when expecting ARRAY. ("
+
+	.globl	_sz21
+	.p2align	4, 0x0
+_sz21:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	")"
+	.zero	2
+
+	.bss
+	.globl	tc_offs__Project_Json_JDict
+	.p2align	2, 0x0
+tc_offs__Project_Json_JDict:
+	.zero	4
+
+	.data
+	.globl	tc__Project_Json_JDict
+	.p2align	3, 0x0
+tc__Project_Json_JDict:
+	.long	1
+	.zero	4
+	.quad	tc_offs__Project_Json_JDict
+
+	.section	.rdata,"dr"
+	.globl	_sz22
+	.p2align	4, 0x0
+_sz22:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	65
+	.asciz	"JsonObj.sm - Received unexpected Json value when expecting MAP. ("
+	.zero	2
+
+	.globl	_sz23
+	.p2align	4, 0x0
+_sz23:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	")"
+	.zero	2
+
+	.globl	_sz24
+	.p2align	4, 0x0
+_sz24:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	27
+	.asciz	"JsonObj.sm - Lookup of key "
+
+	.globl	_sz25
+	.p2align	4, 0x0
+_sz25:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	8
+	.asciz	" failed."
+	.zero	3
+
+	.globl	_sz26
+	.p2align	4, 0x0
+_sz26:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"null"
+	.zero	3
+	.zero	4
+
+	.globl	_sz27
+	.p2align	4, 0x0
+_sz27:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"\""
+	.zero	2
+
+	.globl	_sz28
+	.p2align	4, 0x0
+_sz28:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"["
+	.zero	2
+
+	.globl	_sz29
+	.p2align	4, 0x0
+_sz29:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	","
+	.zero	2
+
+	.globl	_sz30
+	.p2align	4, 0x0
+_sz30:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"]"
+	.zero	2
+
+	.globl	_sz31
+	.p2align	4, 0x0
+_sz31:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"{"
+	.zero	2
+
+	.globl	_sz32
+	.p2align	4, 0x0
+_sz32:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"\":"
+	.zero	1
+
+	.globl	_sz33
+	.p2align	4, 0x0
+_sz33:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"}"
+	.zero	2
+
+	.globl	_sz34
+	.p2align	4, 0x0
+_sz34:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	31
+	.asciz	"JsonObj.sm - Invalid character "
+	.zero	4
+
+	.globl	_sz35
+	.p2align	4, 0x0
+_sz35:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	15
+	.asciz	" while reading "
+	.zero	4
+
+	.globl	_sz36
+	.p2align	4, 0x0
+_sz36:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"."
+	.zero	2
+
+	.globl	_sz37
+	.p2align	4, 0x0
+_sz37:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	39
+	.asciz	"JsonObj.sm - End of file while reading "
+	.zero	4
+
+	.globl	_sz38
+	.p2align	4, 0x0
+_sz38:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	51
+	.asciz	"JsonObj.sm - End of file while reading Json string."
+
+	.globl	_sz39
+	.p2align	4, 0x0
+_sz39:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	31
+	.asciz	"JsonObj.sm - Invalid character "
+	.zero	4
+
+	.globl	_sz40
+	.p2align	4, 0x0
+_sz40:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	26
+	.asciz	" while reading Json array."
+	.zero	1
+
+	.globl	_sz41
+	.p2align	4, 0x0
+_sz41:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	50
+	.asciz	"JsonObj.sm - End of file while reading Json array."
+	.zero	1
+
+	.bss
+	.globl	tc_offs_tup.11
+	.p2align	2, 0x0
+tc_offs_tup.11:
+	.zero	4
+
+	.data
+	.globl	tc_tup.12
+	.p2align	3, 0x0
+tc_tup.12:
+	.long	1
+	.zero	4
+	.quad	tc_offs_tup.11
+
+	.section	.rdata,"dr"
+	.globl	_sz42
+	.p2align	4, 0x0
+_sz42:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	21
+	.asciz	"Json map (expected \")"
+	.zero	2
+	.zero	4
+
+	.globl	_sz43
+	.p2align	4, 0x0
+_sz43:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	21
+	.asciz	"Json map (expected :)"
+	.zero	2
+	.zero	4
+
+	.globl	_sz44
+	.p2align	4, 0x0
+_sz44:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	31
+	.asciz	"JsonObj.sm - Invalid character "
+	.zero	4
+
+	.globl	_sz45
+	.p2align	4, 0x0
+_sz45:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	24
+	.asciz	" while reading Json map."
+	.zero	3
+
+	.globl	_sz46
+	.p2align	4, 0x0
+_sz46:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	31
+	.asciz	"JsonObj.sm - Invalid character "
+	.zero	4
+
+	.globl	_sz47
+	.p2align	4, 0x0
+_sz47:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	27
+	.asciz	" while reading Json object."
+
+	.globl	_sz48
+	.p2align	4, 0x0
+_sz48:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	51
+	.asciz	"JsonObj.sm - End of file while reading Json object."
+
 	.globl	_Physics_Obj__GRAV_CONST
 	.p2align	2, 0x0
 _Physics_Obj__GRAV_CONST:
@@ -25003,37 +28380,12 @@ tc__Physics_Obj_MoveObj:
 	.zero	4
 	.quad	tc_offs__Physics_Obj_MoveObj
 
-	.globl	_rawC.11
-	.p2align	2, 0x0
-_rawC.11:
-	.long	0
-	.long	256
-	.long	257
-
-	.globl	_arrC.12
-	.p2align	4, 0x0
-_arrC.12:
-	.long	4
-	.long	3
-	.long	3
-	.zero	4
-	.quad	_rawC.11
-	.long	3
-	.zero	4
-
-	.section	.rdata,"dr"
-	.globl	ATTR_Physics_Room_TType_canonId
-	.p2align	3, 0x0
-ATTR_Physics_Room_TType_canonId:
-	.quad	_arrC.12
-
-	.data
 	.globl	_rawC.13
 	.p2align	2, 0x0
 _rawC.13:
 	.long	0
-	.long	1
-	.long	8
+	.long	256
+	.long	257
 
 	.globl	_arrC.14
 	.p2align	4, 0x0
@@ -25047,9 +28399,9 @@ _arrC.14:
 	.zero	4
 
 	.section	.rdata,"dr"
-	.globl	ATTR_Physics_Room_TType_baseId
+	.globl	ATTR_Physics_Room_TType_canonId
 	.p2align	3, 0x0
-ATTR_Physics_Room_TType_baseId:
+ATTR_Physics_Room_TType_canonId:
 	.quad	_arrC.14
 
 	.data
@@ -25057,8 +28409,8 @@ ATTR_Physics_Room_TType_baseId:
 	.p2align	2, 0x0
 _rawC.15:
 	.long	0
-	.long	2
-	.long	9
+	.long	1
+	.long	8
 
 	.globl	_arrC.16
 	.p2align	4, 0x0
@@ -25072,23 +28424,23 @@ _arrC.16:
 	.zero	4
 
 	.section	.rdata,"dr"
-	.globl	ATTR_Physics_Room_TType_dispId
+	.globl	ATTR_Physics_Room_TType_baseId
 	.p2align	3, 0x0
-ATTR_Physics_Room_TType_dispId:
+ATTR_Physics_Room_TType_baseId:
 	.quad	_arrC.16
 
 	.data
 	.globl	_rawC.17
-	.p2align	1, 0x0
+	.p2align	2, 0x0
 _rawC.17:
-	.short	0
-	.short	1
-	.short	2
+	.long	0
+	.long	2
+	.long	9
 
 	.globl	_arrC.18
 	.p2align	4, 0x0
 _arrC.18:
-	.long	2
+	.long	4
 	.long	3
 	.long	3
 	.zero	4
@@ -25097,23 +28449,47 @@ _arrC.18:
 	.zero	4
 
 	.section	.rdata,"dr"
+	.globl	ATTR_Physics_Room_TType_dispId
+	.p2align	3, 0x0
+ATTR_Physics_Room_TType_dispId:
+	.quad	_arrC.18
+
+	.data
+	.globl	_rawC.19
+	.p2align	1, 0x0
+_rawC.19:
+	.short	0
+	.short	1
+	.short	2
+
+	.globl	_arrC.20
+	.p2align	4, 0x0
+_arrC.20:
+	.long	2
+	.long	3
+	.long	3
+	.zero	4
+	.quad	_rawC.19
+	.long	3
+	.zero	4
+
+	.section	.rdata,"dr"
 	.globl	ATTR_Physics_Room_TType_rt
 	.p2align	3, 0x0
 ATTR_Physics_Room_TType_rt:
-	.quad	_arrC.18
+	.quad	_arrC.20
 
 	.globl	_Physics_Room__SEC_SIZE
 	.p2align	2, 0x0
 _Physics_Room__SEC_SIZE:
 	.long	64
 
-	.bss
+	.data
 	.globl	tc_offs__Physics_Room_Sector
 	.p2align	2, 0x0
 tc_offs__Physics_Room_Sector:
-	.zero	4
+	.long	8
 
-	.data
 	.globl	tc__Physics_Room_Sector
 	.p2align	3, 0x0
 tc__Physics_Room_Sector:
@@ -25146,6 +28522,607 @@ tc__Physics_Room_Room:
 	.zero	4
 	.quad	tc_offs__Physics_Room_Room
 
+	.section	.rdata,"dr"
+	.globl	_sz49
+	.p2align	4, 0x0
+_sz49:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"m"
+	.zero	2
+
+	.globl	_sz50
+	.p2align	4, 0x0
+_sz50:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"s_"
+	.zero	1
+
+	.globl	_sz51
+	.p2align	4, 0x0
+_sz51:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"_"
+	.zero	2
+
+	.bss
+	.globl	tc_offs_tup.21
+	.p2align	2, 0x0
+tc_offs_tup.21:
+	.zero	4
+
+	.data
+	.globl	tc_tup.22
+	.p2align	3, 0x0
+tc_tup.22:
+	.long	1
+	.zero	4
+	.quad	tc_offs_tup.21
+
+	.section	.rdata,"dr"
+	.globl	_sz52
+	.p2align	4, 0x0
+_sz52:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	3
+	.asciz	"ver"
+
+	.globl	_sz53
+	.p2align	4, 0x0
+_sz53:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"V0"
+	.zero	1
+
+	.globl	_sz54
+	.p2align	4, 0x0
+_sz54:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"data"
+	.zero	3
+	.zero	4
+
+	.bss
+	.globl	tc_offs_tup.23
+	.p2align	2, 0x0
+tc_offs_tup.23:
+	.zero	4
+
+	.data
+	.globl	tc_tup.24
+	.p2align	3, 0x0
+tc_tup.24:
+	.long	1
+	.zero	4
+	.quad	tc_offs_tup.23
+
+	.section	.rdata,"dr"
+	.globl	_sz55
+	.p2align	4, 0x0
+_sz55:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"sx"
+	.zero	1
+
+	.globl	_sz56
+	.p2align	4, 0x0
+_sz56:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"sy"
+	.zero	1
+
+	.globl	_sz57
+	.p2align	4, 0x0
+_sz57:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"secX"
+	.zero	3
+	.zero	4
+
+	.globl	_sz58
+	.p2align	4, 0x0
+_sz58:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"secY"
+	.zero	3
+	.zero	4
+
+	.globl	_sz59
+	.p2align	4, 0x0
+_sz59:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	9
+	.asciz	"secCoords"
+	.zero	2
+
+	.globl	_sz60
+	.p2align	4, 0x0
+_sz60:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"univ"
+	.zero	3
+	.zero	4
+
+	.globl	_sz61
+	.p2align	4, 0x0
+_sz61:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	10
+	.asciz	"rom/world/"
+	.zero	1
+
+	.globl	_sz62
+	.p2align	4, 0x0
+_sz62:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"s_"
+	.zero	1
+
+	.globl	_sz63
+	.p2align	4, 0x0
+_sz63:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	1
+	.asciz	"_"
+	.zero	2
+
+	.globl	_sz64
+	.p2align	4, 0x0
+_sz64:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	10
+	.asciz	"rom/world/"
+	.zero	1
+
+	.globl	_sz65
+	.p2align	4, 0x0
+_sz65:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	28
+	.asciz	"Could not load room sector: "
+	.zero	3
+	.zero	4
+
+	.globl	_sz66
+	.p2align	4, 0x0
+_sz66:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	7
+	.asciz	"sector "
+	.zero	4
+
+	.globl	_sz67
+	.p2align	4, 0x0
+_sz67:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	3
+	.asciz	"ver"
+
+	.globl	_sz68
+	.p2align	4, 0x0
+_sz68:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	14
+	.asciz	"sector version"
+	.zero	1
+	.zero	4
+
+	.globl	_sz69
+	.p2align	4, 0x0
+_sz69:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	5
+	.asciz	"VER: "
+	.zero	2
+	.zero	4
+
+	.globl	_sz70
+	.p2align	4, 0x0
+_sz70:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"data"
+	.zero	3
+	.zero	4
+
+	.globl	_sz71
+	.p2align	4, 0x0
+_sz71:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	11
+	.asciz	"sector data"
+
+	.globl	_sz72
+	.p2align	4, 0x0
+_sz72:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"V0"
+	.zero	1
+
+	.globl	_sz73
+	.p2align	4, 0x0
+_sz73:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"tx"
+	.zero	1
+
+	.globl	_sz74
+	.p2align	4, 0x0
+_sz74:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"ty"
+	.zero	1
+
+	.globl	_sz75
+	.p2align	4, 0x0
+_sz75:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	8
+	.asciz	"canon id"
+	.zero	3
+
+	.globl	_sz76
+	.p2align	4, 0x0
+_sz76:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	28
+	.asciz	"Unrecognized version string "
+	.zero	3
+	.zero	4
+
+	.globl	_sz77
+	.p2align	4, 0x0
+_sz77:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	30
+	.asciz	" during load for room sector: "
+	.zero	1
+	.zero	4
+
+	.globl	_sz78
+	.p2align	4, 0x0
+_sz78:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	14
+	.asciz	"rom/world/univ"
+	.zero	1
+	.zero	4
+
+	.globl	_sz79
+	.p2align	4, 0x0
+_sz79:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	12
+	.asciz	"room loading"
+	.zero	3
+	.zero	4
+
+	.globl	_sz80
+	.p2align	4, 0x0
+_sz80:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"sx"
+	.zero	1
+
+	.globl	_sz81
+	.p2align	4, 0x0
+_sz81:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	9
+	.asciz	"start pos"
+	.zero	2
+
+	.globl	_sz82
+	.p2align	4, 0x0
+_sz82:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	2
+	.asciz	"sy"
+	.zero	1
+
+	.globl	_sz83
+	.p2align	4, 0x0
+_sz83:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"secX"
+	.zero	3
+	.zero	4
+
+	.globl	_sz84
+	.p2align	4, 0x0
+_sz84:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	11
+	.asciz	"sector left"
+
+	.globl	_sz85
+	.p2align	4, 0x0
+_sz85:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	4
+	.asciz	"secY"
+	.zero	3
+	.zero	4
+
+	.globl	_sz86
+	.p2align	4, 0x0
+_sz86:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	10
+	.asciz	"sector top"
+	.zero	1
+
+	.globl	_sz87
+	.p2align	4, 0x0
+_sz87:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	9
+	.asciz	"secCoords"
+	.zero	2
+
+	.globl	_sz88
+	.p2align	4, 0x0
+_sz88:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	17
+	.asciz	"sector coord list"
+	.zero	2
+
+	.globl	_sz89
+	.p2align	4, 0x0
+_sz89:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	18
+	.asciz	"sector coordinates"
+	.zero	1
+
+	.globl	_sz90
+	.p2align	4, 0x0
+_sz90:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	7
+	.asciz	"x coord"
+	.zero	4
+
+	.globl	_sz91
+	.p2align	4, 0x0
+_sz91:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	7
+	.asciz	"y coord"
+	.zero	4
+
+	.data
 	.globl	tc_offs__Editor_GUI_ElemState
 	.p2align	2, 0x0
 tc_offs__Editor_GUI_ElemState:
@@ -25213,15 +29190,30 @@ tc__Editor_GUI_Pane:
 	.zero	4
 	.quad	tc_offs__Editor_GUI_Pane
 
+	.bss
+	.globl	tc_offs__Editor_Main_EState
+	.p2align	2, 0x0
+tc_offs__Editor_Main_EState:
+	.zero	4
+
+	.data
+	.globl	tc__Editor_Main_EState
+	.p2align	3, 0x0
+tc__Editor_Main_EState:
+	.long	1
+	.zero	4
+	.quad	tc_offs__Editor_Main_EState
+
 	.section	.rdata,"dr"
-	.globl	_sz16
+	.globl	_sz92
 	.p2align	4, 0x0
-_sz16:
+_sz92:
 	.quad	0
 	.quad	0
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	4
 	.asciz	"SAVE"
 	.zero	3
@@ -25245,83 +29237,12 @@ tc__Editor_Main_Editor:
 	.quad	tc_offs__Editor_Main_Editor
 
 	.bss
-	.globl	_rawC.19
-	.p2align	1, 0x0
-_rawC.19:
-	.zero	2
-
-	.data
-	.globl	_arrC.20
-	.p2align	4, 0x0
-_arrC.20:
-	.long	2
-	.long	1
-	.long	1
-	.zero	4
-	.quad	_rawC.19
-	.long	1
-	.zero	4
-
-	.section	.rdata,"dr"
-	.globl	ATTR_Game_GameObj_ObjType_mType
-	.p2align	3, 0x0
-ATTR_Game_GameObj_ObjType_mType:
-	.quad	_arrC.20
-
-	.data
-	.globl	_rawC.21
-	.p2align	3, 0x0
-_rawC.21:
-	.long	3
-	.long	7
-
-	.globl	_arrC.22
-	.p2align	4, 0x0
-_arrC.22:
-	.long	8
-	.long	1
-	.long	1
-	.zero	4
-	.quad	_rawC.21
-	.long	1
-	.zero	4
-
-	.section	.rdata,"dr"
-	.globl	ATTR_Game_GameObj_ObjDef_size
-	.p2align	3, 0x0
-ATTR_Game_GameObj_ObjDef_size:
-	.quad	_arrC.22
-
-	.bss
-	.globl	_rawC.23
-	.p2align	1, 0x0
-_rawC.23:
-	.zero	2
-
-	.data
-	.globl	_arrC.24
-	.p2align	4, 0x0
-_arrC.24:
-	.long	2
-	.long	1
-	.long	1
-	.zero	4
-	.quad	_rawC.23
-	.long	1
-	.zero	4
-
-	.section	.rdata,"dr"
-	.globl	ATTR_Game_GameObj_ObjDef_oType
-	.p2align	3, 0x0
-ATTR_Game_GameObj_ObjDef_oType:
-	.quad	_arrC.24
-
-	.data
 	.globl	_rawC.25
 	.p2align	1, 0x0
 _rawC.25:
-	.short	3
+	.zero	2
 
+	.data
 	.globl	_arrC.26
 	.p2align	4, 0x0
 _arrC.26:
@@ -25334,10 +29255,81 @@ _arrC.26:
 	.zero	4
 
 	.section	.rdata,"dr"
+	.globl	ATTR_Game_GameObj_ObjType_mType
+	.p2align	3, 0x0
+ATTR_Game_GameObj_ObjType_mType:
+	.quad	_arrC.26
+
+	.data
+	.globl	_rawC.27
+	.p2align	3, 0x0
+_rawC.27:
+	.long	3
+	.long	7
+
+	.globl	_arrC.28
+	.p2align	4, 0x0
+_arrC.28:
+	.long	8
+	.long	1
+	.long	1
+	.zero	4
+	.quad	_rawC.27
+	.long	1
+	.zero	4
+
+	.section	.rdata,"dr"
+	.globl	ATTR_Game_GameObj_ObjDef_size
+	.p2align	3, 0x0
+ATTR_Game_GameObj_ObjDef_size:
+	.quad	_arrC.28
+
+	.bss
+	.globl	_rawC.29
+	.p2align	1, 0x0
+_rawC.29:
+	.zero	2
+
+	.data
+	.globl	_arrC.30
+	.p2align	4, 0x0
+_arrC.30:
+	.long	2
+	.long	1
+	.long	1
+	.zero	4
+	.quad	_rawC.29
+	.long	1
+	.zero	4
+
+	.section	.rdata,"dr"
+	.globl	ATTR_Game_GameObj_ObjDef_oType
+	.p2align	3, 0x0
+ATTR_Game_GameObj_ObjDef_oType:
+	.quad	_arrC.30
+
+	.data
+	.globl	_rawC.31
+	.p2align	1, 0x0
+_rawC.31:
+	.short	4
+
+	.globl	_arrC.32
+	.p2align	4, 0x0
+_arrC.32:
+	.long	2
+	.long	1
+	.long	1
+	.zero	4
+	.quad	_rawC.31
+	.long	1
+	.zero	4
+
+	.section	.rdata,"dr"
 	.globl	ATTR_Game_GameObj_ObjDef_sDef
 	.p2align	3, 0x0
 ATTR_Game_GameObj_ObjDef_sDef:
-	.quad	_arrC.26
+	.quad	_arrC.32
 
 	.data
 	.globl	tc_offs__Game_GameObj_GameObj
@@ -25403,64 +29395,69 @@ __SW:
 __SH:
 	.long	267
 
-	.globl	_sz17
+	.globl	_sz93
 	.p2align	4, 0x0
-_sz17:
+_sz93:
 	.quad	0
 	.quad	0
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	26
 	.asciz	"Could not initialize GLFW."
 	.zero	1
 
-	.globl	_sz18
+	.globl	_sz94
 	.p2align	4, 0x0
-_sz18:
+_sz94:
 	.quad	0
 	.quad	0
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	5
 	.asciz	"Sedna"
 	.zero	2
 	.zero	4
 
-	.globl	_sz19
+	.globl	_sz95
 	.p2align	4, 0x0
-_sz19:
+_sz95:
 	.quad	0
 	.quad	0
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	29
 	.asciz	"Could not create GLFW window."
 	.zero	2
 	.zero	4
 
-	.globl	_sz20
+	.globl	_sz96
 	.p2align	4, 0x0
-_sz20:
+_sz96:
 	.quad	0
 	.quad	0
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	31
 	.asciz	"Failed to load OpenGL bindings."
 	.zero	4
 
-	.globl	_sz21
+	.globl	_sz97
 	.p2align	4, 0x0
-_sz21:
+_sz97:
 	.quad	0
 	.quad	0
 	.byte	3
 	.byte	0
 	.zero	6
+	.quad	0
 	.long	32
 	.asciz	"Could not create OpenGL context."
 	.zero	3

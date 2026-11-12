@@ -16,6 +16,7 @@ type lhs_type =
 	LT of g_type
 	| NullLT
 	| RawTupleLT of lhs_type list
+	| RawStructLT of canon_name * string * (string * g_type) list * g_type list
 
 let nullable_type (t: lhs_type): bool = match t with
 	LT (NullableTy _) -> true
@@ -24,6 +25,7 @@ let nullable_type (t: lhs_type): bool = match t with
 	| LT _ -> false
 	| NullLT -> true
 	| RawTupleLT _ -> false
+	| RawStructLT _ -> false
 
 let rec string_of_ltype (tau: lhs_type): string = match tau with
 	LT t -> string_of_type cr t
@@ -31,6 +33,7 @@ let rec string_of_ltype (tau: lhs_type): string = match tau with
 	| RawTupleLT [] -> "(??)"
 	| RawTupleLT (tau0 :: tau_t) -> "(" ^ string_of_ltype tau0 ^ ", " ^
 		String.concat ", " (List.map string_of_ltype tau_t) ^ ")"
+	| RawStructLT(x, y, _, _) -> cr x ^ "#" ^ y
 
 	(*
 		- values always have enough of their type to "approximate" the type
@@ -41,3 +44,4 @@ let rec approxGenType (tau: lhs_type): g_type = match tau with
 	LT t -> t
 	| NullLT -> VarTy "A"
 	| RawTupleLT tau_l -> TupleTy(false, List.map approxGenType tau_l)
+	| RawStructLT(x, _, _, tau_l) -> NamedTy(x, tau_l)

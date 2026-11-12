@@ -40,6 +40,7 @@ let tag_of_ltype (tau_o: lhs_type option): string = match tau_o with
 	| Some (LT t) -> tag_of_type (Some t)
 	| Some NullLT -> "any"
 	| Some (RawTupleLT tau_l) -> tag_of_ntuple (List.length tau_l)
+	| Some (RawStructLT(x, _, _, _)) -> cr x
 
 	(*
 		overloaded (polymorphic) function types
@@ -76,6 +77,7 @@ type tc_tval =
 	TcTDef of g_tdef
 	| TcCtorE of canon_name
 	| TcCtorU of canon_name
+	| TcCtorS of canon_name * canon_name field_list
 
 type type_env = {
 	curDir: string option;
@@ -107,10 +109,12 @@ let dump_tenv (env: type_env): unit =
 		let print_tc_item td = match td with
 			TcTDef (StructTD(_, _)) -> print_string "struct"
 			| TcTDef (EnumTD _) -> print_string "enum"
-			| TcTDef (UnionTD _) -> print_string "union"
+			| TcTDef (TupUnionTD _) -> print_string "tuple union"
+			| TcTDef (StrUnionTD _) -> print_string "struct union"
 			| TcTDef ExternTD -> print_string "extern"
 			| TcCtorE f -> print_string ("ctor (e): " ^ (cr f))
-			| TcCtorU f -> print_string ("ctor (u): " ^ (cr f))
+			| TcCtorU f -> print_string ("ctor (t u): " ^ (cr f))
+			| TcCtorS(f, _) -> print_string ("ctor (s u): " ^ (cr f))
 		in print_tc_item td); print_string "\n"
 	) env.globalTIds;
 	Hashtbl.iter (fun x (_, tau, _) ->
@@ -129,8 +133,10 @@ let add_tdef_tenv (env: type_env) (f: canon_name) (td: g_tdef): unit =
 	let att_aux td = match td with
 		EnumTD cl ->
 			List.iter (fun (_, c, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorE f)) cl
-		| UnionTD cl ->
+		| TupUnionTD cl ->
 			List.iter (fun (_, c, _, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorU f)) cl
+		| StrUnionTD cl ->
+			List.iter (fun (_, c, fl, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorS(f, fl))) cl
 		| StructTD _ | ExternTD -> ()
 	in att_aux td
 

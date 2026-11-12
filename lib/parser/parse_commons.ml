@@ -11,6 +11,7 @@ type parse_err =
 	| NonIntExp_Err of l_pos
 	| BadAttrs_Err of l_pos
 	| BadForInit_Err of string * string * l_pos
+	| InconsistentCase_Err of string * string * l_pos
 
 type 'a parse_res = ('a, parse_err) try_res
 
@@ -26,6 +27,8 @@ let string_of_parse_err e = match e with
 		"Unexpected attributes defined for enum without attribute definitions at " ^ (string_of_pos pos) ^ "."
 	| BadForInit_Err(x, y, pos) ->
 		"For loop range variable " ^ y ^ " does not agree with initializer variable " ^ x ^ " at " ^ (string_of_pos pos) ^ "."
+	| InconsistentCase_Err(x, _case, pos) ->
+		"Union case " ^ x ^ " does not match previous " ^ _case ^ " cases at " ^ (string_of_pos pos) ^ "." 
 
 let string_of_parse_res sf r = match r with
 	Valid v -> sf v

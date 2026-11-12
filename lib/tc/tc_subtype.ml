@@ -89,6 +89,7 @@ let rec cmp_type (c: cmp_type) (t: g_type): (t_crn list) opt_res = match (c, t) 
 			let* crnt = cmp_type (LeqCmp s) t in Valid (crnz @ crnt)
 		) [] (List.combine _sl _tl)
 	| (LeqCmp (RawTupleLT _), _) -> Error ()
+	| (LeqCmp (RawStructLT(x, _, _, _sl)), _) -> cmp_type_raw c (NamedTy(x, _sl)) t
 
 	(*
 		** simple constraint solving
@@ -153,6 +154,7 @@ let rec _join_type_l (s: lhs_type) (t: g_type): g_type opt_res = match (s, t) wi
 		else let* _ul = map_try_res (fun (s, t) -> _join_type_l s t) (List.combine _sl _tl) in
 			Valid (TupleTy(zf, _ul))
 	| (RawTupleLT _, _) -> Error ()
+	| (RawStructLT(x, _, _, _sl), _) -> join_type_raw (NamedTy(x, _sl)) t
 
 let rec join_type (s: lhs_type) (t: lhs_type): lhs_type opt_res = match (s, t) with
 	(_, LT BotTy) -> Valid s
@@ -164,6 +166,8 @@ let rec join_type (s: lhs_type) (t: lhs_type): lhs_type opt_res = match (s, t) w
 		if List.length _sl <> List.length _tl then Error ()
 		else let* _ul = map_try_res (fun (s, t) -> join_type s t) (List.combine _sl _tl) in
 			Valid (RawTupleLT _ul)
+	| (RawStructLT(x, _, _, _sl), RawStructLT(y, _, _, _tl)) ->
+		let* u = join_type_raw (NamedTy(x, _sl)) (NamedTy(y, _tl)) in Valid (LT u)
 	| _ -> Error () 
 
 	(*
@@ -312,6 +316,7 @@ let complete_type (tau: lhs_type) (p: l_pos): g_type tc_res =
 		| RawTupleLT tau_l ->
 			let* tau_l' = map_try_res ct_rec tau_l in
 			Valid (TupleTy(false, tau_l'))
+		| RawStructLT(x, _, _, tau_l) -> Valid (NamedTy(x, tau_l))
 	in ct_rec tau
 
 let complete_sol (sol: tvar_env) (p: l_pos): unit tc_res =

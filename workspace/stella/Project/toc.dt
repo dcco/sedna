@@ -24,7 +24,12 @@ end
 
 module Serial
 	references Sys.Os
-
-	type FileWrap
+	
 	type SerialObj
+end
+
+module Json
+	references Sys.Os
+	
+	type JsonObj
 end

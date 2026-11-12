@@ -13,7 +13,7 @@ fn newEditor(Camera cam, Room room) Editor
 	return new Editor{
 		cam = cam,
 		room = room,
-		state = newEState(),
+		state = newEState(room),
 		layout = layout,
 		paneList = paneList
 	}
@@ -72,6 +72,10 @@ fn update(Editor editor)
 	elsif GS.input.keyDown[_GLFW_KEY_D] then
 		cam.x = cam.x + 2
 	end
+	-- calculate center sector
+	var mx = cam.x + cam.canvasWidth / 2
+	var my = cam.y + cam.canvasWidth / 2
+	state.draftPos = (adiv(mx, tilePixel(_SEC_SIZE)), adiv(my, tilePixel(_SEC_SIZE)))
 	-- UI update
 	var (mx, my) = GS.input.mousePos()
 	mx = mx / cam.zoom
@@ -93,6 +97,7 @@ fn update(Editor editor)
 		match state.mode case PencilTM do
 			room.data.delete(tx, ty)
 			room.reify(tx, ty)
+			room.data.updateEmpty(tx, ty)
 		end
 	end
 	-- click-only behavior (fill, etc)
@@ -112,10 +117,11 @@ end
 fn drawBack(Editor editor)
 	var cam = editor.cam
 	-- calculate center sector
-	var mx = cam.x + cam.canvasWidth / 2
+	(*var mx = cam.x + cam.canvasWidth / 2
 	var my = cam.y + cam.canvasWidth / 2
 	var sx = adiv(mx, tilePixel(_SEC_SIZE))
-	var sy = adiv(my, tilePixel(_SEC_SIZE))
+	var sy = adiv(my, tilePixel(_SEC_SIZE))*)
+	var (sx, sy) = editor.state.draftPos
 	-- draw boundaries for center sector
 	var tx = sx * tilePixel(_SEC_SIZE)
 	var ty = sy * tilePixel(_SEC_SIZE)

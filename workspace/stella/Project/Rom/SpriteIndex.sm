@@ -7,7 +7,8 @@ enum SheetDef attrs{ String name } =
 enum SpriteDef attrs{ SheetDef sheet, (Int, Int) tPos, (Int, Int) tSize, Int span } =
 	TextSp{ TextSh, (0, 0), (1, 1), 13 }
 	| Tset{ TsetSh, (0, 0), (1, 1), 20 }
-	| Toolset{ TsetSh, (0, 20), (1, 1), 20 }
+	| Toolset{ TsetSh, (0, 30), (1, 1), 20 }
+	| DraftTset{ TsetSh, (0, 40), (1, 1), 20 }
 	| MaySp{ MainSh, (0, 0), (2, 2), 20 }
 
 struct SpriteRef{

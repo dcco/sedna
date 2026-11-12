@@ -63,6 +63,7 @@ lin main()
 
 	-- load editor state
 	var room = newRoom()
+	room.load()
 	var cam = newCamera(_SW, _SH, _ZOOM)
 	var editor = newEditor(cam, room)
 	var game = newGame(cam, room)

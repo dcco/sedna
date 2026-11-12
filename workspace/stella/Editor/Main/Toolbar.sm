@@ -88,25 +88,49 @@ fn newImageButton(SpriteDef sDef, Int frame, ToolMode tm, Int w, Int h) Elem[ESt
 	}
 end
 
-	(* - map *)
-(*
-fn drawMapPane(EState cont, ElemState state)
-	
+	(* - draft map *)
+
+fn drawDraftPane(EState cont, ElemState state)
+	var sprite = GS.iMap.spriteStore[DraftTset.i]
+	if sprite is null then return end
+	-- calculate draft dimensions
+	var (cx, cy) = cont.draftPos
+	var tw = pixelTile(state.width)
+	var th = pixelTile(state.height)
+	var sx = cx - tw / 2
+	var sy = cy - th / 2
+	-- draw tiles
+	var room = cont.roomRef
+	for i < tw, j < th do
+		var xx = sx + i
+		var yy = sy + j
+		var (sector, _, _) = room.data.lookupSector(xx, yy)
+		-- draft frame
+		var frame = 0
+		if sector isnt null then
+			if !sector.memFlag then frame = 1
+			elsif sector.emptyFlag then frame = 4
+			elsif sector.dirtyFlag then frame = 3
+			else frame = 2 end
+		end
+		if xx = cx && yy = cy then frame = frame + 5 end
+		drawSprite(tilePixel(i), tilePixel(j), sprite, frame, false)
+	end
 end
 
-fn newMapPane(Int w, Int h) Elem[EState]
+fn newDraftPane(Int w, Int h) Elem[EState]
 	return new Elem{
 		size = (w, h),
 		params = new 1d[~XPtr],
 		click = nopClick,
-		draw = drawMapPane
+		draw = drawDraftPane
 	}
-end*)
+end
 
 	(* save/load hooks *)
 
 fn saveAct(EState cont, ElemState state, Int x, Int y)
-
+	cont.roomRef.save()
 end
 
 	(* tool bar *)
@@ -122,9 +146,10 @@ fn toolbar(Int canvasWidth) Layout[EState]
 		newTileSel()
 	], 4)
 	var savePane = vertElems(new 1d[
-		newButton("SAVE", tilePixel(2), tilePixel(2), saveAct)
+		newDraftPane(tilePixel(13), tilePixel(6)),
+		newButton("SAVE", tilePixel(3), tilePixel(1), saveAct)
 	], 4)
-	var layout = horizGroup(new 1d[toolsetPane, tilesetPane], 6)
+	var layout = horizGroup(new 1d[toolsetPane, tilesetPane, savePane], 6)
 	layout.backFlag = true
 	layout.padding = 8
 	layout.minSize = (canvasWidth, 85)

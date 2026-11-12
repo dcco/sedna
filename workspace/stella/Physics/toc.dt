@@ -10,7 +10,7 @@ module Room
 
 	references Commons modules Core, Project
 	references Sulfur modules Main, Material
-	references Project modules Globals, Rom
+	references Project modules Globals, Rom, Serial, Json
 	references Physics.Obj
 
 	type BaseTile

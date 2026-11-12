@@ -28,7 +28,7 @@ let structType tau_l = struct_type context (Array.of_list tau_l)
 let gcArrType = struct_type context (Array.of_list [iType; iType; iType; _ptrType])
 let gcDimsType n = struct_type context (Array.of_list (List.init n (fun _ -> iType)))
 
-let gcObjType = struct_type context (Array.of_list [_ptrType; _ptrType; i8Type; i8Type])
+let gcObjType = struct_type context (Array.of_list [_ptrType; _ptrType; i8Type; i8Type; _ptrType])
 let strType n = struct_type context (Array.of_list [iType; array_type i8Type n])
 
 	(*
@@ -80,12 +80,14 @@ let rec genStoreType (tau: store_type): lltype = match tau with
 	| TagTupleST(t, _) -> t
 	| StructPtrST _ -> _ptrType
 	| ArrayPtrST _ -> _ptrType
+	| UnionPtrST _ -> _ptrType
 	| FunPtrST _ -> _ptrType
 
 let genInnerType (tau: inner_type): lltype * int option = match tau with
 	OpaqueIDT(t, i) -> (t, Some i)
 	| StructIDT tau_a -> (struct_type context (Array.map genStoreType tau_a), None)
 	| ArrayIDT tau -> (genStoreType tau, None)
+	| UnionIDT _ -> (_ptrType, None)
 
 let alignOfStoreType (tau: store_type): int option = match tau with
 	TagTupleST(_, i) -> Some i
@@ -108,7 +110,8 @@ let rec toStoreType (debug: string) (env: dusk_env) (tau: g_type): store_type = 
 	| PrimTy "Bool" -> PrimST bType
 	| PrimTy "String" -> PrimST _ptrType
 	| PrimTy "PRNG" -> PrimST _ptrType
-	| PrimTy "FileChannel" -> PrimST _ptrType
+	| PrimTy "FileReader" -> PrimST _ptrType
+	| PrimTy "FileWriter" -> PrimST _ptrType
 	| PrimTy x -> failwith ("BUG: gen_type.ml - Non-existent primitive type \"" ^ x ^ "\". " ^ debug)
 	| NamedTy(t, _) -> _namedStoreType debug env t
 	| TupleTy(_, tau_l) -> TupleST (Array.of_list (List.map (toStoreType debug env) tau_l))
@@ -136,12 +139,13 @@ and _namedStoreType (debug: string) (env: dusk_env) (t: canon_name): store_type 
 		EnumTD_C -> PrimST tagType
 		| OpaqueTD_C(i, align) -> TagTupleST(array_type i8Type i, align)
 		| StructTD_C(tau_l, _) -> StructPtrST (Array.map (fun t -> ImplDST t) tau_l)
+		| UnionTD_C i -> UnionPtrST i
 		| UnknownTD_C -> PrimST _ptrType
 		(*| StructTD_C(tau_l, _) -> StructPtrST tau_l*)
 	) 
 	| Some v -> failwith ("BUG: gen_type.ml - Invalid type \"" ^ (cr t) ^
 		"\" mapped to unexpected value " ^ (string_of_dval v) ^ " while generating storage type. " ^ debug)
-	| None -> failwith ("BUG: gen_type.ml - Invalid type \"" ^ (cr t) ^ "\" encountered while generating storage type." ^ debug)
+	| None -> failwith ("BUG: gen_type.ml - Invalid type \"" ^ (cr t) ^ "\" encountered while generating storage type. " ^ debug)
 	
 	(*
 		storeToValType: converts storage type into its "main" type
@@ -160,6 +164,7 @@ and storeToValType (debug: string) (env: dusk_env) (tau: store_type): dusk_type 
 		) tau_a in
 		HeapPtrDT (StructIDT tau_a')
 	| ArrayPtrST tau -> HeapPtrDT (ArrayIDT tau)
+	| UnionPtrST i -> HeapPtrDT (UnionIDT i)
 	| FunPtrST(tf, tau_r) -> FunDT(tf, tau_r)
 
 and toValType (debug: string) (env: dusk_env) (tau: g_type): dusk_type =
@@ -171,6 +176,11 @@ and genFunType (debug: string) (env: dusk_env) (tau_pl: g_type list) (tau_r: g_t
 		StackPtrDT _ -> function_type voidType (Array.of_list (_ptrType :: tau_pl'))
 		| tau_r' -> function_type (genType tau_r') (Array.of_list tau_pl')
 
+let genCastType (debug: string) (env: dusk_env) (tau: g_cast_type): dusk_type = match tau with
+	RawStructCT tau_l ->
+		let tau_l' = List.map (toStoreType debug env) tau_l in
+		HeapPtrDT (StructIDT (Array.of_list ((PrimST tagType) :: tau_l'))) 
+
 	(*
 		valToStoreType: converts a value type into its corresponding storage type
 	*)
@@ -179,12 +189,16 @@ let valToStoreType (debug: string) (tau: dusk_type): store_type = match tau with
 	PrimDT t -> PrimST t
 	| FunDT(tf, tau_r) -> FunPtrST(tf, tau_r)
 	| HeapPtrDT (StructIDT tau_l) -> StructPtrST (Array.map (fun t -> ExplDST t) tau_l)
-	| HeapPtrDT _->
-		failwith ("BUG: gen_type.ml - Encountered invalid memory type stored in heap pointer type. " ^ debug)
+	| HeapPtrDT (UnionIDT i) -> UnionPtrST i
+	| HeapPtrDT tau_inner ->
+		failwith ("BUG: gen_type.ml - Encountered invalid memory type stored in heap pointer type. " ^
+			(string_of_inner_type tau_inner) ^ " " ^ debug)
 	| StackPtrDT (OpaqueIDT(t, i)) -> TagTupleST(t, i)
 	| StackPtrDT (StructIDT tau_l) -> TupleST tau_l
-	| StackPtrDT (ArrayIDT _ ) ->
+	| StackPtrDT (ArrayIDT _) ->
 		failwith ("BUG: gen_type.ml - Encountered direct usage of array stored in stack pointer type. " ^ debug)
+	| StackPtrDT (UnionIDT _) ->
+		failwith ("BUG: gen_type.ml - Encountered direct usage of struct union stored in stack pointer type. " ^ debug)
 
 	(*
 		storeToBoxType: boxes a storage type into its "main" type
@@ -202,11 +216,15 @@ let storeToBoxType (_: string) (tau: store_type): dusk_type = match tau with
 let innerValType (debug: string) (tau: dusk_type): store_type array =
 	let ivt_aux tau_inner = match tau_inner with
 		StructIDT tau_a -> tau_a
-		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^ debug)
+			(* when structure is unknown, we can still read initial tag *)
+		| UnionIDT _ -> [| PrimST tagType |]
+		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^
+			(string_of_inner_type tau_inner) ^ " " ^ debug)
 	in match tau with
 		StackPtrDT tau_inner -> ivt_aux tau_inner
 		| HeapPtrDT tau_inner -> ivt_aux tau_inner
-		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^ debug)
+		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^
+			(string_of_dtype tau) ^ " " ^ debug)
 
 let elemOfValType (debug: string) (tau: dusk_type): store_type =
 	let eovt_aux tau_inner = match tau_inner with
@@ -222,7 +240,7 @@ let elemOfValType (debug: string) (tau: dusk_type): store_type =
 	*)
 
 let genTagCaseType (env: dusk_env) (tau_l: g_type list): lltype =
-	let tau_l' = List.map (toStoreType "(Tag Tuple)" env) tau_l in
+	let tau_l' = List.map (toStoreType "(Union Type)" env) tau_l in
 	let tlf = List.map genStoreType tau_l' in
 	struct_type context (Array.of_list (tagType :: tlf))
 

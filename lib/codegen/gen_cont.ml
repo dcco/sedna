@@ -61,12 +61,16 @@ let genRef (cont: llvm_cont): int = cont.uid := !(cont.uid) + 1; !(cont.uid) - 1
 			- opaque: opaque array of bytes used for unions
 				(size, alignment, GC type layout)
 			- struct: heap-allocated struct + GC type layout
+			- union (struct):
+				(alignment)
+			- unknown:
 	*)
 
 type dusk_tdef =
 	EnumTD_C
 	| OpaqueTD_C of int * int
 	| StructTD_C of g_type array * llvalue
+	| UnionTD_C of int
 	| UnknownTD_C
 
 	(*
@@ -84,6 +88,7 @@ type store_type =
 	| TagTupleST of lltype * int
 	| ArrayPtrST of store_type
 	| StructPtrST of deref_type array
+	| UnionPtrST of int
 	| FunPtrST of lltype * store_type
 and deref_type =
 	ExplDST of store_type
@@ -101,6 +106,7 @@ and inner_type =
 	OpaqueIDT of lltype * int
 	| StructIDT of store_type array
 	| ArrayIDT of store_type
+	| UnionIDT of int
 
 let _stringify_arr (f: 'a -> string) (a: 'a array): string =
 	String.concat ", " (List.map f (Array.to_list a))
@@ -111,12 +117,14 @@ let rec string_of_store_type (t: store_type): string = match t with
 	| TagTupleST(t, i) -> (string_of_lltype t) ^ " (" ^ (string_of_int i) ^ ")"
 	| ArrayPtrST t -> "[" ^ (string_of_store_type t) ^ "]"
 	| StructPtrST _ -> "_struct_ptr_type_"
+	| UnionPtrST i -> "_union_ptr_type_ (" ^ (string_of_int i) ^ ")"
 	| FunPtrST _ -> "_fun_ptr_type_"
 
 let string_of_inner_type (t: inner_type): string = match t with
 	OpaqueIDT(t, i) -> (string_of_lltype t) ^ " (" ^ (string_of_int i) ^ ")"
 	| StructIDT a -> "{" ^ (_stringify_arr string_of_store_type a) ^ "}"
 	| ArrayIDT t -> "[" ^ (string_of_store_type t) ^ "]"
+	| UnionIDT i -> "{ << union case >> } (" ^ (string_of_int i) ^ ")"
 
 let string_of_dtype (t: dusk_type): string = match t with
 	PrimDT t -> string_of_lltype t

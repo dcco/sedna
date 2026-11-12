@@ -3,7 +3,7 @@ open Dusk_type
 
 	(* int bool is TRUE when UNSIGNED *)
 type raw_token = INT of Int64.t * bool * bit_width | FLOAT of float | F64 of float | TRUE | FALSE | NULL
-	| STRLIT of string | KLIT of string | T_INT of bool * bit_width
+	| STRLIT of string | CHARLIT of int | KLIT of string | T_INT of bool * bit_width
 	| ID of string | TID of string | VID of string | CID of string | DIM of int | T_TYPE | T_FN | T_OUT
 	| REFERENCES | MODULE | MODULES | AS | IFACE | FTOR | REQUIRES | IMPL | IMPLEMENTS | WITH | END
 	| L_LINKER
@@ -34,6 +34,7 @@ let string_of_raw_token tk = match tk with
 	| FLOAT f -> string_of_float f
 	| F64 f -> (string_of_float f) ^ "l"
 	| STRLIT s -> "\"" ^ (String.escaped s) ^ "\""
+	| CHARLIT c -> "\'" ^ (Char.escaped (Char.chr c)) ^ "\'"
 	| KLIT s -> "^" ^ s
 	| DIM i -> (string_of_int i) ^ "d"
 	(*| VDIM -> "1v"*)

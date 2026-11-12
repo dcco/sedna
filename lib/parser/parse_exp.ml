@@ -165,7 +165,8 @@ let rec parseAtomType: m_type parser = fun tkList -> match tkList with
 		else if x = "VPtr" then Valid (CPtrTy u8Ty, tkRem)
 		else if x = "XPtr" then Valid (XPtrTy, tkRem)
 		else if x = "Int" then Valid (IntTy(false, S32), tkRem)
-		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64"; "PRNG"; "FileChannel"] then Valid (primTy x, tkRem)
+		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64";
+			"PRNG"; "FileReader"; "FileWriter"] then Valid (primTy x, tkRem)
 		else if x = "BOT" then Valid (BotTy, tkRem)
 		else (match tkRem with
 			(LBRACE, _) :: _ ->
@@ -279,6 +280,7 @@ let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
 		| _ -> Valid (ConstExp(NullConst, p), tkRem)
 	)*)
 	| (STRLIT s, p) :: tkRem -> Valid (ConstExp(SConst s, p), tkRem)
+	| (CHARLIT c, p) :: tkRem -> Valid (ConstExp(IConst(Int64.of_int c, true, S8), p), tkRem)
 	| (TILDE, p) :: tkRem ->
 		let* (t, tkRem2) = parseType tkRem in Valid (TConstExp(t, p), tkRem2)
 	| (AT, p) :: tkRem ->
@@ -532,7 +534,9 @@ let rec parseStmt: m_stmt parser = fun tkList -> match tkList with
 		let* (_, tkRem5) = parseTk END "Match (End)" tkRem4 in
 		Valid (MatchStmt(e, cl @ co, p), tkRem5)
 	| (RETURN, p) :: tkRem -> (match tkRem with
-		(END, _) :: _ -> Valid (ReturnStmt(None, p), tkRem)
+		(END, _) :: _ | (ELSIF, _) :: _ | (ELSE, _) :: _
+		| (CASE, _) :: _ | (OWISE, _) :: _ ->
+			Valid (ReturnStmt(None, p), tkRem)
 		| [] -> Valid (ReturnStmt(None, p), [])
 		| _ ->
 			let* (e, tkRem2) = parseExp tkRem in
@@ -739,6 +743,50 @@ let parseEnumDefFull (p: l_pos): m_dec list parser = fun tkList ->
 		else Valid []
 	) in Valid ((TDefDec(qn x, EnumTD cl_e, p)) :: attrsOpt, tkRem4)
 
+	(* union parsing *)
+
+let parseUnionCase: qual_name any_union_case parser = fun tkList ->
+	let* (ctor, tkRem) = parseDeclTId "Union Case Definition" tkList in (match tkRem with
+		(LPAREN, _) :: _ ->
+			let* (tau_l, tkRem2) = parseParenWrap (parseSepList parseType chkComma) "Union Case Definition" tkRem in
+			Valid (TupUnionCase(qn ctor, tau_l, NoEB), tkRem2)
+		| (LBRACK, _) :: _ ->
+			let* (fl, tkRem2) = parseBrackWrap
+				(parseSepList (parseFieldDef "Union Case Definition") chkComma) "Union Case Definition" tkRem in
+			Valid (StrUnionCase(qn ctor, fl, NoEB), tkRem2)
+		| _ -> Valid (EmptyUnionCase(qn ctor, NoEB), tkRem)
+	)
+
+let rec _unifyTupUnionCases (p: l_pos) (cl: qual_name any_union_case list)
+	(l: qual_name tup_union_case list): (qual_name tup_union_case list) parse_res = match cl with
+	[] -> Valid (List.rev l)
+	| EmptyUnionCase(x, eb) :: ct -> _unifyTupUnionCases p ct ((qr x, x, [], eb) :: l)
+	| TupUnionCase(x, tau_l, eb) :: ct -> _unifyTupUnionCases p ct ((qr x, x, tau_l, eb) :: l)
+	| StrUnionCase(x, _, _) :: _ -> Error (InconsistentCase_Err(qr x, "tuple union", p))
+
+let rec _unifyStrUnionCases (p: l_pos) (cl: qual_name any_union_case list)
+	(l: qual_name str_union_case list): (qual_name str_union_case list) parse_res = match cl with
+	[] -> Valid (List.rev l)
+	| EmptyUnionCase(x, eb) :: ct -> _unifyStrUnionCases p ct ((qr x, x, [], eb) :: l)
+	| StrUnionCase(x, fl, eb) :: ct -> _unifyStrUnionCases p ct ((qr x, x, fl, eb) :: l)
+	| TupUnionCase(x, _, _) :: _ -> Error (InconsistentCase_Err(qr x, "struct union", p))
+
+let rec unifyUnionCases (p: l_pos) (cl: qual_name any_union_case list) (l: string list): m_tdef parse_res = match cl with
+	[] -> let cl = List.map (fun x -> (x, qn x, [], NoEB)) (List.rev l) in Valid (TupUnionTD cl)
+	| EmptyUnionCase(x, _) :: ct -> unifyUnionCases p ct ((qr x) :: l)
+	| TupUnionCase _ :: _ ->
+		let case_l = List.map (fun x -> (x, qn x, [], NoEB)) (List.rev l) in
+		let* case_l' = _unifyTupUnionCases p cl case_l in Valid (TupUnionTD case_l')
+	| StrUnionCase _ :: _ ->
+		let case_l = List.map (fun x -> (x, qn x, [], NoEB)) (List.rev l) in
+		let* case_l' = _unifyStrUnionCases p cl case_l in Valid (StrUnionTD case_l')
+
+let parseUnionDefFull (p: l_pos): m_dec list parser = fun tkList ->
+	let* (x, tkRem) = parseDeclTId "Union Definition" tkList in
+	let* (_, tkRem2) = parseTk EQ "Union Definition" tkRem in
+	let* (cl, tkRem3) = parseSepList parseUnionCase chkBar tkRem2 in
+	let* td = unifyUnionCases p cl [] in Valid ([TDefDec(qn x, td, p)], tkRem3) 
+
 	(* declaration / type definition parsing *)
 (*
 let parseGlobArg: qual_name option parser = fun tkList -> match tkList with
@@ -774,7 +822,7 @@ let parseDec: (m_dec list) parser = fun tkList -> match tkList with
 	(*| (EXTENDS, p) :: tkRem ->
 		let* (_, tkRem2) = parseTk ENUM "Enum Extension" tkRem in
 		parseExtendsOnly p tkRem2*)
-	(*| (UNION, p) :: tkRem -> parseUnionDefFull p tkRem*)
+	| (UNION, p) :: tkRem -> parseUnionDefFull p tkRem
 		(* - misc top-level definitions *)
 	| (CONST, p) :: tkRem ->
 		let* (x, tkRem2) = parseDeclCId "Constant Declaration" tkRem in

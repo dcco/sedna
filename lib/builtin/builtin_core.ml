@@ -222,6 +222,7 @@ let builtinList =
 	("toString", ExternalSym, [intTy], stringTy);
 	("toString", ExternalSym, [u32Ty], stringTy);
 	("toString", ExternalSym, [floatTy], stringTy);
+	("toString", ExternalSym, [ArrayTy(1, u8Ty)], stringTy);
 	("measure", ExternalSym, [stringTy], intTy);
 	("eq", ExternalSym, [stringTy; stringTy], boolTy);
 
@@ -275,7 +276,8 @@ let builtinList =
 ]
 
 let prngTy = primTy "PRNG"
-let fcTy = primTy "FileChannel"
+let fcrTy = primTy "FileReader"
+let fcwTy = primTy "FileWriter"
 
 let osList = [
 	("print", ExternalSym, [stringTy], unitTy);
@@ -291,14 +293,29 @@ let osList = [
 	("time", ExternalSym, [], u64Ty);
 	("timeNS", ExternalSym, [], u64Ty);
 
-	("fileOpen", ExternalSym, [stringTy; stringTy], NullableTy fcTy);
-	("close", ExternalSym, [fcTy], unitTy);
-	("read", ExternalSym, [fcTy; ArrayTy(1, u8Ty); intTy], intTy);
-	("write", ExternalSym, [fcTy; ArrayTy(1, u8Ty); intTy], intTy);
-	("writeRaw", ExternalSym, [fcTy; CPtrTy u8Ty; intTy], intTy);
+		(* path operations *)
 	("fileExists", ExternalSym, [stringTy], boolTy);
 	("fileDelete", ExternalSym, [stringTy], boolTy);
-	("fileRename", ExternalSym, [stringTy; stringTy], boolTy)
+	("fileRename", ExternalSym, [stringTy; stringTy], boolTy);
+
+		(* file reader *)
+	("newFileReader", ExternalSym, [stringTy], NullableTy fcrTy);
+	("close", ExternalSym, [fcrTy], unitTy);
+	("read", ExternalSym, [fcrTy; TValTy (varTy "A"); intTy], ArrayTy(1, varTy "A"));
+	("readByte", ExternalSym, [fcrTy], u8Ty);
+	("readInt", ExternalSym, [fcrTy], intTy);
+		(* - positioning commands *)
+	("seek", ExternalSym, [fcrTy; intTy], boolTy);
+	("eof", ExternalSym, [fcrTy], boolTy);
+	(*("read", ExternalSym, [fcrTy; ArrayTy(1, varTy "A"); intTy], intTy);*)
+
+		(* file writer*)
+	("newFileWriter", ExternalSym, [stringTy; boolTy], NullableTy fcwTy);
+	("close", ExternalSym, [fcwTy], unitTy);
+	("write", ExternalSym, [fcwTy; ArrayTy(1, varTy "A")], unitTy);
+	("writeByte", ExternalSym, [fcwTy; u8Ty], u8Ty);
+	("writeInt", ExternalSym, [fcwTy; intTy], unitTy);
+	("writeString", ExternalSym, [fcwTy; stringTy], unitTy);
 ]
 
 	(*
@@ -313,6 +330,7 @@ let builtinTreeMap (): (m_virt_bind list) tree_map =
 let extractSymbols (symList: (raw_bind, qual_name) virt_bind list): raw_bind list =
 	List.concat (List.map (fun (f, vd, _) -> match vd with
 		TDefVD (EnumTD cl) -> f :: (List.map (fun (c, _, _) -> RawBind c) cl)
-		| TDefVD (UnionTD cl) -> f :: (List.map (fun (c, _, _, _) -> RawBind c) cl)
+		| TDefVD (TupUnionTD cl) -> f :: (List.map (fun (c, _, _, _) -> RawBind c) cl)
+		| TDefVD (StrUnionTD cl) -> f :: (List.map (fun (c, _, _, _) -> RawBind c) cl)
 		| _ -> [f]
 	) symList)

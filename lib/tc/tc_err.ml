@@ -68,6 +68,7 @@ type tc_err =
 	| NonCtorU_Err of string * l_pos
 	| NonTagType_Err of lhs_type * l_pos
 	| NonEnum_Err of lhs_type * l_pos
+	| NonUnion_Err of g_type * l_pos
 	| NonTagTuple_Err of g_type * l_pos
 	| BadTag_Err of g_type * string * l_pos
 	| BadAttr_Err of string * string * l_pos
@@ -130,7 +131,9 @@ let string_of_tc_err (e: tc_err) = match e with
 	| NonCtorU_Err(t, p) -> "Type name \"" ^ t ^ "\" did not resolve to a union constructor at " ^ (string_of_pos p) ^ "."
 	| NonTagType_Err(t, p) -> "Tag requested for untagged type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonEnum_Err(t, p) -> "Enum operation called on non-enum type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
-	| NonTagTuple_Err(t, p) -> "Tag matching performed on non union type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	| NonUnion_Err(t, p) -> "Tag matching performed on non union type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	| NonTagTuple_Err(t, p) -> "Tag tuple matching performed on non tag tuple type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	
 	| BadTag_Err(t, x, p) -> "Attempted to match type \"" ^ (string_of_type cr t) ^ "\" with non-existent constructor \"" ^ x ^ "\" at " ^ (string_of_pos p) ^ "."
 	
 	| BadAttr_Err(t, x, p) -> "Attempted to read non-existent attribute \"" ^ x ^

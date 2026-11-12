@@ -27,7 +27,7 @@ const int8_t ARR_NO = 0;
 const int8_t ARR_FLAT = 1;
 const int8_t ARR_NEST = 2;
 
-#define MAX_ALIGN_UP(size) (size + sizeof(max_align_t) - 1) & ~(sizeof(max_align_t) - 1)
+#define MAX_ALIGN_UP(size) ((size + sizeof(max_align_t) - 1) & ~(sizeof(max_align_t) - 1))
 
 	/*
 		gc_type:
@@ -55,6 +55,7 @@ typedef struct gc_obj {
 	gc_type_t* type;
 	int8_t color;
 	int8_t arrFlag;
+	void* dummy;
 } gc_obj_t;
 
 const size_t GC_OBJ_SIZE = MAX_ALIGN_UP(sizeof(gc_obj_t));
@@ -74,6 +75,7 @@ typedef struct gc_array {
 	int32_t capacity;
 	int32_t size;
 	void* data;
+	void* dummy;
 } gc_array_t;
 
 	/*
@@ -125,7 +127,7 @@ extern void gc_init() {
 
 inline static void* _gc_alloc(int32_t size, gc_type_t* type, int8_t arrFlag) {
 	// initialize object
-	gc_obj_t* obj = (gc_obj_t*) calloc(1, sizeof(gc_obj_t) + size);//GC_OBJ_SIZE + size);
+	gc_obj_t* obj = (gc_obj_t*) calloc(1, GC_OBJ_SIZE + size);
 	obj->type = type;
 	obj->color = GC_WHITE;
 	obj->next = gc_head;
@@ -133,11 +135,12 @@ inline static void* _gc_alloc(int32_t size, gc_type_t* type, int8_t arrFlag) {
 	// update gc state
 	gc_head = obj;
 	gc_obj_total = gc_obj_total + 1;
+	//return (void*) (((int8_t*) obj) + GC_OBJ_SIZE);
 	return (void*) (obj + 1);
 }
 
 extern void* gc_alloc(int32_t size, gc_type_t* type) {
-	_gc_alloc(size, type, ARR_NO);
+	return _gc_alloc(size, type, ARR_NO);
 }
 
 extern void* gc_alloc_array(int32_t elemSize, int32_t arrSize, int32_t exSize, int8_t nestFlag, gc_type_t* type) {

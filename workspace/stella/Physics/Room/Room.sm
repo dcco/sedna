@@ -83,7 +83,7 @@ end
 fn _diffTile((Int, Int) moveRange, Axis axis, Int delta, Int tx, Int ty) (Int, Int)
 	match axis case XA do
 		return moveRange.diff((fromTile(tx), fromTile(tx + 1)), delta)
-	case YA do
+	owise
 		return moveRange.diff((fromTile(ty), fromTile(ty + 1)), delta)
 	end
 end
@@ -108,7 +108,7 @@ fn push(Room room, MoveObj obj, Axis axis, Int delta)
 	var hitBox = obj.hitBox
 	match axis case XA do
 		hitBox.x = hitBox.x + delta
-	case YA do
+	owise
 		hitBox.y = hitBox.y + delta
 	end
 end
@@ -131,12 +131,6 @@ fn update(Room room)
 		obj.updateSpd()
 		room.updateObj(obj)
 	end
-end
-
-	(* - io functions *)
-
-fn save(Room room)
-	
 end
 
 	(* - display functions *)
@@ -163,3 +157,282 @@ fn draw(Room room, Camera cam)
 	end
 	drawSprite(tilePixel(sx), tilePixel(sy), tset, 0, false)
 end
+
+	(* - serialization *)
+(*
+fn _serialNum(Int i) String
+	if i < 0 then return "m" + toString(-i)
+	else return toString(i) end
+end
+
+fn _serialSector(2d[BaseTile?] sector) 1d[Int]
+	var iData = new 1d[~Int]
+	for i < _SEC_SIZE, j < _SEC_SIZE do
+		var tile = sector[i, j]
+		if tile isnt null then
+			iData += i
+			iData += j
+			iData += toInt(tile.fore.canonId)
+		end
+	end
+	return iData
+end
+
+fn _serial(EndlessGrid[BaseTile] grid, 1d[(String, SerialObj)] serList)
+	var (sw, sh) = |grid.sectors|
+	for i < sw, j < sh do
+		var sector = grid.sectors[i, j]
+		if sector isnt null then
+			-- version data
+			var p1 = stringSerial("V0")
+			-- sector data
+			var p2 = intsSerial(sector.data._serialSector())
+			-- final write
+			var tag = "s_" + _serialNum(i + grid.secX) + "_" + _serialNum(j + grid.secY)
+			serList += (tag, listSerial(new 1d[p1, p2]))
+		end
+	end
+end
+
+fn _serialSecCoords(Room room, 1d[Int] iData)
+	var (sw, sh) = |room.data.sectors|
+	var jData = new 1d[~Int]
+	for i < sw, j < sh do
+		var sector = room.data.sectors[i, j]
+		if sector isnt null then
+			jData += i + room.data.secX
+			jData += j + room.data.secY
+		end
+	end
+	iData += |jData| / 2
+	for i < |jData| do
+		iData += jData[i]
+	end
+end
+
+fn serial(Room room) 1d[(String, SerialObj)]
+	var serList = new 1d[~(String, SerialObj)]
+	-- general universe metadata
+	var (sx, sy) = room.startPos
+	var iData = new 1d[sx, sy, room.data.secX, room.data.secY]
+	room._serialSecCoords(iData)
+	serList += ("univ", intsSerial(iData))
+	-- serialize the endless grid
+	room.data._serial(serList)
+	return serList
+end
+
+fn save(Room room)
+	var serList = room.serial()
+	for i < |serList| do
+		var (fName, data) = serList[i]
+		var fc = newFileWriter("rom/world/" + fName, false)
+		if fc isnt null then
+			fc.writeSerial(data)
+			fc.close()
+		end
+	end
+end*)
+
+fn _serialNum(Int i) String
+	if i < 0 then return "m" + toString(-i)
+	else return toString(i) end
+end
+
+fn _jsonSector(2d[BaseTile?] sector) 1d[JsonObj]
+	var iData = new 1d[~JsonObj]
+	for i < _SEC_SIZE, j < _SEC_SIZE do
+		var tile = sector[i, j]
+		if tile isnt null then
+			iData += jINT(i)
+			iData += jINT(j)
+			iData += jINT(toInt(tile.fore.canonId))
+		end
+	end
+	return iData
+end
+
+fn _json(EndlessGrid[BaseTile] grid, 1d[(String, JsonObj)] jsonList)
+	var (sw, sh) = |grid.sectors|
+	for i < sw, j < sh do
+		var sector = grid.sectors[i, j]
+		if sector isnt null then
+			var tag = "s_" + _serialNum(i + grid.secX) + "_" + _serialNum(j + grid.secY)
+			jsonList += (tag, jDICT(new 1d[
+				("ver", jSTRING("V0")),
+				("data", jLIST(sector.data._jsonSector()))
+			]))
+		end
+	end
+end
+
+fn _jsonSecCoords(Room room) JsonObj
+	var (sw, sh) = |room.data.sectors|
+	var jData = new 1d[~JsonObj]
+	for i < sw, j < sh do
+		var sector = room.data.sectors[i, j]
+		if sector isnt null then
+			jData += jLIST(new 1d[jINT(i + room.data.secX), jINT(j + room.data.secY)])
+		end
+	end
+	return jLIST(jData)
+end
+
+fn json(Room room) 1d[(String, JsonObj)]
+	var jsonList = new 1d[~(String, JsonObj)]
+	-- general universe metadata
+	var (sx, sy) = room.startPos
+	var uData = jDICT(new 1d[
+		("sx", jINT(sx)), ("sy", jINT(sy)), ("secX", jINT(room.data.secX)), ("secY", jINT(room.data.secY)),
+		("secCoords", room._jsonSecCoords())
+	])
+	jsonList += ("univ", uData)
+	-- serialize the endless grid
+	room.data._json(jsonList)
+	return jsonList
+end
+
+fn save(Room room)
+	var jsonList = room.json()
+	for i < |jsonList| do
+		var (fName, data) = jsonList[i]
+		var fc = newFileWriter("rom/world/" + fName, false)
+		if fc isnt null then
+			fc.writeJson(data)
+			fc.close()
+		end
+	end
+end
+
+	(* - unserialization *)
+(*
+fn _unserialSector(Room room, Int sx, Int sy)
+	-- load raw data
+	var tag = "s_" + _serialNum(sx) + "_" + _serialNum(sy)
+	var fc = newFileReader("rom/world/" + tag)
+	print("fread " + tag)
+	if fc is null then panic("Could not load room sector: " + tag) end
+	var sObj = fc.readSerial()
+	fc.close()
+	-- read version string
+	var childList = sObj.childList
+	if childList is null then panic("Malformed room sector: " + tag) end
+	var ver = childList[0].stringUnserial()
+	print("VER: " + ver)
+	-- init sector
+	var _data = new 2d(_SEC_SIZE, _SEC_SIZE)[~BaseTile?]
+	var sector = new Sector{
+		memFlag = true,
+		emptyFlag = false,
+		dirtyFlag = false,
+		data = _data
+	}
+	-- read tile data
+	var iData = childList[1].iData
+	if ver = "V0" then
+		var iTotal = |iData| / 3
+		for i < iTotal do
+			var tx = iData[i * 3]
+			var ty = iData[i * 3 + 1]
+			var canonId = iData[i * 3 + 2]
+			var tile = newBaseTile()
+			tile.fore = ttLookup(canonId)
+			sector.data[tx, ty] = tile
+		end
+	else
+		panic("Unrecognized version string " + ver + " during load for room sector: " + tag)
+	end
+	-- reify
+	room.data.sectors[sx - room.data.secX, sy - room.data.secY] = sector
+	from i = -1 while i <= _SEC_SIZE,
+		j = -1 while j <= _SEC_SIZE do
+		room._reifyTile(sx * _SEC_SIZE + i, sy * _SEC_SIZE + j)
+	end
+end*)
+
+fn _readJsonSector(Room room, Int sx, Int sy)
+	-- load raw data
+	var tag = "s_" + _serialNum(sx) + "_" + _serialNum(sy)
+	var fc = newFileReader("rom/world/" + tag)
+	if fc is null then panic("Could not load room sector: " + tag) end
+	var sObj = fc.readJson().asDICT("sector " + tag)
+	fc.close()
+	-- read version string
+	var ver = sObj["ver"].asSTRING("sector version")
+	print("VER: " + ver)
+	-- init sector
+	var _data = new 2d(_SEC_SIZE, _SEC_SIZE)[~BaseTile?]
+	var sector = new Sector{
+		memFlag = true,
+		emptyFlag = false,
+		dirtyFlag = false,
+		data = _data
+	}
+	-- read tile data
+	var iData = sObj["data"].asLIST("sector data")
+	if ver = "V0" then
+		var iTotal = |iData| / 3
+		for i < iTotal do
+			var tx = iData[i * 3].asINT("tx")
+			var ty = iData[i * 3 + 1].asINT("ty")
+			var canonId = iData[i * 3 + 2].asINT("canon id")
+			var tile = newBaseTile()
+			tile.fore = ttLookup(canonId)
+			sector.data[tx, ty] = tile
+		end
+	else
+		panic("Unrecognized version string " + ver + " during load for room sector: " + tag)
+	end
+	-- reify
+	room.data.sectors[sx - room.data.secX, sy - room.data.secY] = sector
+	from i = -1 while i <= _SEC_SIZE,
+		j = -1 while j <= _SEC_SIZE do
+		room._reifyTile(sx * _SEC_SIZE + i, sy * _SEC_SIZE + j)
+	end
+end
+
+fn load(Room room)
+	-- read universe metadata
+	var fc = newFileReader("rom/world/univ")
+	if fc is null then return end
+	var uObj = fc.readJson().asDICT("room loading")
+	fc.close()
+	-- start position
+	room.startPos = (uObj["sx"].asINT("start pos"), uObj["sy"].asINT("start pos"))
+	room.data.secX = uObj["secX"].asINT("sector left")
+	room.data.secY = uObj["secY"].asINT("sector top")
+	-- load sectors
+	var secCoords = uObj["secCoords"].asLIST("sector coord list")
+	for i < |secCoords| do
+		var _sc = secCoords[i].asLIST("sector coordinates")
+		room._readJsonSector(_sc[0].asINT("x coord"), _sc[1].asINT("y coord"))
+	end
+end
+
+(*fn load(Room room)
+	-- read universe metadata
+	var fc = newFileReader("rom/world/univ")
+	print("fread univ")
+	if fc is null then return end
+	var sObj = fc.readSerial()
+	var iData = sObj.iData
+	fc.close()
+	-- start position
+	var startPos = (iData[0], iData[1])
+	room.startPos = startPos
+	room.data.secX = iData[2]
+	room.data.secY = iData[3]
+	-- sector list
+	var secCoords = new 1d[~(Int, Int)]
+	var secTotal = iData[4]
+	for i < secTotal do
+		var sx = iData[5 + i * 2]
+		var sy = iData[6 + i * 2]
+		secCoords += (sx, sy)
+	end
+	-- load sectors
+	for i < |secCoords| do
+		var (sx, sy) = secCoords[i]
+		room._unserialSector(sx, sy)
+	end
+end*)

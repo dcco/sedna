@@ -6,6 +6,9 @@
 const _SEC_SIZE = 64
 
 struct Sector[T]{
+	Bool memFlag,
+	Bool emptyFlag,
+	Bool dirtyFlag,
 	2d[T?] data
 }
 
@@ -29,46 +32,59 @@ fn newEndlessGrid(TYPE[T]) EndlessGrid[T]
 	}
 end
 
-fn lookup(EndlessGrid[T] grid, Int x, Int y) T?
-	var tsx = adiv(x, _SEC_SIZE) - grid.secX
-	var tsy = adiv(y, _SEC_SIZE) - grid.secY
+fn lookupSector(EndlessGrid[T] grid, Int sx, Int sy) (Sector[T]?, Int, Int)
+	var tsx = sx - grid.secX
+	var tsy = sy - grid.secY
 	var (sw, sh) = |grid.sectors|
 	if tsx < 0 || tsy < 0 || tsx >= sw || tsy >= sh then
-		return null
+		return (null, tsx, tsy)
 	end
-	var sector = grid.sectors[tsx, tsy]
+	return (grid.sectors[tsx, tsy], tsx, tsy)
+end
+
+fn lookup(EndlessGrid[T] grid, Int x, Int y) T?
+	var (sector, _, _) = grid.lookupSector(adiv(x, _SEC_SIZE), adiv(y, _SEC_SIZE))
 	if sector is null then return null end
 	return sector.data[amod(x, _SEC_SIZE), amod(y, _SEC_SIZE)]
 end
 
 fn update(EndlessGrid[T] grid, T tile, Int x, Int y)
-	var tsx = adiv(x, _SEC_SIZE) - grid.secX
+	(*var tsx = adiv(x, _SEC_SIZE) - grid.secX
 	var tsy = adiv(y, _SEC_SIZE) - grid.secY
 	var (sw, sh) = |grid.sectors|
 	if tsx < 0 || tsy < 0 || tsx >= sw || tsy >= sh then
 		-- TODO: decide how we want "extension" to go
 		return
-	end
-	var sector = grid.sectors[tsx, tsy]
+	end*)
+	var (sector, tsx, tsy) = grid.lookupSector(adiv(x, _SEC_SIZE), adiv(y, _SEC_SIZE)) --grid.sectors[tsx, tsy]
 	if sector is null then
 		var _data = new 2d(_SEC_SIZE, _SEC_SIZE)[~T?]
-		sector = new Sector{ data = _data }
+		sector = new Sector{ memFlag = false, emptyFlag = false, dirtyFlag = true, data = _data }
 		grid.sectors[tsx, tsy] = sector
 	end
 	sector.data[amod(x, _SEC_SIZE), amod(y, _SEC_SIZE)] = tile
+	sector.emptyFlag = false
+	sector.dirtyFlag = true
+end
+
+fn updateEmpty(EndlessGrid[T] grid, Int x, Int y)
+	var (sector, tsx, tsy) = grid.lookupSector(adiv(x, _SEC_SIZE), adiv(y, _SEC_SIZE))
+	if sector is null then return end
+	var emptyFlag = true
+	for i < _SEC_SIZE, j < _SEC_SIZE do
+		var tile = sector.data[i, j]
+		if tile isnt null then emptyFlag = false end
+	end
+	if emptyFlag then sector.emptyFlag = true end
+	if sector.emptyFlag && !sector.memFlag then grid.sectors[tsx, tsy] = null end
 end
 
 fn delete(EndlessGrid[T] grid, Int x, Int y)
-	var tsx = adiv(x, _SEC_SIZE) - grid.secX
-	var tsy = adiv(y, _SEC_SIZE) - grid.secY
-	var (sw, sh) = |grid.sectors|
-	if tsx < 0 || tsy < 0 || tsx >= sw || tsy >= sh then
-		return
-	end
-	var sector = grid.sectors[tsx, tsy]
+	var (sector, _, _) = grid.lookupSector(adiv(x, _SEC_SIZE), adiv(y, _SEC_SIZE))
 	if sector is null then return end
 	sector.data[amod(x, _SEC_SIZE), amod(y, _SEC_SIZE)] = null
-	-- TODO: add emptiness check to delete sectoors
+	sector.dirtyFlag = true
 end
+
 
 

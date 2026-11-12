@@ -38,12 +38,19 @@ let resolve_type_def (env: res_env) (p: l_pos) (td: m_tdef): g_tdef rs_res = mat
 		let* cl' = map_try_res (fun (cx, x, ext) ->
 			let* x' = add_dec_renv env p LocalOr x in Valid (cx, x', ext)
 		) cl in Valid (EnumTD cl')
-	| UnionTD cl ->
+	| TupUnionTD cl ->
 		let* cl' = map_try_res (fun (cx, x, tau_l, ext) ->
 			let* x' = add_dec_renv env p LocalOr x in
 			let* tau_l' = map_try_res (resolve_type env p) tau_l in
 			Valid (cx, x', tau_l', ext)
-		) cl in Valid (UnionTD cl')
+		) cl in Valid (TupUnionTD cl')
+	| StrUnionTD cl ->
+		let* cl' = map_try_res (fun (cx, x, fl, ext) ->
+			let* x' = add_dec_renv env p LocalOr x in
+			let* fl' = map_try_res (fun (x, tau) ->
+				let* tau' = resolve_type env p tau in Valid (x, tau')
+			) fl in Valid (cx, x', fl', ext)
+		) cl in Valid (StrUnionTD cl')
 	| ExternTD -> Valid ExternTD
 
 	(* 

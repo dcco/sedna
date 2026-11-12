@@ -40,7 +40,7 @@ fn update(Input input)
 	end
 	for i < _MB_TOTAL do
 		var cur = (glfwGetMouseButton(window, i) = _GLFW_PRESS)
-		input.mbPress[i] = (cur && !input.keyDown[i])
+		input.mbPress[i] = (cur && !input.mbDown[i])
 		input.mbDown[i] = cur
 	end
 end

@@ -6,13 +6,19 @@ struct ToolModeRef{
 }
 
 struct EState{
+	Room roomRef,
+	-- painting status
 	ToolMode mode,
-	TType selTT
+	TType selTT,
+	-- draft map
+	(Int, Int) draftPos
 }
 
-fn newEState() EState
+fn newEState(Room room) EState
 	return new EState{
+		roomRef = room,
 		mode = PencilTM,
-		selTT = GrassTT
+		selTT = GrassTT,
+		draftPos = (0, 0)
 	}
 end

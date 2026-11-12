@@ -1,15 +1,44 @@
 
 struct SerialObj{
-	1d[Int] binData,
+	1d[Int] iData,
 	1d[SerialObj]? childList 
 }
 
-fn writeSerial(FileChannel fc, SerialObj obj)
-	-- write personal binary data
-	fc.writeInt(|obj.binData|)
-	for i < |obj.binData| do
-		fc.writeRaw(toRawPtr(obj.binData), |obj.binData| * 4)
+fn intsSerial(1d[Int] iData) SerialObj
+	return new SerialObj{
+		iData = iData,
+		childList = null
+	}
+end
+
+fn stringSerial(String s) SerialObj
+	var iData = new 1d[~Int]
+	for i < |s| do
+		iData += toInt(s[i])
 	end
+	return intsSerial(iData)
+end
+
+fn stringUnserial(SerialObj s) String
+	var len = |s.iData|
+	var bData = new 1d[~U8]
+	for i < len do
+		bData += toU8(s.iData[i])
+	end
+	return toString(bData)
+end
+
+fn listSerial(1d[SerialObj] cList) SerialObj
+	return new SerialObj{
+		iData = new 1d[~Int],
+		childList = cList
+	}
+end
+
+fn writeSerial(FileWriter fc, SerialObj obj)
+	-- write personal binary data
+	fc.writeInt(|obj.iData|)
+	fc.write(obj.iData)
 	-- write children objects
 	var childList = obj.childList
 	if childList is null then
@@ -22,6 +51,21 @@ fn writeSerial(FileChannel fc, SerialObj obj)
 		fc.writeSerial(childList[i])
 	end
 end
-(*
-fn readSerial(FileChannel fc) SerialObj
-end*)
+
+fn readSerial(FileReader fc) SerialObj
+	-- read personal binary data
+	var iTotal = fc.readInt()
+	var iData = fc.read(~Int, iTotal)
+	-- read children objects
+	var cFlag = fc.readInt()
+	if cFlag = 0 then return intsSerial(iData) end
+	var cTotal = fc.readInt()
+	var cList = new 1d[~SerialObj]
+	for i < cTotal do
+		cList += fc.readSerial()
+	end
+	return new SerialObj{
+		iData = iData,
+		childList = cList
+	}
+end

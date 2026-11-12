@@ -9,5 +9,7 @@ type g_type = canon_name raw_type
 type g_tdef = canon_name raw_tdef
 
 type g_virt_bind = (canon_name, canon_name) virt_bind
+
+type g_cast_type = RawStructCT of g_type list
 (*
 type deref_type = TypeDeref of g_type | CtorDeref of string*)

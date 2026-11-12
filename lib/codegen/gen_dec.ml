@@ -63,7 +63,7 @@ let genPreAlloc (cont: llvm_cont) (env: dusk_env) (b: gen_stmt list): unit =
 		type definition generation
 	*)
 
-let genStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_type) list): unit =
+let makeStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_type) list): dusk_tdef =
 		(* add temp type w/out layout for recursive type generation *)
 	let tau_l = List.map snd fl in
 	Hashtbl.add env (DTName f) (DTDef (StructTD_C(Array.of_list tau_l, const_null _ptrType)));
@@ -74,16 +74,18 @@ let genStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_t
 			(* - i dont think this case can happen here *)
 		| [DirectChild] -> const_null _ptrType
 		| _ -> genGCType cont f offsetList
-	) in
 		(*
-			add struct w/ layout type
+			struct w/ layout type
 			- ignores alignment, values must be copied out
 		*)
-	Hashtbl.replace env (DTName f) (DTDef (StructTD_C(Array.of_list tau_l, tc_struct)))
+	) in StructTD_C(Array.of_list tau_l, tc_struct)
 
-let rec genEnumTD (cont: llvm_cont) (env: dusk_env) (i: int) (cl: (canon_name union_case) list): unit = match cl with
+let genStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_type) list): unit =
+	Hashtbl.replace env (DTName f) (DTDef (makeStructTD cont env f fl))
+
+let rec genEnumTD (cont: llvm_cont) (env: dusk_env) (i: int) (cl: (canon_name enum_case) list): unit = match cl with
 	[] -> ()
-	| (_, name, _, ext_o) :: ct ->
+	| (_, name, ext_o) :: ct ->
 		(* - ignores alignment, value must be copied out *)
 		let (v, i') = (match ext_o with
 			NoEB -> (DEnum (IntEV i), i + 1)
@@ -93,7 +95,7 @@ let rec genEnumTD (cont: llvm_cont) (env: dusk_env) (i: int) (cl: (canon_name un
 		Hashtbl.add env (DCtor (cr name)) v;
 		genEnumTD cont env i' ct
 
-let genUnionTD (cont: llvm_cont) (env: dusk_env) (f: string) (cl: (canon_name union_case) list): unit =
+let genTupUnionTD (cont: llvm_cont) (env: dusk_env) (f: string) (cl: (canon_name tup_union_case) list): unit =
 	let zero_size = size_of_type cont tagType in
 	let max_size = List.fold_left max zero_size (List.map (fun (_, _, tau_l, _) ->
 		size_of_type cont (genTagCaseType env tau_l)
@@ -102,15 +104,27 @@ let genUnionTD (cont: llvm_cont) (env: dusk_env) (f: string) (cl: (canon_name un
 		align_of_type cont (genTagCaseType env tau_l)
 	) cl) in
 	Hashtbl.add env (DTName f) (DTDef (OpaqueTD_C(max_size, max_align)));
-	genEnumTD cont env 0 cl
+	genEnumTD cont env 0 (List.map (fun (cx, x, _, ext) -> (cx, x, ext)) cl)
 
 let genTDef (cont: llvm_cont) (env: dusk_env) (f: string) (td: g_tdef): unit = match td with
 	StructTD(_, fl) -> genStructTD cont env f fl
 	| EnumTD cl ->
 		Hashtbl.add env (DTName f) (DTDef EnumTD_C);
 			(* - filler datatypes for data-less enums *)
-		genEnumTD cont env 0 (List.map (fun (cx, x, ext) -> (cx, x, [], ext)) cl)
-	| UnionTD cl -> genUnionTD cont env f cl
+		genEnumTD cont env 0 cl
+	| TupUnionTD cl -> genTupUnionTD cont env f cl
+	| StrUnionTD cl ->
+		let zero_size = size_of_type cont tagType in
+			(* - add initially to allow for recursive ref in alignment calc *)
+		Hashtbl.add env (DTName f) (DTDef (UnionTD_C zero_size));
+		let max_align = List.fold_left max zero_size (List.map (fun (_, _, fl, _) ->
+			align_of_type cont (genTagCaseType env (List.map snd fl))
+		) cl) in
+		Hashtbl.replace env (DTName f) (DTDef (UnionTD_C max_align));
+		genEnumTD cont env 0 (List.map (fun (cx, x, _, ext) -> (cx, x, ext)) cl);
+			(* - accuracy is not important for this type, it just needs to be a tag *)
+		let tau_tag = TagOfTy(CN(f, [])) in
+		List.iter (fun (_, x, fl, _) -> genStructTD cont env (cr x) (("", tau_tag) :: fl)) cl
 	| ExternTD -> Hashtbl.add env (DTName f) (DTDef UnknownTD_C)
 
 	(*

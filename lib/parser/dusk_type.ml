@@ -12,7 +12,8 @@ let qn x = QN(None, x)
 let cn (QN(xo, x)) x' = match xo with
 	None -> CN(x', [x])
 	| Some p -> CN(x', [p; x])
- 
+
+let qr (QN(_, x)) = x
 let cr (CN(x, _)) = x
 
 	(*
@@ -123,13 +124,22 @@ type enum_back = NoEB | IntEB of int | GlobalEB of string
 type 'm field_list = (string * 'm raw_type) list
 
 type 'm enum_case = string * 'm * enum_back
-type 'm union_case = string * 'm * 'm raw_type list * enum_back
+type 'm tup_union_case = string * 'm * 'm raw_type list * enum_back
+type 'm str_union_case = string * 'm * 'm field_list * enum_back
+
+type 'm any_union_case =
+	EmptyUnionCase of 'm * enum_back
+	| TupUnionCase of 'm * 'm raw_type list * enum_back
+	| StrUnionCase of 'm * 'm field_list * enum_back
 
 type 'm raw_tdef =
 	StructTD of string list * 'm field_list
 	| EnumTD of 'm enum_case list
-	| UnionTD of ('m union_case) list
+	| TupUnionTD of ('m tup_union_case) list
+	| StrUnionTD of ('m str_union_case) list
 	| ExternTD
 
 type m_field_list = qual_name field_list
 type m_tdef = qual_name raw_tdef
+
+

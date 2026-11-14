@@ -34,12 +34,13 @@ let read_usize (e: gen_exp): (bool * bit_width) = match e with
 let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match e with
 	ConstExpC c -> Valid (ConstExpC c)
 	| EnumExpC tag -> Valid (EnumExpC tag)
-	| VarExpC(x, _) -> (match Hashtbl.find_opt env.globalIds x with
+	| VarExpC x -> (match Hashtbl.find_opt env.globalIds x with
 		Some (_, _, cOpt) -> (match cOpt with
 			None -> Error (NonCVar_Err(x, p))
 			| Some c -> Valid c
 		)
-		| _ -> failwith "BUG: calc_exp.ml - Failed variable lookup during type-checking phase."
+		| _ ->  Valid (VarExpC x)
+			(*failwith "BUG: calc_exp.ml - Failed variable lookup during type-checking phase."*)
 	)
 	| BinExpC(xOp, e1, e2) ->
 		let* v1 = calc_exp env p e1 in
@@ -93,7 +94,10 @@ let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match
 		Valid (ConstArrayExpC(dims, el', tau))
 	| TupleExpC(_, tau, el) ->
 		let* el' = map_try_res (calc_exp env p) el in
-		Valid (ConstStructExpC(el', tau))
+		Valid (ConstStructExpC(el', tau, false))
+	| NewStructExpC(_, tau, el) ->
+		let* el' = map_try_res (calc_exp env p) el in
+		Valid (ConstStructExpC(el', tau, true))
 	| _ -> failwith "UNIMPLEMENTED: calc_exp.ml - Constant expression."
 
 let calc_cfun (env: type_env) (f: string) (el: gen_exp list) (tau: g_type) (p: l_pos): gen_exp tc_res = match (f, el) with

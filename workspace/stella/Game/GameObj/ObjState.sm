@@ -1,0 +1,12 @@
+
+(*
+	state:
+		- describes a series of "actions" (happen continuously), "events" (happen once),
+			"conditionals", as well as control flow describing what to do once the sequence ends
+			(looping, state transition, etc)
+
+		- some states are named in a "state table" however many states are anonymous
+*)
+
+union ObjState =
+	SimpState{ ObjAct act }

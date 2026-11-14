@@ -165,7 +165,7 @@ let rec parseAtomType: m_type parser = fun tkList -> match tkList with
 		else if x = "VPtr" then Valid (CPtrTy u8Ty, tkRem)
 		else if x = "XPtr" then Valid (XPtrTy, tkRem)
 		else if x = "Int" then Valid (IntTy(false, S32), tkRem)
-		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64";
+		else if List.mem x ["Unit"; "Float"; "Bool"; "String"; "F64"; "OID";
 			"PRNG"; "FileReader"; "FileWriter"] then Valid (primTy x, tkRem)
 		else if x = "BOT" then Valid (BotTy, tkRem)
 		else (match tkRem with
@@ -200,6 +200,7 @@ type appObj =
 	| StructFieldApp of string * l_pos
 	| TupleTagApp of l_pos
 	| EnumRawApp of l_pos
+	| OidApp of l_pos
 	| DirectApp of m_exp list * l_pos
 	| IndirectApp of qual_name * m_exp list * l_pos
 
@@ -210,6 +211,7 @@ let rec foldAppList (e: m_exp) (appList: appObj list): m_exp = match appList wit
 	| (StructFieldApp(x, p)) :: appTail -> foldAppList (AppExp(OpExp(StructFieldOp(RR, x), p), [e], p)) appTail
 	| (TupleTagApp p) :: appTail -> foldAppList (AppExp(OpExp(TupleTagOp, p), [e], p)) appTail
 	| (EnumRawApp p) :: appTail -> foldAppList (AppExp(OpExp(EnumRawOp, p), [e], p)) appTail
+	| (OidApp p) :: appTail -> foldAppList (AppExp(OpExp(OidOp, p), [e], p)) appTail
 	| (DirectApp(el, p)) :: appTail -> foldAppList (AppExp(e, el, p)) appTail
 	| (IndirectApp(f, el, p)) :: appTail -> foldAppList (AppExp(VarExp(f, p), e :: el, p)) appTail
 
@@ -378,6 +380,7 @@ and parseAppObj: appObj parser = fun tkList -> match tkList with
 	| (DOT, p) :: tkRem -> (match tkRem with
 		(ID "t", _) :: tkRem2 -> Valid (TupleTagApp p, tkRem2)
 		| (ID "i", _) :: tkRem2 -> Valid (EnumRawApp p, tkRem2)
+		| (ID "oid", _) :: tkRem2 -> Valid (OidApp p, tkRem2)
 		| (ID f, _) :: tkRem2 -> (match tkRem2 with
 			(LPAREN, _) :: _ ->
 				let* (el, tkRem3) = parseParenWrap parseArgList "Function Call" tkRem2 in

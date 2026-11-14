@@ -12,10 +12,11 @@ open Fin_type
 
 type gen_exp =
 	ConstExpC of const
-	| VarExpC of string * g_cast_type option
+	| VarExpC of string
 	| UnaryExpC of string * gen_exp
 	| BinExpC of string * gen_exp * gen_exp
 	| CallExpC of int option * gen_exp * gen_exp list * g_type
+	| CastExpC of gen_exp * g_type list * bool
 		(* boxes a value inside a pointer *)
 	| BoxExpC of int * gen_exp * g_type
 		(* tuple operations (tuple creation also requires a box) *)
@@ -32,7 +33,7 @@ type gen_exp =
 	| ArrayDimsExpC of int * gen_exp
 	| ArrayAddExpC of gen_exp * gen_exp
 		(* struct operations *)
-	| NewStructExpC of string * gen_exp list
+	| NewStructExpC of string * g_type * gen_exp list
 		(* misc memory operations *)
 	| SizeExpC of g_type
 		(* garbage collection *)
@@ -40,7 +41,8 @@ type gen_exp =
 	| GCReplaceRootExpC of gen_exp * gen_exp
 		(* special constants *)
 	| ConstArrayExpC of int list * gen_exp list * g_type
-	| ConstStructExpC of gen_exp list * g_type
+		(* - bool is gc flag *)
+	| ConstStructExpC of gen_exp list * g_type * bool
 and gen_rw = RC of int option * g_type | WC of gen_exp
 and gen_index =
 	RawIndexC of gen_exp
@@ -56,7 +58,7 @@ and gen_stmt =
 		(* garbage collection *)
 	| GCCollectStmtC
 
-let var_exp_cn (x: string) = VarExpC(x, None)
+(*let var_exp_cn (x: string) = VarExpC(x, None)*)
 
 type gen_met =
 	MethodC of (string * g_type) list * g_type * gen_stmt list
@@ -78,6 +80,7 @@ let rec collect_thru_exp (f: gen_exp -> 'a list) (e: gen_exp): 'a list = match e
 	UnaryExpC(_, e') -> collect_thru_exp f e'
 	| BinExpC(_, e1, e2) -> (collect_thru_exp f e1) @ (collect_thru_exp f e2)
 	| CallExpC(_, ef, el, _) -> (f e) @ (collect_thru_exp f ef) @ (List.concat (List.map (collect_thru_exp f) el))
+	| CastExpC(e', _, _) -> collect_thru_exp f e'
 	| BoxExpC(_, e', _) -> (f e) @ (collect_thru_exp f e')
 	| TagExpC e' -> collect_thru_exp f e'
 	| EnumRawExpC e' -> collect_thru_exp f e'
@@ -94,7 +97,7 @@ let rec collect_thru_exp (f: gen_exp -> 'a list) (e: gen_exp): 'a list = match e
 	| ArrayLengthExpC e' -> collect_thru_exp f e'
 	| ArrayDimsExpC(_, e') -> collect_thru_exp f e'
 	| ArrayAddExpC(ea, ev) -> (collect_thru_exp f ea) @ (collect_thru_exp f ev)
-	| NewStructExpC(_, el) -> List.concat (List.map (collect_thru_exp f) el)
+	| NewStructExpC(_, _, el) -> List.concat (List.map (collect_thru_exp f) el)
 	| GCNewRootExpC e' -> collect_thru_exp f e'
 	| GCReplaceRootExpC(e1, e2) -> (collect_thru_exp f e1) @ (collect_thru_exp f e2)
 	| ConstExpC _ | VarExpC _ | EnumExpC _ | ConstArrayExpC _ | SizeExpC _ | ConstStructExpC _ -> f e

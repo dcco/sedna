@@ -100,7 +100,7 @@ type file_context =
 	| LibFC of string * string
 
 let full_name_fc (main_dir: string) (fc: file_context): string = match fc with
-	TopLevelFC -> main_dir ^ "/main.sm"
+	TopLevelFC -> main_dir ^ "/Main.sm"
 	| ExtLibFC(lib_dir, f) -> lib_dir ^ "/" ^ f
 	| LibFC(dir, f) -> main_dir ^ "/" ^ dir ^ "/" ^ f
 
@@ -133,7 +133,7 @@ let rec pre_compile_lib (resEnv: Res_cont.res_env) (typeEnv: Tc_cont.type_env)
 	(main_dir: string) (parent: string option) (libName: string): (pre_comp_res list) try_log_res =
 		(* - lex / parse the library TOC *)
 	print_lib_alert libName parent;
-	let*! tkList = load_token_list (main_dir ^ "/" ^ libName ^ "/" ^ "toc.dt") in
+	let*! tkList = load_token_list (main_dir ^ "/" ^ libName ^ "/" ^ libName ^ ".toc") in
 	let*! Toc ml = tryWithErrLog string_of_parse_err (parseToc tkList) in
 		(* - load un-compiled libraries *)
 	let*! res_pre_ll = mapLogRes (fun m ->

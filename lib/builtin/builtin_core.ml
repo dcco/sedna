@@ -211,7 +211,8 @@ let builtinList =
 	("not", UnaryASMSym "bnot", [boolTy], boolTy);
 	("and", BinaryASMSym "band", [boolTy; boolTy], boolTy);
 	("or", BinaryASMSym "bor", [boolTy; boolTy], boolTy);
-	("eq", BinaryASMSym "bxor", [boolTy; boolTy], boolTy);
+	("eq", BinaryASMSym "beq", [boolTy; boolTy], boolTy);
+	("neq", BinaryASMSym "bxor", [boolTy; boolTy], boolTy);
 
 		(* reserved ops *)
 	("update", ExternalSym, [BotTy], unitTy);
@@ -243,6 +244,8 @@ let builtinList =
 	("cLoad", InternalSym "cLoad", [stringTy], stringTy);
 
 		(* misc *)
+	("eq", BinaryASMSym "ptr_eq", [oidTy; oidTy], boolTy);
+	("neq", BinaryASMSym "ptr_neq", [oidTy; oidTy], boolTy);
 	("panic", ExternalSym, [stringTy], BotTy);
 
 		(* polymorphic functions *)

@@ -36,6 +36,10 @@ fn horizGroup(1d[Layout[T]] childList, Int spacing) Layout[T]
 	}
 end
 
+fn singleGroup(Elem[T] elem) Layout[T]
+	return horizElems(new 1d[elem], 0)
+end
+
 fn vertElems(1d[Elem[T]] elemList, Int spacing) Layout[T]
 	return new Layout{
 		backFlag = false,

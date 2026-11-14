@@ -7,7 +7,7 @@ references Sulfur modules Material, RenderData, Input
 references Project modules Globals, Rom
 references Physics.Room
 references Editor.Main as Editor
-references Game.Game
+references Game modules Game, GameUpdate
 
 const _FPS = _60l
 const _DELAY = _1000l / _FPS

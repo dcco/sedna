@@ -58,18 +58,20 @@ fn _buildLayout(Layout[T] layout, 1d[Pane[T]] paneList, Int _cx, Int _cy) (Int, 
 		if ph > maxHeight then maxHeight = ph end
 	end
 	-- if back is enabled, add the backing panel
-	var totalWidth = cx + layout.padding - _cx
-	var totalHeight = cy + layout.padding - _cy
+	var totalWidth = cx + layout.padding - layout.spacing - _cx
+	var totalHeight = cy + layout.padding - layout.spacing - _cy
 	match layout.dir case HorizLD do
-		totalHeight = cy + maxHeight + layout.padding
+		totalHeight = maxHeight + layout.padding * 2
 	owise
-		totalWidth = cx + maxWidth + layout.padding
+		totalWidth = maxWidth + layout.padding * 2
 	end
 	-- (fill to minimum size)
 	var (minWidth, minHeight) = layout.minSize
 	if totalWidth < minWidth then totalWidth = minWidth end
 	if totalHeight < minHeight then totalHeight = minHeight end
-	paneList += newBackElem(~T, totalWidth, totalHeight)._buildPane(_cx, _cy)
+	if layout.backFlag then
+		paneList += newBackElem(~T, totalWidth, totalHeight)._buildPane(_cx, _cy)
+	end
 	return (totalWidth, totalHeight)
 end
 
@@ -79,20 +81,30 @@ fn initLayout(Layout[T] layout, Int _cx, Int _cy) 1d[Pane[T]]
 	return paneList
 end
 
+	-- returns true if the mouse is hovering over any panes
 fn updatePanes(1d[Pane[T]] paneList, T cont, Int mx, Int my) Bool
-	-- TODO: fix click-behind behaviorsd
+	-- TODO: fix click-behind behaviors
 	-- click behavior
-	if !GS.input.mbPress[_GLFW_MOUSE_BUTTON_1] then return false end
+	var hoverFlag = false
+	var down = GS.input.mbDown[_GLFW_MOUSE_BUTTON_1]
+	var press = GS.input.mbPress[_GLFW_MOUSE_BUTTON_1]
 	for i < |paneList| do
 		var pane = paneList[i]
 		var cx = mx - pane.x
 		var cy = my - pane.y
 		if cx >= 0 && cx < pane.state.width && cy >= 0 && cy < pane.state.height then
-			pane.def..click(cont, pane.state, cx, cy)
-			return true
+			if press then
+				pane.def..press(cont, pane.state, cx, cy)
+			elsif !down && pane.state.heldFlag then
+				pane.def..release(cont, pane.state, cx, cy)
+			end
+			pane.state.heldFlag = down
+			hoverFlag = true
+		else
+			pane.state.heldFlag = false
 		end
 	end
-	return false
+	return hoverFlag
 end
 
 fn draw(Pane[T] pane, T cont)

@@ -21,14 +21,21 @@ fn addObj(Game game, GameObj obj)
 end
 
 fn reset(Game game)
+	-- clear the room
 	game._objList.clear()
 	game.room.clear()
+	-- add player object
 	var player = newGameObj(MayObj)
 	var (sx, sy) = game.room.startPos
 	player.body.hitBox.x = fromTile(sx)
 	player.body.hitBox.y = fromTile(sy)
 	game.addObj(player)
 	game.player = player
+	-- TEST: add boxes
+	var box = newGameObj(BigBoxObj)
+	box.body.hitBox.x = fromTile(sx + 4)
+	box.body.hitBox.y = fromTile(sy - 5)
+	game.addObj(box)
 end
 
 fn input(Game game)
@@ -59,16 +66,6 @@ fn input(Game game)
 		body.yacc = _GRAV_CONST
 	end
 	--val grav = if (VBoard.down("a") && yspd < -0x420) "" + 0x68 else "" + 0xF0
-end
-
-fn update(Game game)
-	-- physics simulation
-	game.room.update()
-	-- object behavior update
-	for i < |game._objList| do
-		var obj = game._objList[i]
-		obj.update()	
-	end
 end
 
 fn draw(Game game)

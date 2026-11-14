@@ -1,28 +1,34 @@
 
 struct GameObj{
 	ObjDef class,
-	MoveObj body
+	MoveObj body,
+	ObjState state
 }
 
 fn newGameObj(ObjDef class) GameObj
-	var body = newMoveObj(class.oType.mType)
+	var body = newMoveObj(class.oType.mType, class.oType.pushType)
 	var (w, h) = class.size
 	body.hitBox.setSize(fromPixel(w), fromPixel(h))
 	return new GameObj{
 		class = class,
-		body = body
+		body = body,
+		state = class.iState
 	}
-end
-
-fn update(GameObj obj)
 end
 
 fn draw(GameObj obj)
 	var class = obj.class
 	var body = obj.body
+	-- get sprite
 	var sprite = GS.iMap.spriteStore[class.sDef.i]
 	if sprite is null then return end
-	--drawBox(0xA0A0A0FF, toPixel(body.hitBox.x), toPixel(body.hitBox.y),
+	-- calculate animation frame
+	var (am, args) = lookupAnim(class.sDef, DefAnim)
+	var frame = 1
+	match am case FrameAm(_frame) do
+		frame = _frame
+	end
+	drawSprite(toPixel(body.hitBox.x), toPixel(body.hitBox.y), sprite, frame, body.facing)
+		--drawBox(0xA0A0A0FF, toPixel(body.hitBox.x), toPixel(body.hitBox.y),
 	--	toPixel(body.hitBox.width), toPixel(body.hitBox.height))
-	drawSprite(toPixel(body.hitBox.x), toPixel(body.hitBox.y), sprite, 1, body.facing)
 end

@@ -1,0 +1,10 @@
+
+fn update(GameObj obj)
+	var state = obj.state
+	match state
+	case SimpState do
+		var act = state.act
+		var (updateFun, _) = _ACT_TABLE[act.i]
+		updateFun(obj)
+	end
+end

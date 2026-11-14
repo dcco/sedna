@@ -2,23 +2,30 @@
 const _GRAV_CONST = +0x78
 const _TERMINAL_SPD = +0x800
 
-enum MType = MAcc
+enum PushType = PushNone | PushCrate | PushDef | PushBlock1 | PushBlock2 | PushFixed 
+enum MType = MAcc | MBlock
 
 struct MoveObj{
 	MType mType,
+	PushType pushType,
 	Bool facing,
 	Rect hitBox,
+	WallTrack[MoveObj] wall,
+
 	Int xspd,
 	Int yspd,
 	-- used for accelerating objects (only the player atm)
 	Int tarXspd,
 	Int xacc,
-	Int yacc
+	Int yacc,
+	-- used for moving blocks
+	Int lastXdelta
 }
 
-fn newMoveObj(MType mType) MoveObj
+fn newMoveObj(MType mType, PushType pushType) MoveObj
 	return new MoveObj{
 		mType = mType,
+		pushType = pushType,
 		facing = false,
 		hitBox = new Rect{
 			x = 0,
@@ -26,11 +33,13 @@ fn newMoveObj(MType mType) MoveObj
 			width = 0,
 			height = 0
 		},
+		wall = newWallTrack(~MoveObj),
 		xspd = 0,
 		yspd = 0,
 		tarXspd = 0,
 		xacc = 0,
-		yacc = _GRAV_CONST
+		yacc = _GRAV_CONST,
+		lastXdelta = 0
 	}
 end
 

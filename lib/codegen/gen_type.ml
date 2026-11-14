@@ -175,11 +175,11 @@ and genFunType (debug: string) (env: dusk_env) (tau_pl: g_type list) (tau_r: g_t
 	match toValType debug env tau_r with
 		StackPtrDT _ -> function_type voidType (Array.of_list (_ptrType :: tau_pl'))
 		| tau_r' -> function_type (genType tau_r') (Array.of_list tau_pl')
-
+(*
 let genCastType (debug: string) (env: dusk_env) (tau: g_cast_type): dusk_type = match tau with
 	RawStructCT tau_l ->
 		let tau_l' = List.map (toStoreType debug env) tau_l in
-		HeapPtrDT (StructIDT (Array.of_list ((PrimST tagType) :: tau_l'))) 
+		HeapPtrDT (StructIDT (Array.of_list ((PrimST tagType) :: tau_l'))) *)
 
 	(*
 		valToStoreType: converts a value type into its corresponding storage type

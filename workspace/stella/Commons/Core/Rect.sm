@@ -16,6 +16,10 @@ fn bottom(Rect box) Int
 	return box.y + box.height
 end
 
+fn overlaps(Rect box, Rect other) Bool
+	return box.x < other.right() && other.x < box.right() && box.y < other.bottom() && other.y < box.bottom()  
+end
+
 fn copy(Rect box) Rect
 	return new Rect{
 		x = box.x,

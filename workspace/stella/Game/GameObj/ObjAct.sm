@@ -1,0 +1,4 @@
+
+enum ObjAct =
+	PCAct
+	| BounceAct

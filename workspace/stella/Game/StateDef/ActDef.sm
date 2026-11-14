@@ -1,0 +1,23 @@
+
+fn defAnim(GameObj self) AnimState
+	return DefAnim
+end
+
+fn pcUpdate(GameObj self)
+end
+
+fn pcAnim(GameObj self) AnimState
+	return DefAnim
+end
+
+fn bounceUpdate(GameObj self)
+	var wall = self.body.wall
+	if wall.obstruct && wall.left then self.body.xspd = +0x200
+	elsif wall.obstruct && wall.right then self.body.xspd = -0x200
+	elsif self.body.xspd = 0 then self.body.xspd = +0x200 end
+end
+
+const _ACT_TABLE = new 1d[
+	(pcUpdate, pcAnim),
+	(bounceUpdate, defAnim)
+]

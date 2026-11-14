@@ -6,7 +6,8 @@ const _COL_STEEL_DOWN = 0x70708FFF
 struct Elem[T]{
 	(Int, Int) size,
 	1d[XPtr] params,
-	Fn(T, ElemState, Int, Int) click,
+	Fn(T, ElemState, Int, Int) press,
+	Fn(T, ElemState, Int, Int) release,
 	Fn(T, ElemState) draw
 }
 
@@ -23,7 +24,8 @@ fn newBackElem(TYPE[T], Int w, Int h) Elem[T]
 	return new Elem[T]{
 		size = (w, h),
 		params = new 1d[~XPtr],
-		click = nopClick,
+		press = nopClick,
+		release = nopClick,
 		draw = backDraw
 	}
 end
@@ -33,8 +35,12 @@ end
 fn drawButton(BOT cont, ElemState state)
 	var w = state.width
 	var h = state.height
+	-- draw main box
 	drawBox(_COL_BLACK, 0, 0, w, h)
-	drawBox(_COL_STEEL, 1, 1, w - 2, h - 2)
+	var backColor = _COL_STEEL
+	if state.heldFlag then backColor = _COL_STEEL_DOWN end
+	drawBox(backColor, 1, 1, w - 2, h - 2)
+	-- draw text
 	var text = fromAnonPtr(~String, state.params[0])
 	var tw = |text| * 4
 	drawText(text, _COL_BLACK, (w - tw) / 2, (h - 4) / 2)
@@ -44,7 +50,8 @@ fn newButton(String text, Int w, Int h, Fn(T, ElemState, Int, Int) click) Elem[T
 	return new Elem{
 		size = (w, h),
 		params = new 1d[toAnonPtr(text)],
-		click = click,
+		press = nopClick,
+		release = click,
 		draw = drawButton
 	}
 end

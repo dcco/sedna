@@ -19,19 +19,29 @@ let genGCWrap (v: llvalue): llvalue =
 		[| const_null _ptrType; const_null _ptrType; const_gc_perm; const_int i8Type 0; const_null _ptrType |]
 	in const_struct context [| gcVal; v |]
 
+let genGCWrapRef (cont: llvm_cont) (vx: string) (v: llvalue) (t: lltype): llvalue =
+		(* - wrap in gc object header *)
+	let structRef = define_global vx (genGCWrap v) cont.llmod in
+	set_global_constant true structRef;
+	let objType = structType [gcObjType; t] in
+		(* - read from gc header *)
+	const_gep objType structRef [|const_int iType 0; const_int iType 1|]
+
 let genStrLit (cont: llvm_cont) (env: dusk_env) (s: string): dusk_val =
 		(* create (pointer to) string constant data *)
 	let i = genRef cont in
 	let strVal = const_string context (s ^ "\x00") in
 	let structVal = const_struct context
 		[| const_int iType (String.length s); strVal |] in
+	let strRef = genGCWrapRef cont ("_sz" ^ (string_of_int i)) structVal (strType (String.length s + 1)) in
+	Hashtbl.add env (DStrLit s) (DVal (strRef, LitVT)); (strRef, HeapPtrDT dummyInnerType)
 		(* - wrap in gc object header *)
-	let structRef = define_global ("_sz" ^ (string_of_int i)) (genGCWrap structVal) cont.llmod in
+	(*let structRef = define_global ("_sz" ^ (string_of_int i)) (genGCWrap structVal) cont.llmod in
 	set_global_constant true structRef;
 	let objType = structType [gcObjType; strType (String.length s + 1)] in
 		(* - read from gc header *)
 	let strRef = const_gep objType structRef [|const_int iType 0; const_int iType 1|] in
-	Hashtbl.add env (DStrLit s) (DVal (strRef, LitVT)); (strRef, HeapPtrDT dummyInnerType)
+	Hashtbl.add env (DStrLit s) (DVal (strRef, LitVT)); (strRef, HeapPtrDT dummyInnerType)*)
 
 	(* expression generation *)
 
@@ -63,18 +73,20 @@ let genConst (cont: llvm_cont) (env: dusk_env) (c: const): dusk_val = match c wi
 		### VARIABLE GENERATION ###
 	*)
 
-let genLoadVar (cont: llvm_cont) (env: dusk_env) (k: dusk_key) (ct: g_cast_type option) (debugName: string): dusk_val = match Hashtbl.find_opt env k with
+let genLoadVar (cont: llvm_cont) (env: dusk_env) (k: dusk_key) (debugName: string): dusk_val = match Hashtbl.find_opt env k with
 	(*Some (DFunVal (v, t)) -> (v, t)
 	| *)
 	Some (DVal (v, FunVT(t, tr))) -> (v, FunDT(t, tr))
 	| Some (DVal (v, FunPtrVT(t, tr))) ->
 		(build_load _ptrType v debugName cont.builder, FunDT(t, tr))
-	| Some (DVal (v, VarVT t)) -> (match ct with
+	| Some (DVal (v, VarVT t)) ->
+		(build_load (genType t) v debugName cont.builder, t)
+	(*match ct with
 		None ->	(build_load (genType t) v debugName cont.builder, t)
 		| Some cti ->
 			let t' = genCastType "(Type Lookup Narrowing)" env cti in
 			(build_load (genType t') v debugName cont.builder, t')
-	)
+	*)
 		(*print_endline ((string_of_llvalue v) ^ " :: " ^ (string_of_dtype t));*)
 	| Some _ -> failwith ("BUG: gen_exp.ml - Variable \"" ^ debugName ^ "\" resolved to non-value in generation phase.")
 	| None -> failwith ("BUG: gen_exp.ml - Unexpected variable \"" ^ debugName ^ "\" encountered in generation phase.")
@@ -282,7 +294,7 @@ let _revType (t: dusk_type): lltype = match t with
 
 let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx = cont.builder in match e with
 	ConstExpC c -> genConst cont env c
-	| VarExpC(x, tn) -> genLoadVar cont env (DVar x) tn x
+	| VarExpC x -> genLoadVar cont env (DVar x) x
 	| UnaryExpC(xOp, e) ->
 		let (v, _tv) = genExp cont env e in
 		let tv = _revType _tv in
@@ -356,10 +368,11 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 			| "band" -> (build_and v1 v2 "_andT" bx, bType)
 			| "bor" -> (build_or v1 v2 "_orT" bx, bType)
 			| "bxor" -> (build_xor v1 v2 "_xorT" bx, bType)
+			| "beq" -> (build_icmp Icmp.Eq v1 v2 "_eqT" bx, bType)
 				(* enum/ptr ops *)
 			| "tag_eq" -> (build_icmp Icmp.Eq v1 v2 "_caseT" bx, bType)
-			| "ptr_eq" -> (build_icmp Icmp.Eq v1 v2 "_isT" bx, bType)
-			| "ptr_neq" -> (build_icmp Icmp.Ne v1 v2 "_isntT" bx, bType)
+			| "ptr_eq" -> (build_icmp Icmp.Eq v1 v2 "_eqT" bx, bType)
+			| "ptr_neq" -> (build_icmp Icmp.Ne v1 v2 "_neqT" bx, bType)
 				(* bitwise ops *)
 			| "bit_shl" -> (build_shl v1 v2 "_bitShlT" bx, tv)
 			| "bit_ashr" -> (build_ashr v1 v2 "_bitShrT" bx, tv)
@@ -386,6 +399,11 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 				failwith ("BUG: gen_exp.ml - Ungenerated box for boxed function return value.")
 			| _ -> (build_call (genCallType tf) vf (Array.of_list vl) "" cont.builder, tr)
 		)
+	| CastExpC(e, tau_l, tagFlag) ->
+		let (v, _) = genExp cont env e in
+		let tau_l' = List.map (toStoreType "(Struct Cast)" env) tau_l in
+		let tau_lx' = if tagFlag then (PrimST tagType) :: tau_l' else tau_l' in
+		(v, HeapPtrDT (StructIDT (Array.of_list tau_lx')))
 	| BoxExpC(boxId, e, _) ->
 		let (v, _) = genExp cont env e in
 		genStoreBox "(Boxed Value)" cont env boxId v
@@ -504,7 +522,7 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 		let (va, _) = genExp cont env ea in
 		let dimsPtr = genPtrArithInc "_dimsPT" cont (va, gcArrType) 1 in
 		(dimsPtr, gcDimsValType i)
-	| NewStructExpC(tx, el) ->
+	| NewStructExpC(tx, _, el) ->
 			(* generate struct value *)
 		let res_l = List.map (genExp cont env) el in
 		let (sVal, tau_sl) = genStructLit "(Struct Init)" cont res_l in
@@ -531,6 +549,12 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 
 let rec genConstExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = (*let bx = cont.builder in*) match e with
 	ConstExpC c -> genConst cont env c
+	| VarExpC x -> (match Hashtbl.find_opt env (DVar x) with
+		Some (DVal (v, FunVT(t, tr))) -> (v, FunDT(t, tr))
+		| Some (DVal (_, FunPtrVT _)) ->
+			failwith ("UNIMPLEMENTED: gen_exp.ml - No error handling for impermissible use of function pointer value used as constant.")
+		| _ -> failwith ("BUG: gen_exp.ml - Non-function value used in constant expression.")
+	)
 	| EnumExpC tag ->
 		let tagLit = (match Hashtbl.find_opt env (DCtor tag) with
 			Some (DEnum (IntEV i)) -> const_int tagType i
@@ -556,7 +580,7 @@ let rec genConstExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = (
 		)) in
 		let xVal = define_global "_arrC" sVal cont.llmod in
 		(xVal, gcArrValType tau_store)
-	| ConstStructExpC(el, tau) ->
+	| ConstStructExpC(el, tau, gcFlag) ->
 			(* determine type *)
 		let tau_store = toStoreType "(Constant Struct)" env tau in
 		let tau_v = storeToValType "(Constant Struct)" env tau_store in
@@ -567,5 +591,7 @@ let rec genConstExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = (
 				TODO: im not sure if this will work correctly if the tuple is a standalone somewhere
 			*)
 		(*let xVal = define_global "_structC" sVal cont.llmod in*)
-		(sVal, tau_v)
+		if gcFlag then
+			let sRef = genGCWrapRef cont "_cs" sVal (genType tau_v) in (sRef, tau_v)
+		else (sVal, tau_v)
 	| _ -> failwith "BUG: gen_exp.ml - Non-constant initializer for global declaration encountered in generation phase."

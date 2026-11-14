@@ -27,6 +27,7 @@ type x_op =
 	| ArrayIndexOp of rw
 	| TupleTagOp
 	| EnumRawOp
+	| OidOp
 	| MeasureOp
 	| ArrayAddOp
 	(*| ArrayRemoveOp*)

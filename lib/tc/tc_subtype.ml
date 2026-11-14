@@ -148,6 +148,7 @@ let rec _join_type_l (s: lhs_type) (t: g_type): g_type opt_res = match (s, t) wi
 	| (NullLT, NullableTy _) -> Valid t
 	| (NullLT, CPtrTy _) -> Valid t
 	| (NullLT, NamedTy _) -> Valid (NullableTy t)
+	| (NullLT, ArrayTy _) -> Valid (NullableTy t)
 	| (NullLT, _) -> Error ()
 	| (RawTupleLT _sl, TupleTy(zf, _tl)) ->
 		if List.length _sl <> List.length _tl then Error ()

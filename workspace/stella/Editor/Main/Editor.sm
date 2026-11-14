@@ -61,6 +61,8 @@ fn update(Editor editor)
 	var cam = editor.cam
 	var room = editor.room
 	var state = editor.state
+	-- action display
+	if state.actTime > 0 then state.actTime = state.actTime - 1 end
 	-- camera movement
 	if GS.input.keyDown[_GLFW_KEY_W] then
 		cam.y = cam.y - 2
@@ -87,14 +89,14 @@ fn update(Editor editor)
 	var tx = pixelTile(mcx)
 	var ty = pixelTile(mcy)
 	if GS.input.mbDown[_GLFW_MOUSE_BUTTON_1] then
-		match state.mode case PencilTM do
+		match state.toolMode case PencilTM do
 			_paintTile(state, room, tx, ty)
 		case StartTM do
 			room.startPos = (tx, ty)
 		owise
 		end
 	elsif GS.input.mbDown[_GLFW_MOUSE_BUTTON_2] then
-		match state.mode case PencilTM do
+		match state.toolMode case PencilTM do
 			room.data.delete(tx, ty)
 			room.reify(tx, ty)
 			room.data.updateEmpty(tx, ty)
@@ -102,13 +104,13 @@ fn update(Editor editor)
 	end
 	-- click-only behavior (fill, etc)
 	if GS.input.mbPress[_GLFW_MOUSE_BUTTON_1] then
-		match state.mode case FillTM do
+		match state.toolMode case FillTM do
 			var oldType = _getMatTile(room, tx, ty)
 			if oldType.i != state.selTT.i then
 				var homeSector = (adiv(tx, _SEC_SIZE), adiv(ty, _SEC_SIZE))
 				_fillTile(state, room, tx, ty, oldType, homeSector, 0, 0)
 			end
-			state.mode = PencilTM
+			state.toolMode = PencilTM
 		owise
 		end
 	end

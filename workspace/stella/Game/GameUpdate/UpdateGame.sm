@@ -1,0 +1,10 @@
+
+fn update(Game game)
+	-- physics simulation
+	game.room.update()
+	-- object behavior update
+	for i < |game._objList| do
+		var obj = game._objList[i]
+		obj.update()	
+	end
+end

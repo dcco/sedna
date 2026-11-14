@@ -1,6 +1,30 @@
 
 	(* special elements: *)
 
+	(* - action display *)
+
+const _CALC_DARK = 0x1B2921FF
+const _CALC_LIGHT = 0x76B592FF
+
+fn drawActDisplay(EState cont, ElemState state)
+	drawBox(_CALC_DARK, 0, 0, state.width, state.height)
+	if cont.actTime > 0 then
+		drawText(cont.actText, _CALC_LIGHT, 2, 2)
+	else
+		drawText("-", _CALC_LIGHT, 2, 2)
+	end
+end
+
+fn newActDisplay(Int x, Int y) Elem[EState]
+	return new Elem{
+		size = (x, y),
+		params = new 1d[~XPtr],
+		press = nopClick,
+		release = nopClick,
+		draw = drawActDisplay
+	}
+end
+
 	(* - tile selection display *)
 
 fn drawSel(EState cont, ElemState state)
@@ -13,7 +37,8 @@ fn newTileSel() Elem[EState]
 	return new Elem{
 		size = (_TPX, _TPX),
 		params = new 1d[~XPtr],
-		click = nopClick,
+		press = nopClick,
+		release = nopClick,
 		draw = drawSel
 	}
 end
@@ -51,7 +76,8 @@ fn newTilePal(Int tw, Int th) Elem[EState]
 	return new Elem{
 		size = (tilePixel(tw), tilePixel(th)),
 		params = new 1d[~XPtr],
-		click = clickSel,
+		press = clickSel,
+		release = nopClick,
 		draw = drawPal
 	}
 end
@@ -59,14 +85,26 @@ end
 	(* special [mode select] image button *)
 
 fn clickSetMode(EState cont, ElemState state, Int x, Int y)
-	var ref = fromAnonPtr(~ToolModeRef, state.params[1])
-	cont.mode = ref.mode
+	var ref = fromAnonPtr(~ModeRef, state.params[1])
+	match ref
+	case ToolModeRef do
+		cont.toolMode = ref.mode
+	case PalModeRef do
+		cont.palMode = ref.mode
+	end
 end
 
 fn drawImageButton(EState cont, ElemState state)
-	var modeRef = fromAnonPtr(~ToolModeRef, state.params[1])
+	var modeRef = fromAnonPtr(~ModeRef, state.params[1])
+	-- get mode status
 	var subFrame = 0
-	if modeRef.mode.i = cont.mode.i then subFrame = 1 end
+	match modeRef
+	case ToolModeRef do
+		if modeRef.mode.i = cont.toolMode.i then subFrame = 1 end
+	case PalModeRef do
+		if modeRef.mode.i = cont.palMode.i then subFrame = 1 end
+	end
+	-- draw image + frame
 	var sRef = fromAnonPtr(~SpriteRef, state.params[0])
 	var sprite = GS.iMap.spriteStore[sRef.sDef.i]
 	if sprite is null then return end
@@ -74,16 +112,16 @@ fn drawImageButton(EState cont, ElemState state)
 	drawSprite(0, 0, sprite, frame + subFrame, false)
 end
 
-fn newImageButton(SpriteDef sDef, Int frame, ToolMode tm, Int w, Int h) Elem[EState]
+fn newImageButton(SpriteDef sDef, Int frame, ModeRef ref, Int w, Int h) Elem[EState]
 	var sRef = new SpriteRef{
 		sDef = sDef,
 		frame = frame
 	}
-	var modeRef = new ToolModeRef{ mode = tm }
 	return new Elem{
 		size = (w, h),
-		params = new 1d[toAnonPtr(sRef), toAnonPtr(modeRef)],
-		click = clickSetMode,
+		params = new 1d[toAnonPtr(sRef), toAnonPtr(ref)],
+		press = clickSetMode,
+		release = nopClick,
 		draw = drawImageButton
 	}
 end
@@ -122,7 +160,8 @@ fn newDraftPane(Int w, Int h) Elem[EState]
 	return new Elem{
 		size = (w, h),
 		params = new 1d[~XPtr],
-		click = nopClick,
+		press = nopClick,
+		release = nopClick,
 		draw = drawDraftPane
 	}
 end
@@ -131,25 +170,37 @@ end
 
 fn saveAct(EState cont, ElemState state, Int x, Int y)
 	cont.roomRef.save()
+	cont.actText = "SAVED"
+	cont.actTime = 180
 end
 
 	(* tool bar *)
 
 fn toolbar(Int canvasWidth) Layout[EState]
 	var toolsetPane = vertElems(new 1d[
-		newImageButton(Toolset, 0, StartTM, _TPX, _TPX),
-		newImageButton(Toolset, 2, PencilTM, _TPX, _TPX),
-		newImageButton(Toolset, 4, FillTM, _TPX, _TPX)
+		newImageButton(Toolset, 0, tmRef(StartTM), _TPX, _TPX),
+		newImageButton(Toolset, 2, tmRef(PencilTM), _TPX, _TPX),
+		newImageButton(Toolset, 4, tmRef(FillTM), _TPX, _TPX)
 	], 2)
-	var tilesetPane = vertElems(new 1d[
-		newTilePal(8, 4),
-		newTileSel()
+	var palModePane = horizElems(new 1d[
+		newImageButton(Toolset, 10, pmRef(ForePM), _TPX, _TPX),
+		newImageButton(Toolset, 12, pmRef(BackPM), _TPX, _TPX),
+		newImageButton(Toolset, 14, pmRef(ObjPM), _TPX, _TPX)
+	], 2)
+	var tilesetPane = vertGroup(new 1d[
+		palModePane,
+		singleGroup(newTilePal(8, 4)),
+		singleGroup(newTileSel())
 	], 4)
-	var savePane = vertElems(new 1d[
-		newDraftPane(tilePixel(13), tilePixel(6)),
-		newButton("SAVE", tilePixel(3), tilePixel(1), saveAct)
+	var subSavePane = horizElems(new 1d[
+		newButton("SAVE", tilePixel(3), tilePixel(1), saveAct),
+		newActDisplay(tilePixel(4), tilePixel(1))
 	], 4)
-	var layout = horizGroup(new 1d[toolsetPane, tilesetPane, savePane], 6)
+	var savePane = vertGroup(new 1d[
+		singleGroup(newDraftPane(tilePixel(13), tilePixel(6))),
+		subSavePane
+	], 4)
+	var layout = horizGroup(new 1d[toolsetPane, tilesetPane, savePane], 8)
 	layout.backFlag = true
 	layout.padding = 8
 	layout.minSize = (canvasWidth, 85)

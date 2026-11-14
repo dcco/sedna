@@ -1,0 +1,39 @@
+
+struct WallTrack[T]{
+	Bool left,
+	Bool right,
+	Bool top,
+	Bool bot,
+	Bool obstruct,
+	T? standObj
+}
+
+fn newWallTrack(TYPE[T]) WallTrack[T]
+	return new WallTrack[T]{
+		left = false,
+		right = false,
+		top = false,
+		bot = false,
+		obstruct = false,
+		standObj = null
+	}
+end
+
+fn reset(WallTrack[T] wall)
+	wall.left = false
+	wall.right = false
+	wall.top = false
+	wall.bot = false
+	wall.obstruct = false
+	wall.standObj = null
+end
+
+fn setFlag(WallTrack[T] wall, Axis axis, Int delta)
+	match axis case XA do
+		if delta < 0 then wall.left = true
+		else wall.right = true end
+	owise
+		if delta < 0 then wall.top = true
+		else wall.bot = true end
+	end
+end

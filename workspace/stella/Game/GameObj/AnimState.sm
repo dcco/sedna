@@ -1,0 +1,66 @@
+
+	(* animation definitions *)
+
+union AnimDef = FrameAm(Int) | LoopAm(Int)
+
+enum AnimState attrs { String name } =
+	DefAnim{ "default" }
+	| WalkAnim{ "walk" }
+	| FallAnim{ "fall" }
+
+const _ANIM_TABLE = new 1d[
+	(MaySp, DefAnim, FrameAm(1), null),
+	(MaySp, WalkAnim, LoopAm(10), new 1d[1, 2, 1, 3]),
+	(MaySp, FallAnim, FrameAm(3), null),
+	(BigBoxSp, DefAnim, FrameAm(0), null)
+]
+
+	(*
+		a-table:
+			used to lookup animations for individual sprites
+	*)
+
+struct ATable{
+	1d[(AnimState, AnimDef, 1d[Int]?)] map
+}
+
+fn newATable() ATable
+	return new ATable{
+		map = new 1d[~(AnimState, AnimDef, 1d[Int]?)]
+	}
+end
+
+fn lookup(ATable table, (String, AnimState) _anim) (AnimDef, 1d[Int]?)
+	var (debugSp, anim) = _anim
+	for i < |table.map| do
+		var (animX, am, args) = table.map[i]
+		if anim.i = animX.i then return (am, args) end
+	end
+	panic("Could not find animation " + anim.name + " for sprite " + debugSp + ".")
+end
+
+fn update(ATable table, (AnimDef, 1d[Int]?) aDef, AnimState anim)
+	table.map += (anim, aDef.1, aDef.2)
+end
+
+	(*
+		the big animation table, used to lookup a sprite's a-table
+	*)
+
+fn initAnimTable() 1d[ATable]
+	var table = new 1d(|~SpriteDef|)[.. newATable()]
+	for i < |_ANIM_TABLE| do
+		var (sDef, anim, am, args) = _ANIM_TABLE[i]
+		var aTable = table[sDef.i]
+		aTable[anim] = (am, args)
+	end
+	return table
+end
+
+globals AnimTable{
+	data = initAnimTable()
+}
+
+fn lookupAnim(SpriteDef sDef, AnimState anim) (AnimDef, 1d[Int]?)
+	return AnimTable.data[sDef.i][(sDef.name, anim)]
+end

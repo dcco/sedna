@@ -101,6 +101,7 @@ let floatTy = primTy "Float"
 let f64Ty = primTy "F64"
 let stringTy = primTy "String"
 let boolTy = primTy "Bool"
+let oidTy = primTy "OID"
 
 let intTy = IntTy(false, S32)
 let i8Ty = IntTy(false, S8)

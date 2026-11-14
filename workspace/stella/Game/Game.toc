@@ -1,0 +1,61 @@
+
+(*
+	GameObj:
+		- animstate / anim table
+		- union for "states"
+			> pre-defined to be used in definition of game objects
+		- game objects
+
+	Game:
+		- definition of game as a struct
+
+	StateDef:
+		- defines actions/events that make up a state (using game struct as context)
+		- makes up a limited state table
+		- makes an index of game objects / states
+
+	GameUpdate:
+		- defines game initialization + update
+*)
+
+(*module State
+	references Project modules Rom
+
+	type AnimState
+	type PC
+end*)
+
+module GameObj
+	references Commons modules Core, Project
+	references Project modules Globals, Rom
+	references Physics.Obj
+
+	type AnimState
+	type ObjAct
+	type ObjState
+	type Index
+	type GameObj
+end
+
+module Game
+	references Commons modules Project
+	references Project modules Globals, Rom
+	references Physics modules Obj, Room
+	references Game modules GameObj
+
+	type Game
+end
+
+module StateDef
+	references Game modules GameObj
+
+	type ActDef
+end
+
+module GameUpdate
+	references Sys.Os
+	references Game modules GameObj, Game, StateDef
+
+	type UpdateObj
+	type UpdateGame
+end

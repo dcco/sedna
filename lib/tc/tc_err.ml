@@ -54,6 +54,7 @@ type tc_err =
 	| MismatchedTArgNum_Err of int * int * l_pos
 	| UnknownTArg_Err of l_pos
 	| IncompleteType_Err of lhs_type * l_pos
+	| NonObjectPtr_Err of lhs_type * l_pos
 		(* functions *)
 	| NoOverload_Err of string * lhs_type option * l_pos
 	| AmbiguousLookup_Err of string * l_pos
@@ -117,6 +118,8 @@ let string_of_tc_err (e: tc_err) = match e with
 	| UnknownTArg_Err p -> "Could not determine all type arguments for polymorphic type at " ^ (string_of_pos p) ^ ".\n"
 	| IncompleteType_Err(t, p) -> "Could not determine final type of \"" ^ (string_of_ltype t) ^
 		"\" needed at " ^ (string_of_pos p) ^ ".\n"
+	| NonObjectPtr_Err(t, p) -> "Attempted to access OID on non-object type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
+	
 	| NoOverload_Err(f, t, p) -> "Function \"" ^ f ^ "\" does not have overload for " ^
 		(string_of_first_arg t) ^ " at " ^ (string_of_pos p) ^ "."
 	| AmbiguousLookup_Err(f, p) -> "Ambiguous lookup of overloaded function \"" ^ f ^ "\" at " ^ (string_of_pos p) ^ "."

@@ -1,24 +1,42 @@
 
 enum ToolMode = StartTM | PencilTM | FillTM
+enum PalMode = ForePM | BackPM | ObjPM
 
-struct ToolModeRef{
+union ModeRef = ToolModeRef{
 	ToolMode mode
+} | PalModeRef{
+	PalMode mode
 }
+
+fn tmRef(ToolMode m) ModeRef
+	return new ToolModeRef{ mode = m }
+end
+
+fn pmRef(PalMode m) ModeRef
+	return new PalModeRef{ mode = m }
+end
 
 struct EState{
 	Room roomRef,
 	-- painting status
-	ToolMode mode,
+	ToolMode toolMode,
+	PalMode palMode,
 	TType selTT,
 	-- draft map
-	(Int, Int) draftPos
+	(Int, Int) draftPos,
+	-- action display
+	String actText,
+	Int actTime
 }
 
 fn newEState(Room room) EState
 	return new EState{
 		roomRef = room,
-		mode = PencilTM,
+		toolMode = PencilTM,
+		palMode = ForePM,
 		selTT = GrassTT,
-		draftPos = (0, 0)
+		draftPos = (0, 0),
+		actText = "",
+		actTime = 0
 	}
 end

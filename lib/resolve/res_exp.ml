@@ -34,6 +34,11 @@ let rec resolve_exp (env: res_env) (e: m_exp): r_exp rs_res = match e with
 		let* fl' = map_try_res (fun (f, e) ->
 			let* e' = resolve_exp env e in Valid (f, e')
 		) fl in Valid (NewStructExp(x', t_ann', fl', p))
+	| NewOrdStructExp(x, t_ann, el, p) ->
+		let* x' = resolve_name env p x in
+		let* t_ann' = opt_try_res (map_try_res (resolve_type env p)) t_ann in
+		let* el' = map_try_res (resolve_exp env) el in
+		Valid (NewOrdStructExp(x', t_ann', el', p))
 	| IsNullExp(e, y, p) ->
 		let* e' = resolve_exp env e in
 		(*let* y' = opt_try_res (resolve_name env p) y in *)

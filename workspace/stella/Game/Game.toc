@@ -18,20 +18,14 @@
 		- defines game initialization + update
 *)
 
-(*module State
-	references Project modules Rom
-
-	type AnimState
-	type PC
-end*)
-
 module GameObj
+	references Sys.Os
 	references Commons modules Core, Project
 	references Project modules Globals, Rom
 	references Physics.Obj
 
 	type AnimState
-	type ObjAct
+	type ObjEnums
 	type ObjState
 	type Index
 	type GameObj
@@ -47,8 +41,12 @@ module Game
 end
 
 module StateDef
+	references Sys.Os
 	references Game modules GameObj
 
+	type ExpDef
+	type CondDef
+	type EventDef
 	type ActDef
 end
 

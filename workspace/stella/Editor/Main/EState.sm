@@ -22,6 +22,7 @@ struct EState{
 	ToolMode toolMode,
 	PalMode palMode,
 	TType selTT,
+	EObjType selObj, 
 	-- draft map
 	(Int, Int) draftPos,
 	-- action display
@@ -35,6 +36,7 @@ fn newEState(Room room) EState
 		toolMode = PencilTM,
 		palMode = ForePM,
 		selTT = GrassTT,
+		selObj = BoxEO,
 		draftPos = (0, 0),
 		actText = "",
 		actTime = 0

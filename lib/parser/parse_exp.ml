@@ -312,6 +312,11 @@ let rec parseAtomExp: m_exp parser = fun tkList -> match tkList with
 			(LPAREN, _) :: _ ->
 				let* (el, tkRem2) = parseParenWrap (parseSepList parseExp chkComma) "Enum/Union" tkRem in
 				Valid (TupleExp(Some x, el, p), tkRem2)
+			| (LBRACE, _) :: _ ->
+				let* (el, tkRem2) = parseBraceWrap
+					(parseOrEmpty (parseSepList parseExp chkComma) chkBrackR) "Union" tkRem in
+				let* (t_ann, tkRem3) = parseStructTypeAnn tkRem2 in
+				Valid (NewOrdStructExp(x, t_ann, el, p), tkRem3)
 			| _ -> Valid (TupleExp(Some x, [], p), tkRem)
 		)
 	)

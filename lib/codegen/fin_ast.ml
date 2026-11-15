@@ -21,7 +21,7 @@ type gen_exp =
 	| BoxExpC of int * gen_exp * g_type
 		(* tuple operations (tuple creation also requires a box) *)
 	| TagExpC of gen_exp
-	| EnumExpC of string
+	| EnumExpC of string * bool
 	| EnumRawExpC of gen_exp
 	| TupleExpC of int * g_type * gen_exp list
 	| MemoryFieldExpC of gen_rw * gen_exp * int option

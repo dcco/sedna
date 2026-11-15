@@ -51,6 +51,10 @@ let is_heap_type_lhs (env: type_env) (tau: lhs_type): bool = match tau with
 	| RawTupleLT _ -> false
 	| RawStructLT _ -> true
 
+let is_var_type (tau: lhs_type): bool = match tau with
+	LT (VarTy _) -> true
+	| _ -> false
+
 	(* boxed type auxiliaries *)
 
 let rc_of_type (env: type_env) (tau: g_type): gen_rw =
@@ -267,7 +271,7 @@ let tc_op (env: type_env) (xop: x_op) (tau_a: lhs_type) (p: l_pos): (string * ca
 	| (EnumRawOp, _) -> Error (NonEnum_Err(tau_a, p))
 		(* object id *)
 	| (OidOp, _) ->
-		if is_heap_type_lhs env tau_a then Valid ("<< oid >>", ([VarTy "A"], oidTy), fun el _ ->
+		if is_heap_type_lhs env tau_a || is_var_type tau_a then Valid ("<< oid >>", ([VarTy "A"], oidTy), fun el _ ->
 			Valid (List.hd el)
 		) else Error (NonObjectPtr_Err(tau_a, p))
 		(* array measure *)
@@ -320,6 +324,22 @@ let tc_var (env: type_env) (x: canon_name) (p: l_pos): (string * g_type) tc_res 
 		)
 	)
 
+	(*
+		takes a constructor and looks up
+		- parent type name
+		- "tagged" flag
+		- field list 
+		- type args
+	*)
+let tc_struct_lookup (env: type_env) (ctor: canon_name)
+	(p: l_pos): (canon_name * bool * canon_name field_list * string list) tc_res = match Hashtbl.find_opt env.globalTIds (cr ctor) with
+	Some (_, TcTDef (StructTD(xl, fpl))) ->
+		Valid (ctor, false, fpl, xl)
+	| Some (_, TcCtorS(cx_parent, fpl)) ->
+		Valid (cx_parent, true, fpl, [])
+	| Some _ -> Error (BadCtorStruct_Err(cr ctor, p))
+	| _ -> Error (NonCtor_Err(cr ctor, p))
+
 let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e with
 	ConstExp(c, _) -> Valid (ConstExpC c, tc_const c)
 	| TConstExp(t, _) -> Valid (SizeExpC t, LT (TValTy t))
@@ -332,7 +352,7 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 	| OpExp(_, _) -> failwith "BUG: tc_exp.ml - Operator expression in non-application position."
 		(* TODO: named ty args for @ constructor + tuple *)
 	| AtCtorExp(ctor, p) -> (match Hashtbl.find_opt env.globalTIds (cr ctor) with
-		Some (_, TcCtorU c) -> Valid (EnumExpC (cr ctor), LT (TagOfTy c))
+		Some (_, TcCtorU(c, _)) -> Valid (EnumExpC(cr ctor, false), LT (TagOfTy c))
 		| _ -> Error (NonCtorU_Err(cr ctor, p))
 	)
 	| TupleExp(ctor, el, p) ->
@@ -343,11 +363,18 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 				Valid (TupleExpC(get_box_id_tenv env, approxGenType tau_s, List.map fst et_l'), tau_s)
 			| Some cx -> (match Hashtbl.find_opt env.globalTIds (cr cx) with
 					(* - enum ctor (no args) *)
-				Some (_, TcCtorE c) -> Valid (EnumExpC (cr cx), LT (NamedTy(c, [])))
-				| Some (_, TcCtorU c) ->
+				Some (_, TcCtorE c) -> Valid (EnumExpC(cr cx, false), LT (NamedTy(c, [])))
+				| Some (_, TcCtorU(c, tau_pl)) ->
 					(* - union ctor (args) *)
 					let tau_s = NamedTy(c, []) in
-					Valid (TupleExpC(get_box_id_tenv env, tau_s, (EnumExpC (cr cx)) :: List.map fst et_l'), LT tau_s)
+					if List.length tau_pl <> List.length et_l' then
+						Error (MismatchedTagTupleArgNum_Err(cr cx, List.length et_l', List.length tau_pl, p))
+					else
+						let sol = new_sol () in
+						let* _ = map_try_resi (fun (tau_x, tau_p) i ->
+							tc_subtype sol (TagTupleTCInfo(cr cx, tau_pl, i)) tau_x tau_p p
+						) (List.combine (List.map snd et_l') tau_pl) in
+						Valid (TupleExpC(get_box_id_tenv env, tau_s, (EnumExpC(cr cx, false)) :: List.map fst et_l'), LT tau_s)
 				| Some (_, TcTDef (EnumTD _)) ->
 					(* - raw int -> enum ctor *)
 					let (e', _) = List.hd et_l' in
@@ -374,8 +401,27 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 		Valid (NewArrayExpC(List.map fst dt_l', [], tau), LT (ArrayTy(i, tau)))
 		(* TODO: when constructing a struct type, figure out how the "type inference" will work *)
 	| NewStructExp(cx, t_ann, fl, p) ->
+			(* - typecheck sub-fields *)
 		let* ftl' = map_try_res (fun (x, e) -> let* (e', t) = tc_exp env e in Valid (x, e', t)) fl in
-		let* (cx_parent, el', tau_l) = (match Hashtbl.find_opt env.globalTIds (cr cx) with
+		let* (cx_parent, tagFlag, fpl, t_pl) = tc_struct_lookup env cx p in
+			(* - pair expressions to fields *)
+		let* sol = (match t_ann with None -> Valid (new_sol ()) | Some _tl -> tc_init_sol t_pl _tl p) in
+		let* el' = map_try_res (fun (x, tau_p) ->
+			match List.find_opt (fun (y, _, _) -> x = y) ftl' with
+				None -> Error (MissingField_Err(cr cx, x, FieldTCInfo(cr cx, x, tau_p), p))
+				| Some (_, e', tau_a) ->
+					let* _ = tc_subtype sol (FieldTCInfo(cr cx, x, tau_p)) tau_a tau_p p in Valid e' 
+		) fpl in
+			(* - apply solution *)
+		let* _ = complete_sol sol p in
+		let* t_pl' = extract_sol sol t_pl p in
+			(* - return struct type *)
+		let el_f' = if tagFlag then (EnumExpC(cr cx, false)) :: el' else el' in
+		let tau' = NamedTy(cx_parent, t_pl') in
+		Valid (NewStructExpC(cr cx, tau', el_f'), LT tau')
+			(* - lookup ctor used *)
+		(*let* (cx_parent, el', tau_l) = (match Hashtbl.find_opt env.globalTIds (cr cx) with
+				(* - raw struct *)
 			Some (_, TcTDef (StructTD(xl, pl))) ->
 				let* sol = (match t_ann with None -> Valid (new_sol ()) | Some _tl -> tc_init_sol xl _tl p) in
 				let* el' = map_try_res (fun (x, tau_p) ->
@@ -386,6 +432,7 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 				) pl in
 				let* _ = complete_sol sol p in
 				let* tau_l = extract_sol sol xl p in Valid (cx, el', tau_l)
+				(* - struct union *)
 			| Some (_, TcCtorS(cx_parent, fl)) ->
 				let sol = new_sol () in
 				let* el' = map_try_res (fun (x, tau_p) ->
@@ -393,11 +440,29 @@ let rec tc_exp (env: type_env) (e: r_exp): (gen_exp * lhs_type) tc_res = match e
 						None -> Error (MissingField_Err(cr cx, x, FieldTCInfo(cr cx, x, tau_p), p))
 						| Some (_, e', tau_a) ->
 							let* _ = tc_subtype sol (FieldTCInfo(cr cx, x, tau_p)) tau_a tau_p p in Valid e' 
-				) fl in Valid (cx_parent, (EnumExpC (cr cx)) :: el', [])
+				) fl in Valid (cx_parent, (EnumExpC(cr cx, false)) :: el', [])
 			| Some _ -> Error (BadCtorStruct_Err(cr cx, p))
 			| _ -> Error (NonCtor_Err(cr cx, p))
 		) in let tau' = NamedTy(cx_parent, tau_l) in
-		Valid (NewStructExpC(cr cx, tau', el'), LT tau')
+		Valid (NewStructExpC(cr cx, tau', el'), LT tau')*)
+	| NewOrdStructExp(cx, t_ann, el, p) ->
+			(* - typecheck sub-fields *)
+		let* etl' = map_try_res (tc_exp env) el in
+		let* (cx_parent, tagFlag, fpl, t_pl) = tc_struct_lookup env cx p in
+			(* - pair expressions to fields *)
+		let* sol = (match t_ann with None -> Valid (new_sol ()) | Some _tl -> tc_init_sol t_pl _tl p) in
+		if List.length etl' <> List.length fpl then
+			Error (MismatchedFieldNum_Err(cr cx, List.length etl', List.length fpl, p))
+		else let* el' = map_try_res (fun ((e', tau_a), (x, tau_p)) ->
+			let* _ = tc_subtype sol (FieldTCInfo(cr cx, x, tau_p)) tau_a tau_p p in Valid e'
+		) (List.combine etl' fpl) in
+			(* - apply solution *)
+		let* _ = complete_sol sol p in
+		let* t_pl' = extract_sol sol t_pl p in
+			(* - return struct type *)
+		let el_f' = if tagFlag then (EnumExpC(cr cx, false)) :: el' else el' in
+		let tau' = NamedTy(cx_parent, t_pl') in
+		Valid (NewStructExpC(cr cx, tau', el_f'), LT tau')
 	| IsNullExp(e, y, p) ->
 		let* (ev, tau) = tc_exp env e in
 		let asm = if y then "ptr_eq" else "ptr_neq" in
@@ -619,7 +684,7 @@ let tc_cond_pat (env: type_env) (y: string) (px: pat) (tau_v: g_type) (p: l_pos)
 				(*let tau_l = List.map (fun (_, t) -> t) fl in*)
 				(cx, MemoryFieldExpC(RC(None, tau_v), VarExpC y, Some 0))
 		) in
-		Valid (Some (BinExpC("tag_eq", e1, EnumExpC (cr cx))))
+		Valid (Some (BinExpC("tag_eq", e1, EnumExpC(cr cx, false))))
 			(* - we are given the type, so we can lookup the tag directly (which never requires disambiguation) *)
 	(*	let* (enumFlag, _, ucl) = (match lookup_tup_union_cases env tau_v with
 			Some ucl -> Valid ucl

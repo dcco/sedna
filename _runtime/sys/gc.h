@@ -10,6 +10,8 @@
 #define TIME_ALLOC_MS 850
 #define PING_OBJ_TOTAL 50
 
+//#define GC_DEBUG
+
 	// gc constants
 
 const int8_t GC_WHITE = 0;
@@ -48,6 +50,7 @@ typedef struct gc_type {
 		- color: "color" used to mark the accessibility of a pointer
 		- arrFlag: whether or not the object is an array/vector + whether it contains nested pointers
 		~ followed by either raw data OR array/vector header
+		- freeId: sentinel used for debugging
 	*/
 
 typedef struct gc_obj {
@@ -55,7 +58,8 @@ typedef struct gc_obj {
 	gc_type_t* type;
 	int8_t color;
 	int8_t arrFlag;
-	void* dummy;
+	int32_t _freeId;
+	int32_t _dummy;
 } gc_obj_t;
 
 const size_t GC_OBJ_SIZE = MAX_ALIGN_UP(sizeof(gc_obj_t));
@@ -132,6 +136,7 @@ inline static void* _gc_alloc(int32_t size, gc_type_t* type, int8_t arrFlag) {
 	obj->color = GC_WHITE;
 	obj->next = gc_head;
 	obj->arrFlag = arrFlag;
+	obj->_freeId = 0;
 	// update gc state
 	gc_head = obj;
 	gc_obj_total = gc_obj_total + 1;
@@ -158,13 +163,17 @@ extern void* gc_alloc_array(int32_t elemSize, int32_t arrSize, int32_t exSize, i
 }
 
 void* gc_free(gc_obj_t* obj) {
-	// for array, free the dimension information
-	if (obj->arrFlag) {
-		gc_array_t* array = (gc_array_t*) (obj + 1);
-		free(array->data);
-	}
-	// free the object
-	free(obj);
+	#ifndef GC_DEBUG
+		// for array, free the dimension information
+		if (obj->arrFlag) {
+			gc_array_t* array = (gc_array_t*) (obj + 1);
+			free(array->data);
+		}
+		// free the object
+		free(obj);
+	#else
+		obj->_freeId = 1;
+	#endif
 	gc_obj_total = gc_obj_total - 1;
 }
 
@@ -237,8 +246,8 @@ void _gc_mark_array_direct(gc_array_t* array) {
 void _gc_mark_array_layout(gc_array_t* array, gc_type_t* type) {
 	int8_t* data = (int8_t*) array->data;
 	for (int i = 0; i < array->size; i++) {
-		data = data + array->elemSize;
 		_gc_mark_elem(data, type);
+		data = data + array->elemSize;
 	}
 }
 
@@ -321,6 +330,11 @@ extern void gc_collect() {
 	// mark and sweep
 	if (gc_phase == PHASE_MARK) _gc_mark();
 	if (gc_phase == PHASE_SWEEP) _gc_sweep();
+}
+
+extern int8_t _any_builtin_gc_bad(void* _obj) {
+	gc_obj_t* obj = ((gc_obj_t*) _obj) - 1;
+	return obj->_freeId;
 }
 
 #endif

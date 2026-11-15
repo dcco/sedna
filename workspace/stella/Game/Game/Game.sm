@@ -31,11 +31,25 @@ fn reset(Game game)
 	player.body.hitBox.y = fromTile(sy)
 	game.addObj(player)
 	game.player = player
+	-- initialize other objects
+	from i = sx - 50 while i <= sx + 50,
+		j = sy - 30 while j <= sy + 30 do
+		var tile = game.room.data[i, j]
+		if tile isnt null then
+			if tile.obj != 0 then
+				var objDef = EObjType(tile.obj).def
+				var newObj = newGameObj(objDef)
+				newObj.body.hitBox.x = fromTile(i)
+				newObj.body.hitBox.y = fromTile(j)
+				game.addObj(newObj)
+			end
+		end
+	end
 	-- TEST: add boxes
-	var box = newGameObj(BigBoxObj)
+	(*var box = newGameObj(BigBoxObj)
 	box.body.hitBox.x = fromTile(sx + 4)
 	box.body.hitBox.y = fromTile(sy - 5)
-	game.addObj(box)
+	game.addObj(box)*)
 end
 
 fn input(Game game)
@@ -68,11 +82,13 @@ fn input(Game game)
 	--val grav = if (VBoard.down("a") && yspd < -0x420) "" + 0x68 else "" + 0xF0
 end
 
-fn draw(Game game)
+fn dontDrawObjTile(Int obj, Int x, Int y) end
+
+fn draw(Game game, Fn(Int, Int, Int) drawObjTile)
 	var cam = game.cam
 	for i < |game._objList| do
 		var obj = game._objList[i]
 		obj.draw()
 	end
-	game.room.draw(cam)
+	game.room.draw(cam, drawObjTile)
 end

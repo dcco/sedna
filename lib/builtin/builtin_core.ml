@@ -275,7 +275,10 @@ let builtinList =
 
 		(* amorphous pointer functions *)
 	("fromAnonPtr", InternalSym "coerce", [TValTy (varTy "A"); XPtrTy], varTy "A");
-	("toAnonPtr", UnaryASMSym "nop", [varTy "A"], XPtrTy)
+	("toAnonPtr", UnaryASMSym "nop", [varTy "A"], XPtrTy);
+
+		(* gc debugger commands *)
+	("gc_bad", ExternalSym, [varTy "A"], boolTy)
 ]
 
 let prngTy = primTy "PRNG"

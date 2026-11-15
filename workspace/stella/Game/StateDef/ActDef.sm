@@ -1,13 +1,9 @@
 
-fn defAnim(GameObj self) AnimState
-	return DefAnim
-end
-
-fn pcUpdate(GameObj self)
-end
-
-fn pcAnim(GameObj self) AnimState
-	return DefAnim
+fn idleUpdate(GameObj self)
+	var wall = self.body.wall
+	if wall.bot then
+		self.body.xspd = 0
+	end
 end
 
 fn bounceUpdate(GameObj self)
@@ -17,7 +13,28 @@ fn bounceUpdate(GameObj self)
 	elsif self.body.xspd = 0 then self.body.xspd = +0x200 end
 end
 
+fn doAct(ObjAct act, GameObj self)
+	match act
+	case BounceAct do
+		self.bounceUpdate()
+	case PCAct do
+	case IdleAct do
+		self.idleUpdate()
+	owise
+		panic("ActDef.sm - Unsupported action.")
+	end
+end
+
+(*
 const _ACT_TABLE = new 1d[
+	-- pc
 	(pcUpdate, pcAnim),
-	(bounceUpdate, defAnim)
-]
+	-- bounce
+	(bounceUpdate, defAnim),
+	-- idle
+	(pcUpdate, defAnim)
+])
+
+*)
+
+

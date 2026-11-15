@@ -3,6 +3,7 @@ enum SheetDef attrs{ String name } =
 	TextSh{ "text" }
 	| TsetSh{ "tset" }
 	| MainSh{ "x1" }
+	| EnemySh1{ "p2" }
 
 enum SpriteDef attrs{ String name, SheetDef sheet, (Int, Int) tPos, (Int, Int) tSize, Int span } =
 	TextSp{ "basic font", TextSh, (0, 0), (1, 1), 13 }
@@ -15,6 +16,7 @@ enum SpriteDef attrs{ String name, SheetDef sheet, (Int, Int) tPos, (Int, Int) t
 	| MaySp{ "may", MainSh, (0, 0), (2, 2), 20 }
 	| BigBoxSp{ "big box (test)", MainSh, (0, 2), (2, 2), 2 }
 	| BoxSp{ "box (test)", MainSh, (2, 2), (1, 1), 2 }
+	| CritSp{ "crit", EnemySh1, (0, 0), (1, 1), 10 }
 
 struct SpriteRef{
 	SpriteDef sDef,

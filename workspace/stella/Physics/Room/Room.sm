@@ -2,14 +2,23 @@
 struct Room{
 	(Int, Int) startPos,
 	EndlessGrid[BaseTile] data,
-	1d[MoveObj] _objList
+	OrderList[MoveObj] _objList,
+	-- temporary lists to avoid creating new lists for iteration every frame
+	1d[MoveObj] _iterList,
+	1d[MoveObj] _tempList
 }
+
+fn _pushPri(MoveObj obj) Int
+	return obj.pushType.i
+end
 
 fn newRoom() Room
 	return new Room{
 		startPos = (1, 1),
 		data = newEndlessGrid(~BaseTile),
-		_objList = new 1d[~MoveObj]
+		_objList = newOrderList(|~PushType|, _pushPri),
+		_iterList = new 1d[~MoveObj],
+		_tempList = new 1d[~MoveObj]
 	}
 end
 
@@ -17,7 +26,7 @@ end
 
 fn solid(Room room, Int x, Int y) Bool
 	var tile = room.data[x, y]
-	if tile isnt null then return true end
+	if tile isnt null then return tile.fore.i != 0 end
 	return false
 end
 
@@ -36,7 +45,7 @@ end
 fn _sameMat(Room room, TType tt, Int x, Int y) Bool
 	var tile = room.data[x, y]
 	if tile is null then return false end
-	return true
+	return tile.fore.i != 0
 	--return tile.fore.i = tt.i
 end
 
@@ -105,8 +114,9 @@ fn calcPush(Room room, MoveObj obj, Axis axis, Int delta, PushType pushType) Int
 		end
 	end
 	-- check objects
-	for i < |room._objList| do
-		var otherObj = room._objList[i]
+	var touchList = room._objList.flatten(room._tempList)
+	for i < |touchList| do
+		var otherObj = touchList[i]
 		if obj.canTouch(otherObj, moveBox) then
 			var pushDelta = moveRange.diffDelta(otherObj.hitBox.rangeI(axis), delta)
 			var retDelta = 0
@@ -126,8 +136,9 @@ fn push(Room room, MoveObj obj, Axis axis, Int delta, PushType pushType)
 	-- move other objects
 	var moveRange = hitBox.rangeI(axis).extend(delta)
 	var moveBox = hitBox.copy().setRange(axis, moveRange)
-	for i < |room._objList| do
-		var otherObj = room._objList[i]
+	var touchList = room._objList.flatten(room._tempList)
+	for i < |touchList| do
+		var otherObj = touchList[i]
 		if obj.canTouch(otherObj, moveBox) then
 			var pushDelta = moveRange.diffDelta(otherObj.hitBox.rangeI(axis), delta)
 			if pushDelta != 0 && pushType.i > otherObj.pushType.i then
@@ -165,8 +176,9 @@ fn _update(WallTrack[MoveObj] wall, Room room, MoveObj obj)
 			end
 		end
 		-- check objects
-		for i < |room._objList| do
-			var otherObj = room._objList[i]
+		var touchList = room._objList.flatten(room._tempList)
+		for i < |touchList| do
+			var otherObj = touchList[i]
 			if obj.canTouch(otherObj, checkBox) then
 				wall.setFlag(axis, delta)
 				if obj.pushType.i < otherObj.pushType.i then
@@ -200,7 +212,7 @@ fn updateObj(Room room, MoveObj obj)
 end
 
 fn update(Room room)
-	var curList = room._objList
+	var curList = room._objList.flattenRev(room._iterList)
 	for i < |curList| do
 		var obj = curList[i]
 		obj.updateSpd()
@@ -210,7 +222,7 @@ end
 
 	(* - display functions *)
 
-fn draw(Room room, Camera cam)
+fn draw(Room room, Camera cam, Fn(Int, Int, Int) drawObj)
 	-- get start pos
 	var (sx, sy) = room.startPos
 	-- draw dimensions
@@ -228,6 +240,7 @@ fn draw(Room room, Camera cam)
 		var tile = room.data[cx, cy]
 		if tile isnt null then
 			tile.draw(tset, tilePixel(cx), tilePixel(cy))
+			drawObj(tile.obj, tilePixel(cx), tilePixel(cy))
 		end
 	end
 	drawSprite(tilePixel(sx), tilePixel(sy), tset, 0, false)

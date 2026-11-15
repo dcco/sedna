@@ -2,7 +2,12 @@
 struct GameObj{
 	ObjDef class,
 	MoveObj body,
-	ObjState state
+	ObjState state,
+	-- all purpose timer
+	Int _time,
+	-- code counter for STATE
+	Int _pc,
+	Bool pciFlag
 }
 
 fn newGameObj(ObjDef class) GameObj
@@ -12,7 +17,10 @@ fn newGameObj(ObjDef class) GameObj
 	return new GameObj{
 		class = class,
 		body = body,
-		state = class.iState
+		state = Index.iState[class.i].2,
+		_time = 0,
+		_pc = 0,
+		pciFlag = false
 	}
 end
 

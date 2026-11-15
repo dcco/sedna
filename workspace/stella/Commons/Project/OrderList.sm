@@ -1,0 +1,89 @@
+
+struct OrderList[T]{
+	1d[1d[T]] data,
+	Int max,
+	Fn(T) Int f
+}
+
+fn newOrderList(Int max, Fn(T) Int f) OrderList[T]
+	var data = new 1d(max)[.. new 1d[~T]]
+	return new OrderList{
+		data = data,
+		max = max,
+		f = f
+	}
+end
+
+fn clear(OrderList[T] l)
+	for i < |l.data| do
+		l.data[i].clear()
+	end
+end
+
+fn flatten(OrderList[T] l, 1d[T] dst) 1d[T]
+	dst.clear()
+	for i < |l.data| do
+		for j < |l.data[i]| do
+			dst += l.data[i][j]
+		end
+	end
+	return dst
+end
+
+fn flattenRev(OrderList[T] l, 1d[T] dst) 1d[T]
+	dst.clear()
+	var i = |l.data| - 1
+	while i > -1 do
+		var j = |l.data[i]| - 1
+		while j > -1 do
+			dst += l.data[i][j]
+			j = j - 1
+		end
+		i = i - 1
+	end
+	return dst
+end
+
+(*
+fn contains(OrderList[T] l, (Int, Int) i) Bool
+	if i.1 < 0 || i.1 >= |l.data| then return false end
+	return i.2 >= 0 && i.2 < |l.data[i.1]|
+end
+
+fn next(OrderList[T] l, (Int, Int) i) (Int, Int)
+	var (a, b) = i
+	-- if more in the same list, do that
+	if b + 1 < |l.data[a]| then return (a, b + 1) end
+	-- otherwise, find next non-empty list
+	a = a + 1
+	while a < |l.data| do
+		if |l.data[a]| > 0 then return (a, 0) end
+		a = a + 1
+	end
+	return (|l.data|, -1)
+end
+
+fn start(OrderList[T] l) (Int, Int)
+	return l.next((0, -1))
+end*)
+
+fn lookup(OrderList[T] l, (Int, Int) i) T
+	return l.data[i.1][i.2]
+end
+
+fn insert(OrderList[T] l, T obj)
+	l.data[l..f(obj)] += obj
+end
+
+fn find(OrderList[T] l, T obj) (Int, Int)
+	var a = l.data[l..f(obj)]
+	for i < |a| do
+		if a[i].oid = obj.oid then return (l..f(obj), i) end
+	end
+	return (l..f(obj), -1)
+end
+
+fn remove(OrderList[T] l, T obj)
+	var (a, b) = l.find(obj)
+	l.data[a] /= b
+end

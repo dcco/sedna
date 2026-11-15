@@ -1,0 +1,47 @@
+
+	(* object variables *)
+
+union ObjExp =
+	IExp{ Int v }
+	| RandomExp{ Int v, Int n }
+
+	(* object conditions *)
+
+union ObjCond =
+	CompCond{ 1d[ObjCond] cl }
+	| RandomCond{ Int v, Int n }
+	| TimeoutCond
+
+fn add(ObjCond c1, ObjCond c2) ObjCond
+	match c1
+	case CompCond do
+		c1.cl += c2
+		return c1
+	owise
+		return new CompCond{ cl = new 1d[c1, c2] }
+	end
+end
+
+	(* object events *)
+
+union ObjEvent =
+	CompEV{ 1d[ObjEvent] evl }
+	| SetTimeEV{ ObjExp time }
+	| JumpEV{ ObjCond cNeg, ObjExp x, ObjExp y }
+
+fn add(ObjEvent ev1, ObjEvent ev2) ObjEvent
+	match ev1
+	case CompEV do
+		ev1.evl += ev2
+		return ev1
+	owise
+		return new CompEV{ evl = new 1d[ev1, ev2] }
+	end
+end
+
+	(* object actions *)
+
+union ObjAct =
+	PCAct{ Int sentinel }
+	| BounceAct
+	| IdleAct

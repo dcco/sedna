@@ -1,0 +1,12 @@
+
+fn eval(ObjExp e, GameObj obj) Int
+	match e
+	case IExp do
+		return e.v
+	case RandomExp do
+		if e.n < 0 then return e.v - randomInt(-e.n) end
+		return e.v + randomInt(e.n)
+	owise
+		panic("ExpDef.sm - Unsupported expression.")
+	end
+end

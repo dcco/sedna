@@ -81,7 +81,8 @@ let makeStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_
 	) in StructTD_C(Array.of_list tau_l, tc_struct)
 
 let genStructTD (cont: llvm_cont) (env: dusk_env) (f: string) (fl: (string * g_type) list): unit =
-	Hashtbl.replace env (DTName f) (DTDef (makeStructTD cont env f fl))
+	if Hashtbl.mem env (DTName f) then failwith ("BUG: gen_dec.ml - Redefinition of struct type " ^ f ^ ".")
+	else Hashtbl.replace env (DTName f) (DTDef (makeStructTD cont env f fl))
 
 let rec genEnumTD (cont: llvm_cont) (env: dusk_env) (i: int) (cl: (canon_name enum_case) list): unit = match cl with
 	[] -> ()

@@ -12,7 +12,9 @@ const _ANIM_TABLE = new 1d[
 	(MaySp, DefAnim, FrameAm(1), null),
 	(MaySp, WalkAnim, LoopAm(10), new 1d[1, 2, 1, 3]),
 	(MaySp, FallAnim, FrameAm(3), null),
-	(BigBoxSp, DefAnim, FrameAm(0), null)
+	(BigBoxSp, DefAnim, FrameAm(0), null),
+	(BoxSp, DefAnim, FrameAm(0), null),
+	(CritSp, DefAnim, FrameAm(1), null)
 ]
 
 	(*

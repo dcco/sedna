@@ -8,17 +8,20 @@ enum TType attrs { U32 canonId, Int baseId, Int dispId, RType rt } =
 
 struct BaseTile{
 	TType fore,
+	Int obj,
 	Int rFrame
 }
 
 fn newBaseTile() BaseTile
 	return new BaseTile{
-		fore = GrassTT,
+		fore = NullTT,
+		obj = 0,
 		rFrame = 0
 	}
 end
 
 fn draw(BaseTile tile, Sprite tset, Int px, Int py)
+	if tile.fore.i = 0 then return end
 	drawSprite(px, py, tset, tile.fore.baseId + tile.rFrame, false)
 end
 

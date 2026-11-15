@@ -19,9 +19,11 @@ module Main
 
 	references Commons modules Core, Project
 	references Physics modules Room
+	references Game modules GameObj
 	references Editor modules GUI
 
 	type EState
+	type TilePal
 	type Toolbar
 	type Editor
 end

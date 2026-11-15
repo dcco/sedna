@@ -1,10 +1,28 @@
 
 fn update(GameObj obj)
+	-- tick timer
+	if obj._time > 0 then obj._time = obj._time - 1 end
+	-- update state
 	var state = obj.state
 	match state
 	case SimpState do
 		var act = state.act
-		var (updateFun, _) = _ACT_TABLE[act.i]
-		updateFun(obj)
+		act.doAct(obj)
+	case LoopState do
+		var seq = state.seq
+		var (initEV, act, endCond) = seq[obj._pc]
+		-- perform action
+		act.doAct(obj)
+		-- check end condition
+		if endCond.eval(obj) then
+			obj._pc = obj._pc + 1
+			if obj._pc = |seq| then obj._pc = 0 end
+			obj.pciFlag = false
+		end
+		-- init if necessary (this happens at the end to ensure that a frame of movement can happen)
+		if !obj.pciFlag then
+			initEV.exec(obj)
+			obj.pciFlag = true
+		end
 	end
 end

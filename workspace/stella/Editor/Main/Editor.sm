@@ -25,8 +25,31 @@ fn _paintTile(EState state, Room room, Int tx, Int ty)
 		tile = newBaseTile()
 		room.data[tx, ty] = tile
 	end
-	tile.fore = state.selTT
-	room.reify(tx, ty)
+	match state.palMode
+	case ForePM do
+		tile.fore = state.selTT
+		room.reify(tx, ty)
+	case ObjPM do
+		tile.obj = state.selObj.i
+	end
+end
+
+fn _deleteTile(EState state, Room room, Int tx, Int ty)
+	var tile = room.data[tx, ty]
+	if tile is null then return end
+	-- erase on layer
+	match state.palMode
+	case ForePM do
+		tile.fore = NullTT
+		room.reify(tx, ty)
+	case ObjPM do
+		tile.obj = 0
+	end
+	-- if "zero" tile, delete entirely
+	if tile.fore.i = 0 && tile.obj = 0 then
+		room.data.delete(tx, ty)
+		room.data.updateEmpty(tx, ty)
+	end
 end
 
 fn _getMatTile(Room room, Int tx, Int ty) TType
@@ -97,13 +120,17 @@ fn update(Editor editor)
 		end
 	elsif GS.input.mbDown[_GLFW_MOUSE_BUTTON_2] then
 		match state.toolMode case PencilTM do
-			room.data.delete(tx, ty)
-			room.reify(tx, ty)
-			room.data.updateEmpty(tx, ty)
+			_deleteTile(state, room, tx, ty)
 		end
 	end
 	-- click-only behavior (fill, etc)
 	if GS.input.mbPress[_GLFW_MOUSE_BUTTON_1] then
+		-- do NOT fill in object mode
+		match state.palMode case ObjPM do
+			match state.toolMode case FillTM do
+				state.toolMode = PencilTM
+			end
+		end
 		match state.toolMode case FillTM do
 			var oldType = _getMatTile(room, tx, ty)
 			if oldType.i != state.selTT.i then
@@ -141,4 +168,11 @@ fn drawFore(Editor editor)
 		paneList[ix].draw(editor.state)
 		ix = ix - 1
 	end
+end
+
+fn editDrawObjTile(Int obj, Int x, Int y)
+	var oset = lookupSprite(Oset)
+	if obj = 0 || oset is null then return end
+	var dispId = EObjType(obj).dispId
+	drawSprite(x, y, oset, dispId, false)
 end

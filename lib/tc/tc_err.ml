@@ -15,6 +15,7 @@ open Tc_type
 type tc_info =
 	FieldTCInfo of string * string * g_type
 	| CallTCInfo of string * g_type list * g_type * int option
+	| TagTupleTCInfo of string * g_type list * int
 	| ListTCInfo of int option
 	| AssignTCInfo of string * g_type
 	| ForLoopTCInfo
@@ -30,10 +31,18 @@ let string_of_tc_info (info: tc_info): string = match info with
 		let rs = string_of_type cr tau_r in
 		let retStr = if Some (List.length tau_pl) = argOpt then "<< " ^ rs ^ " >>" else rs in
 		f ^ "(" ^ (String.concat ", " argStrList) ^ ") " ^ retStr
+	| TagTupleTCInfo(f, tau_pl, arg) ->
+		let argStrList = List.mapi (fun i t ->
+			let s = string_of_type cr t in
+			if i = arg then "<< " ^ s ^ " >>" else s
+		) tau_pl in
+		f ^ "(" ^ (String.concat ", " argStrList) ^ ")"
+
 	| ListTCInfo argOpt -> (match argOpt with
 		None -> "[<< type annotation >>]"
 		| Some i ->	"[] Index: " ^ (string_of_int i)
 	)
+
 	| AssignTCInfo(x, t) -> "var " ^ x ^ ": " ^ (string_of_type cr t)
 	| ForLoopTCInfo -> "for loop"
 
@@ -71,6 +80,7 @@ type tc_err =
 	| NonEnum_Err of lhs_type * l_pos
 	| NonUnion_Err of g_type * l_pos
 	| NonTagTuple_Err of g_type * l_pos
+	| MismatchedTagTupleArgNum_Err of string * int * int * l_pos
 	| BadTag_Err of g_type * string * l_pos
 	| BadAttr_Err of string * string * l_pos
 	| MismatchedAttrNum_Err of string * int * int * l_pos
@@ -80,6 +90,7 @@ type tc_err =
 		(* structs *)
 	| NonStruct_Err of lhs_type * l_pos
 	| BadCtorStruct_Err of string * l_pos
+	| MismatchedFieldNum_Err of string * int * int * l_pos
 	| MissingField_Err of string * string * tc_info * l_pos
 	| BadField_Err of string * string * l_pos
 		(* nullable *)
@@ -136,7 +147,9 @@ let string_of_tc_err (e: tc_err) = match e with
 	| NonEnum_Err(t, p) -> "Enum operation called on non-enum type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonUnion_Err(t, p) -> "Tag matching performed on non union type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| NonTagTuple_Err(t, p) -> "Tag tuple matching performed on non tag tuple type \"" ^ (string_of_type cr t) ^ "\" at " ^ (string_of_pos p) ^ "."
-	
+	| MismatchedTagTupleArgNum_Err(f, s, t, p) -> "Tag tuple \"" ^ f ^ "\" expected " ^ (string_of_int t) ^
+		" arguments and received " ^ (string_of_int s) ^ " at " ^ (string_of_pos p) ^ ".\n"
+
 	| BadTag_Err(t, x, p) -> "Attempted to match type \"" ^ (string_of_type cr t) ^ "\" with non-existent constructor \"" ^ x ^ "\" at " ^ (string_of_pos p) ^ "."
 	
 	| BadAttr_Err(t, x, p) -> "Attempted to read non-existent attribute \"" ^ x ^
@@ -150,6 +163,8 @@ let string_of_tc_err (e: tc_err) = match e with
 	| NestedFormat_Err p  -> "Variable-size array constructor found outside of top-level assignment at " ^ (string_of_pos p) ^ "."
 	| NonStruct_Err(t, p) -> "Struct operation called on non-struct type \"" ^ (string_of_ltype t) ^ "\" at " ^ (string_of_pos p) ^ "."
 	| BadCtorStruct_Err(t, p) -> "Attempted to initialize struct with non-struct constructor \"" ^ t ^ "\" at " ^ (string_of_pos p) ^ "."
+	| MismatchedFieldNum_Err(f, s, t, p) -> "Struct \"" ^ f ^ "\" expected " ^ (string_of_int t) ^
+		" arguments and received " ^ (string_of_int s) ^ " at " ^ (string_of_pos p) ^ ".\n"
 	| MissingField_Err(t, x, info, p) -> "Initialization of struct \"" ^ t ^
 		"\" missing field \"" ^ x ^ "\" at " ^ (string_of_pos p) ^ ".\n" ^
 		"  From: " ^ (string_of_tc_info info)

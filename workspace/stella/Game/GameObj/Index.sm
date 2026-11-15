@@ -1,9 +1,40 @@
 
 enum ObjType attrs{ MType mType, PushType pushType } =
 	PLAYER{ MAcc, PushDef }
+	| ENEMY{ MFric, PushDef }
 	| BLOCK1{ MBlock, PushBlock1 }
 	| BLOCK2{ MBlock, PushBlock2 }
 
-enum ObjDef attrs{ (Int, Int) size, ObjType oType, SpriteDef sDef, ObjState iState } =
-	MayObj{ (3, 7), PLAYER, MaySp, new SimpState{ act = PCAct } }
-	| BigBoxObj{ (16, 16), BLOCK2, BigBoxSp, new SimpState{ act = BounceAct } }
+enum ObjDef attrs{ (Int, Int) size, ObjType oType, SpriteDef sDef } =
+	MayObj{ (3, 7), PLAYER, MaySp }
+	| BigBoxObj{ (16, 16), BLOCK2, BigBoxSp }
+	| BoxObj{ (8, 8), BLOCK1, BoxSp }
+	| CritObj{ (7, 5), ENEMY, CritSp }
+
+fn _iState() 1d[(ObjDef, ObjState)]
+	return new 1d[
+		(MayObj, SimpState[PCAct[0]]),
+		(BigBoxObj, SimpState[BounceAct[]]),
+		(BoxObj, SimpState[BounceAct[]]),
+		(CritObj, LoopState[new 1d[
+			(SetTimeEV[RandomExp[70, 140]] +
+				JumpEV[RandomCond[1, 2], IExp[+0x300], RandomExp[-0x700, -0x200]], IdleAct[], TimeoutCond[])
+		]])
+	]
+end
+
+globals Index{
+	iState = _iState()
+}
+
+	(* objects that can be in the editor *)
+
+enum EObjType attrs{ U32 canonId, Int dispId, ObjDef def } =
+	NullEO{ _0, 0, BoxObj }
+		-- 1x1 previews
+	| BoxEO{ 0x100, 2, BoxObj }
+	| CritEO{ 0x101, 0, CritObj }
+		-- 2x2 previews
+	| BigBoxEO{ 0x800, 1, BigBoxObj }
+
+const _START_2X2 = BigBoxEO.i

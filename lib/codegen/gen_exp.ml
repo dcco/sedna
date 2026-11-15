@@ -410,7 +410,7 @@ let rec genExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = let bx
 	| TagExpC e ->
 		let (v, _) = genExp cont env e in
 		(build_trunc v tagType "_dropT" bx, PrimDT tagType)
-	| EnumExpC tag ->
+	| EnumExpC(tag, _) ->
 		let tagLit = (match Hashtbl.find_opt env (DCtor tag) with
 			Some (DEnum (IntEV i)) -> const_int tagType i
 			| Some (DEnum (GlobalEV vp)) -> build_load tagType vp "_G" bx
@@ -555,14 +555,15 @@ let rec genConstExp (cont: llvm_cont) (env: dusk_env) (e: gen_exp): dusk_val = (
 			failwith ("UNIMPLEMENTED: gen_exp.ml - No error handling for impermissible use of function pointer value used as constant.")
 		| _ -> failwith ("BUG: gen_exp.ml - Non-function value used in constant expression.")
 	)
-	| EnumExpC tag ->
+	| EnumExpC(tag, upFlag) ->
+		let _tagType = if upFlag then iType else tagType in
 		let tagLit = (match Hashtbl.find_opt env (DCtor tag) with
-			Some (DEnum (IntEV i)) -> const_int tagType i
+			Some (DEnum (IntEV i)) -> const_int _tagType i
 			| Some (DEnum (GlobalEV _)) ->
 				failwith ("UNIMPLEMENTED: gen_exp.ml - Enum constructor \"" ^ tag ^ "\" resolved to external (non-constant) constructor.") 
 			| Some _ -> failwith ("BUG: gen_exp.ml - Enum constructor \"" ^ tag ^ "\" resolved to non-enum constructor.")
 			| None -> failwith ("BUG: gen_exp.ml - Unexpected enum \"" ^ tag ^ "\" encountered in generation phase.")
-		) in (tagLit, PrimDT tagType)
+		) in (tagLit, PrimDT _tagType)
 	| ConstArrayExpC(dims, el, tau) ->
 		let size = List.fold_left (fun i v -> i * v) 1 dims in
 		let tau_store = toStoreType "(Constant Array)" env tau in

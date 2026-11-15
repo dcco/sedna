@@ -10,3 +10,4 @@
 
 union ObjState =
 	SimpState{ ObjAct act }
+	| LoopState{ 1d[(ObjEvent, ObjAct, ObjCond)] seq }

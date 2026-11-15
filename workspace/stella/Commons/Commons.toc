@@ -13,4 +13,5 @@ end
 
 module Project
 	type Units
+	type OrderList
 end

@@ -1,0 +1,23 @@
+
+fn exec(ObjEvent ev, GameObj obj)
+	match ev
+	case CompEV do
+		for i < |ev.evl| do
+			ev.evl[i].exec(obj)
+		end
+	case SetTimeEV do
+		obj._time = ev.time.eval(obj)
+	case JumpEV do
+		var xspd = ev.x.eval(obj)
+		obj.body.facing = true
+		if ev.cNeg.eval(obj) then
+			xspd = -xspd
+			obj.body.facing = false
+		end
+		var yspd = ev.y.eval(obj)
+		obj.body.xspd = xspd
+		obj.body.yspd = yspd		 
+	owise
+		panic("EventDef.sm - Unsupported event. " + toString(ev.t.i))
+	end
+end

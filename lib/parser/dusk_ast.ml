@@ -47,6 +47,7 @@ type ('m, 'ann) exp =
 	| FormatArrayExp of int * ('m, 'ann) exp list * ('m, 'ann) exp * 'ann
 	| ZeroArrayExp of int * ('m, 'ann) exp list * 'm raw_type * 'ann
 	| NewStructExp of 'm * ('m raw_type list) option * ('m, 'ann) field_init * 'ann
+	| NewOrdStructExp of 'm * ('m raw_type list) option * ('m, 'ann) exp list * 'ann
 		(* selectors *)
 	| IsNullExp of ('m, 'ann) exp * bool * 'ann
 		(* function call *)
@@ -98,6 +99,7 @@ let ann_exp e = match e with
 	| FormatArrayExp(_, _, _, a) -> a
 	| ZeroArrayExp(_, _, _, a) -> a
 	| NewStructExp(_, _, _, a) -> a
+	| NewOrdStructExp(_, _, _, a) -> a
 	| IsNullExp(_, _, a) -> a
 	| AppExp(_, _, a) -> a
 

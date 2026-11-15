@@ -1,0 +1,119 @@
+
+	(* - tile palette *)
+
+	-- returns raw int id + whether it's an exact coordinate (-1 out of bounds)
+fn _coordToTileType(PalMode mode, Int tx, Int ty, Int tw) (Int, Bool)
+	match mode
+	case ForePM do
+		var ix = tx + (ty * tw)
+		if ix < |~TType| - 1 then return (ix + 1, true) end
+	case ObjPM do
+		var ix = tx + (ty * tw)
+		if ix < _START_2X2 then return (ix + 1, true) end
+	end
+	return (-1, true)
+end
+
+fn clickSel(EState cont, ElemState state, Int x, Int y)
+	var tx = pixelTile(x)
+	var ty = pixelTile(y)
+	var tw = pixelTile(state.width)
+	-- tileset selection
+	var (rawId, _) = _coordToTileType(cont.palMode, tx, ty, tw)
+	if rawId = -1 then return end
+	match cont.palMode
+	case ForePM do
+		cont.selTT = TType(rawId)
+	case ObjPM do
+		cont.selObj = EObjType(rawId)
+	end
+end
+
+fn drawPal(EState cont, ElemState state)
+	-- draw backing
+	var tw = pixelTile(state.width)
+	var th = pixelTile(state.height)
+	drawBox(_COL_STEEL_DOWN, 0, 0, state.width, state.height)
+	-- lookup tileset
+	var tset = lookupSprite(Tset)
+	match cont.palMode
+	case ObjPM do
+		tset = lookupSprite(Oset)
+	end
+	if tset is null then return end
+	-- draw tiles
+	for i < tw, j < th do
+		var (rawId, exFlag) = _coordToTileType(cont.palMode, i, j, tw)
+		if rawId != -1 && exFlag then
+			var dispId = -1
+			match cont.palMode
+			case ForePM do
+				dispId = TType(rawId).dispId
+			case ObjPM do
+				dispId = EObjType(rawId).dispId
+			end
+			drawSprite(tilePixel(i), tilePixel(j), tset, dispId, false)
+		end
+	end
+(*
+	match cont.palMode
+	case ForePM do
+		var tset = lookupSprite(Tset)
+		if tset is null then return end
+			var ix = i + (j * tw)
+			if ix < |~TType| - 1 then
+				var tt = TType(ix + 1)
+				drawSprite(tilePixel(i), tilePixel(j), tset, tt.dispId, false)
+			end
+		end
+	case ObjPM do
+		var oset = lookupSprite()
+		for i < tw, j < th do
+			var ix = i + (j * tw)
+			if ix < _START_2X2 then
+				drawSprite(tilePixel(i), tilePixel(j), tset, tt.dispId, )
+			end
+		end
+	end*)
+end
+
+fn newTilePal(Int tw, Int th) Elem[EState]
+	return new Elem{
+		size = (tilePixel(tw), tilePixel(th)),
+		params = new 1d[~XPtr],
+		press = clickSel,
+		release = nopClick,
+		draw = drawPal
+	}
+end
+
+	(* - tile selection display *)
+
+fn drawSel(EState cont, ElemState state)
+	-- lookup tileset
+	var tset = lookupSprite(Tset)
+	match cont.palMode
+	case ObjPM do
+		tset = lookupSprite(Oset)
+	end
+	if tset is null then return end
+	-- lookup display id
+	var dispId = 0
+	match cont.palMode
+	case ForePM do
+		dispId = cont.selTT.dispId
+	case ObjPM do
+		dispId = cont.selObj.dispId
+	end
+	drawSprite(0, 0, tset, dispId, false)
+end
+
+fn newTileSel() Elem[EState]
+	return new Elem{
+		size = (_TPX, _TPX),
+		params = new 1d[~XPtr],
+		press = nopClick,
+		release = nopClick,
+		draw = drawSel
+	}
+end

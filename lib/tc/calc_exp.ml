@@ -33,7 +33,7 @@ let read_usize (e: gen_exp): (bool * bit_width) = match e with
 
 let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match e with
 	ConstExpC c -> Valid (ConstExpC c)
-	| EnumExpC tag -> Valid (EnumExpC tag)
+	| EnumExpC(tag, _) -> Valid (EnumExpC(tag, false))
 	| VarExpC x -> (match Hashtbl.find_opt env.globalIds x with
 		Some (_, _, cOpt) -> (match cOpt with
 			None -> Error (NonCVar_Err(x, p))
@@ -98,6 +98,16 @@ let rec calc_exp (env: type_env) (p: l_pos) (e: gen_exp): gen_exp tc_res = match
 	| NewStructExpC(_, tau, el) ->
 		let* el' = map_try_res (calc_exp env p) el in
 		Valid (ConstStructExpC(el', tau, true))
+	| MemoryFieldExpC(RC _, e, iOpt) ->
+		let i = (match iOpt with Some i -> i | None -> 0) in (match e with
+			TupleExpC(_, _, el) -> Valid (List.nth el i)
+			| _ -> failwith "UNIMPLEMENTED: calc_exp.ml - Memory field into constant expression."
+		)
+	| EnumRawExpC e ->
+		let* e' = calc_exp env p e in (match e' with
+			EnumExpC(tag, _) -> Valid (EnumExpC(tag, true))
+			| _ -> failwith "BUG: calc_exp.ml - Raw enum expression received non-enum value during constant evaluation."
+		)
 	| _ -> failwith "UNIMPLEMENTED: calc_exp.ml - Constant expression."
 
 let calc_cfun (env: type_env) (f: string) (el: gen_exp list) (tau: g_type) (p: l_pos): gen_exp tc_res = match (f, el) with

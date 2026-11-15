@@ -1,0 +1,17 @@
+
+fn eval(ObjCond c, GameObj obj) Bool
+	match c
+	case CompCond do
+		var cl = c.cl
+		for i < |cl| do
+			if !cl[i].eval(obj) then return false end
+		end
+		return true
+	case RandomCond do
+		return randomInt(c.n) < c.v
+	case TimeoutCond do
+		return obj._time = 0
+	owise
+		panic("CondDef.sm - Unsupported condition. " + toString(c.t.i))
+	end
+end

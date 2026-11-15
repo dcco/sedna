@@ -6,8 +6,8 @@ references Sulfur.Main as Sulfur
 references Sulfur modules Material, RenderData, Input
 references Project modules Globals, Rom
 references Physics.Room
-references Editor.Main as Editor
 references Game modules Game, GameUpdate
+references Editor.Main as Editor
 
 const _FPS = _60l
 const _DELAY = _1000l / _FPS
@@ -107,12 +107,12 @@ lin main()
 		if !modeFlag then
 			pushOffset(-cam.x, -cam.y)
 				editor.drawBack()
-				room.draw(cam)
+				room.draw(cam, editDrawObjTile)
 			popOffset()
 			editor.drawFore()
 		else
 			pushOffset(-cam.x, -cam.y)
-				game.draw()
+				game.draw(dontDrawObjTile)
 			popOffset()
 		end
 		sulfur.render()

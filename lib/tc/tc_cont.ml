@@ -54,10 +54,10 @@ let add_ptype (rho: 'a poly_type) (tag: string) (v: 'a) (debug: string): 'a poly
 		| Some _ -> failwith ("(TODO?) (IMPORTANT) BUG: tc_cont.ml - Attempted to add to polymorphic type with already existing tag " ^
 			tag ^ " " ^ debug ^ ".")
 
-let disambig_ptype (rho: 'a poly_type) (tag: string): 'a option =
+let disambig_ptype (rho: 'a poly_type) (tag: string): ('a * string) option =
 	let rec dp_rec tagX rho = match rho with
 		[] -> None
-		| (tag', v) :: rho' -> if tagX = tag' then Some v else dp_rec tagX rho'
+		| (tag', v) :: rho' -> if tagX = tag' then Some (v, tagX) else dp_rec tagX rho'
 	in let res = dp_rec tag rho in (match res with
 		None -> if tag = "any" then None else dp_rec "any" rho
 		| _ -> res
@@ -76,7 +76,7 @@ type tc_attrs = (string, g_type) Hashtbl.t
 type tc_tval =
 	TcTDef of g_tdef
 	| TcCtorE of canon_name
-	| TcCtorU of canon_name
+	| TcCtorU of canon_name * g_type list
 	| TcCtorS of canon_name * canon_name field_list
 
 type type_env = {
@@ -93,18 +93,26 @@ type type_env = {
 
 	(* - TEST fun: used to dump *)
 
-let dump_tenv (env: type_env): unit =
+let filterFun (x: string) (fl: string list) =
+	let rec ff_rec fl = match fl with
+		[] -> true
+		| f :: ft -> if String.starts_with ~prefix:f x then false else ff_rec ft
+	in ff_rec fl
+
+let dump_tenv (fl: string list) (env: type_env): unit =
 	print_string "#TYPE_ENV {\n";
-	Hashtbl.iter (fun x (_, rho) ->
+	Hashtbl.iter (fun x (_, rho) -> if filterFun x fl then (
 		print_string (" " ^ x ^ ": ");
-		if List.length rho = 1 then	print_string (string_of_fun_type cr (snd (snd (List.hd rho))))
-		else (print_string " [\n";
+		if List.length rho = 1 then (
+			print_string ("[" ^ fst (List.hd rho) ^ "] ");
+			print_string (string_of_fun_type cr (snd (snd (List.hd rho))))
+		) else (print_string " [\n";
 			List.iter (fun (_, (_, tau_f)) -> print_string ("  - " ^ (string_of_fun_type cr tau_f) ^ "\n")) rho;
 			print_string " ]"
 		); print_string "\n"
-	) env.globalFIds;
+	)) env.globalFIds;
 	print_string "} {\n";
-	Hashtbl.iter (fun x (_, td) ->
+	Hashtbl.iter (fun x (_, td) -> if filterFun x fl then (
 		print_string (" " ^ x ^ ": "); (
 		let print_tc_item td = match td with
 			TcTDef (StructTD(_, _)) -> print_string "struct"
@@ -113,18 +121,19 @@ let dump_tenv (env: type_env): unit =
 			| TcTDef (StrUnionTD _) -> print_string "struct union"
 			| TcTDef ExternTD -> print_string "extern"
 			| TcCtorE f -> print_string ("ctor (e): " ^ (cr f))
-			| TcCtorU f -> print_string ("ctor (t u): " ^ (cr f))
+			| TcCtorU(f, _) -> print_string ("ctor (t u): " ^ (cr f))
 			| TcCtorS(f, _) -> print_string ("ctor (s u): " ^ (cr f))
 		in print_tc_item td); print_string "\n"
-	) env.globalTIds;
-	Hashtbl.iter (fun x (_, tau, _) ->
+	)) env.globalTIds;
+	Hashtbl.iter (fun x (_, tau, _) -> if filterFun x fl then (
 		print_string (" " ^ x ^ ": " ^ (string_of_type cr tau) ^ "\n")
-	) env.globalIds;
+	)) env.globalIds;
 	print_string "}\n";;
 
 let add_fun_tenv (env: type_env) (f: canon_name) (v: sym_fun_type): unit =
 	let (_, (tau_pl, _)) = v in
-	let tag = tag_of_type (hd_opt tau_pl) in match Hashtbl.find_opt env.globalFIds (cr f) with
+	let tag = tag_of_type (hd_opt tau_pl) in
+	match Hashtbl.find_opt env.globalFIds (cr f) with
 		None -> Hashtbl.add env.globalFIds (cr f) (f, [(tag, v)])
 		| Some (_f, rho) -> Hashtbl.replace env.globalFIds (cr f) (_f, add_ptype rho tag v ("for function " ^ (cr f))) 
 
@@ -134,7 +143,7 @@ let add_tdef_tenv (env: type_env) (f: canon_name) (td: g_tdef): unit =
 		EnumTD cl ->
 			List.iter (fun (_, c, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorE f)) cl
 		| TupUnionTD cl ->
-			List.iter (fun (_, c, _, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorU f)) cl
+			List.iter (fun (_, c, tau_l, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorU(f, tau_l))) cl
 		| StrUnionTD cl ->
 			List.iter (fun (_, c, fl, _) -> Hashtbl.add env.globalTIds (cr c) (c, TcCtorS(f, fl))) cl
 		| StructTD _ | ExternTD -> ()
@@ -169,7 +178,7 @@ let lookup_fun_tenv (env: type_env) (f: canon_name) (tau_o: lhs_type option): (c
 	| Some (_f, rho) ->
 		let tag = tag_of_ltype tau_o in (match disambig_ptype rho tag with
 			None -> None
-			| Some res -> Some (aug_cn ("_" ^ tag) _f, res)
+			| Some (res, tag') -> Some (aug_cn ("_" ^ tag') _f, res)
 		)
 
 let lookup_fun_tenv_nodis (env: type_env) (f: canon_name): (canon_name * sym_fun_type) option = match Hashtbl.find_opt env.globalFIds (cr f) with

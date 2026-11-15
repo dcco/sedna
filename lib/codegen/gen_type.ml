@@ -217,6 +217,7 @@ let innerValType (debug: string) (tau: dusk_type): store_type array =
 	let ivt_aux tau_inner = match tau_inner with
 		StructIDT tau_a -> tau_a
 			(* when structure is unknown, we can still read initial tag *)
+		| OpaqueIDT _ -> [| PrimST tagType |]
 		| UnionIDT _ -> [| PrimST tagType |]
 		| _ -> failwith ("BUG: gen_type.ml - Attempted to index non-struct type in generation phase. " ^
 			(string_of_inner_type tau_inner) ^ " " ^ debug)
@@ -264,8 +265,8 @@ let rec gcElemType (debug: string) (cont: llvm_cont) (env: dusk_env) (tau: g_typ
 	NamedTy(t, _) -> (match Hashtbl.find_opt env (DTName (cr t)) with
 		Some (DTDef td) -> (match td with
 			StructTD_C(_, _) -> [DirectChild]
-			| OpaqueTD_C(_, _) -> []
-			| _ -> []
+			| UnionTD_C _ -> [DirectChild]
+			| EnumTD_C | OpaqueTD_C _ | UnknownTD_C -> []
 		) 
 		| _ -> failwith ("BUG: gen_type.ml - Invalid type \"" ^ (cr t) ^ "\" encountered while constructing GC layout for type.")
 	)

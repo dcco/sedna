@@ -25,63 +25,6 @@ fn newActDisplay(Int x, Int y) Elem[EState]
 	}
 end
 
-	(* - tile selection display *)
-
-fn drawSel(EState cont, ElemState state)
-	var tset = lookupSprite(Tset)
-	if tset is null then return end
-	drawSprite(0, 0, tset, cont.selTT.dispId, false)
-end
-
-fn newTileSel() Elem[EState]
-	return new Elem{
-		size = (_TPX, _TPX),
-		params = new 1d[~XPtr],
-		press = nopClick,
-		release = nopClick,
-		draw = drawSel
-	}
-end
-
-	(* - tile palette *)
-
-fn clickSel(EState cont, ElemState state, Int x, Int y)
-	var tx = pixelTile(x)
-	var ty = pixelTile(y)
-	var tw = pixelTile(state.width)
-	var ix = tx + (ty * tw)
-	if ix < |~TType| - 1 then
-		cont.selTT = TType(ix + 1)
-	end
-end
-
-fn drawPal(EState cont, ElemState state)
-	-- draw backing
-	var tw = pixelTile(state.width)
-	var th = pixelTile(state.height)
-	drawBox(_COL_STEEL_DOWN, 0, 0, state.width, state.height)
-	-- draw tiles
-	var tset = lookupSprite(Tset)
-	if tset is null then return end
-	for i < tw, j < th do
-		var ix = i + (j * tw)
-		if ix < |~TType| - 1 then
-			var tt = TType(ix + 1)
-			drawSprite(tilePixel(i), tilePixel(j), tset, tt.dispId, false)
-		end
-	end
-end
-
-fn newTilePal(Int tw, Int th) Elem[EState]
-	return new Elem{
-		size = (tilePixel(tw), tilePixel(th)),
-		params = new 1d[~XPtr],
-		press = clickSel,
-		release = nopClick,
-		draw = drawPal
-	}
-end
-
 	(* special [mode select] image button *)
 
 fn clickSetMode(EState cont, ElemState state, Int x, Int y)

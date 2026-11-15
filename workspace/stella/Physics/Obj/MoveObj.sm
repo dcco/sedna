@@ -3,7 +3,7 @@ const _GRAV_CONST = +0x78
 const _TERMINAL_SPD = +0x800
 
 enum PushType = PushNone | PushCrate | PushDef | PushBlock1 | PushBlock2 | PushFixed 
-enum MType = MAcc | MBlock
+enum MType = MAcc | MBlock | MFric
 
 struct MoveObj{
 	MType mType,
@@ -80,5 +80,7 @@ end
 fn updateSpd(MoveObj obj)
 	match obj.mType case MAcc do
 		obj._accSpd()
+	case MFric do
+		obj.yspd = min(obj.yspd + obj.yacc, _TERMINAL_SPD)
 	end
 end

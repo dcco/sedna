@@ -58,28 +58,27 @@ fn input(Game game)
 	var body = player.body
 	-- walking/strafing
 	if inputDown(KLeft) then
-		body.tarXspd = -0x380
+		body.tarXspd = -_MAY_XSPD
 		body.facing = false
 	elsif inputDown(KRight) then
-		body.tarXspd = +0x380
+		body.tarXspd = _MAY_XSPD
 		body.facing = true
 	else
 		body.tarXspd = 0
 	end
 	-- accel speed
 	--var facing = body.facing
-	body.xacc = +0x80
+	body.xacc = _MAY_XACC
 	-- jumping
 	if inputPress(KA) then
-		body.yspd = -0x600 - abs(body.xspd / 2)
+		body.yspd = -_MAY_JUMP_SPD - toInt(abs(toFloat(body.xspd) * _MAY_JUMP_XFACTOR))
 	end
 	-- gravity
-	if inputDown(KA) && body.yspd < -0x320 then
-		body.yacc = +0x50
+	if inputDown(KA) && body.yspd < -_MAY_HOLD_THRESH then
+		body.yacc = _MAY_HOLD_GRAV
 	else
 		body.yacc = _GRAV_CONST
 	end
-	--val grav = if (VBoard.down("a") && yspd < -0x420) "" + 0x68 else "" + 0xF0
 end
 
 fn dontDrawObjTile(Int obj, Int x, Int y) end

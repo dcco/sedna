@@ -18,7 +18,7 @@ fn _iState() 1d[(ObjDef, ObjState)]
 		(BoxObj, SimpState[BounceAct[]]),
 		(CritObj, LoopState[new 1d[
 			(SetTimeEV[RandomExp[70, 140]] +
-				JumpEV[RandomCond[1, 2], IExp[+0x300], RandomExp[-0x700, -0x200]], IdleAct[], TimeoutCond[])
+				JumpEV[RandomCond[1, 2], IExp[+0x280], RandomExp[-0x300, -0x280]], IdleAct[], TimeoutCond[])
 		]])
 	]
 end

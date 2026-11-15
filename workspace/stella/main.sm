@@ -74,6 +74,9 @@ lin main()
 	var remTime = _0l
 
 	-- main loop
+	var fpsTime = time()
+	var fpsSnap = 0
+	var fpsCount = 0
 	while glfwWindowShouldClose(window) = 0 do
 		-- timer logic
 		var curTime = time()
@@ -81,6 +84,7 @@ lin main()
 		prevTime = curTime
 		-- update
 		while remTime >= _DELAY do
+			fpsCount = fpsCount + 1
 			remTime = remTime - _DELAY
 			-- if too much delay, give up to avoid stutter
 			if remTime >= _1000l then remTime = _0l end
@@ -115,6 +119,13 @@ lin main()
 				game.draw(dontDrawObjTile)
 			popOffset()
 		end
+		-- DEBUG fps display
+		if curTime > fpsTime + _1000l then
+			fpsTime = curTime
+			fpsSnap = fpsCount
+			fpsCount = 0
+		end
+		drawText("FPS: " + toString(fpsSnap), 0xFFFFFFFF, 4, 4)
 		sulfur.render()
 		-- capture card
 		cc.copy()

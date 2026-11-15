@@ -1,7 +1,4 @@
 
-const _GRAV_CONST = +0x78
-const _TERMINAL_SPD = +0x800
-
 enum PushType = PushNone | PushCrate | PushDef | PushBlock1 | PushBlock2 | PushFixed 
 enum MType = MAcc | MBlock | MFric
 

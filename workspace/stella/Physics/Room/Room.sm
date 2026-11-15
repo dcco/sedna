@@ -120,7 +120,7 @@ fn calcPush(Room room, MoveObj obj, Axis axis, Int delta, PushType pushType) Int
 		if obj.canTouch(otherObj, moveBox) then
 			var pushDelta = moveRange.diffDelta(otherObj.hitBox.rangeI(axis), delta)
 			var retDelta = 0
-			if pushDelta != 0 && pushType.i > otherObj.pushType.i then
+			if pushDelta != 0 && pushType.i >= otherObj.pushType.i then
 				var retDelta = room.calcPush(otherObj, axis, pushDelta, pushType)
 			end
 			moveRange = moveRange.sub(pushDelta - retDelta)
@@ -141,7 +141,7 @@ fn push(Room room, MoveObj obj, Axis axis, Int delta, PushType pushType)
 		var otherObj = touchList[i]
 		if obj.canTouch(otherObj, moveBox) then
 			var pushDelta = moveRange.diffDelta(otherObj.hitBox.rangeI(axis), delta)
-			if pushDelta != 0 && pushType.i > otherObj.pushType.i then
+			if pushDelta != 0 && pushType.i >= otherObj.pushType.i then
 				room.push(otherObj, axis, pushDelta, pushType)
 			end
 		end
@@ -202,6 +202,7 @@ fn updateObj(Room room, MoveObj obj)
 	-- perform movement
 	var newXspd = room.moveObj(obj, XA, obj.xspd + standXspd) - standXspd
 	var newYspd = room.moveObj(obj, YA, obj.yspd)
+	room.moveObj(obj, YA, obj.yspd)
 	-- update wall flags, record metadata
 	obj.wall._update(room, obj)
 	if newXspd != obj.xspd || newYspd != obj.yspd then obj.wall.obstruct = true end

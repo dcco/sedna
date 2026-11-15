@@ -1,0 +1,46 @@
+
+(*
+	constants from original may's quest
+
+	global gravity: 0xF0
+	shallow water gravity: 0x70
+	deep water gravity: -0x70 - (yspd / 2)
+	terminal velocity: 0x1000
+
+	may base speed: 0x380
+	may acceleration: 0x100
+	may ice acceleration: 0x50 / 0x20 (turning)
+	may jump yspd: -0x800 + xspd * 0.5
+	may dash speed: 0x800 (increases 1.1 per frame for 8 frames)
+	may "hold a" gravity: 0x68 (when yspd < -0x420)
+
+	may bullet speed: 0x800
+	soda can initial xspd: 0x280 + ~0x180
+	soda can initial yspd: 0x60 + ~0x280 - 0x600
+	object drop x,y speed: 0x500, -0x300
+	object throw x,y speed: 0x900, -0x600
+*)
+
+const _GRAV_CONST = +0x3C
+const _TERMINAL_SPD = +0x800
+
+const _MAY_XSPD = +0x1C0
+const _MAY_XACC = +0x40
+const _MAY_JUMP_SPD = +0x400
+const _MAY_JUMP_XFACTOR = 0.5
+const _MAY_HOLD_GRAV = +0x1A
+const _MAY_HOLD_THRESH = +0x210
+
+(*
+	alts:
+
+const _GRAV_CONST = +0x40
+
+const _MAY_XSPD = +0x380
+const _MAY_XACC = +0x80
+const _MAY_JUMP_SPD = +0x400
+const _MAY_JUMP_XFACTOR = 0.2
+const _MAY_HOLD_GRAV = +0x1A
+const _MAY_HOLD_THRESH = +0x210
+
+*)

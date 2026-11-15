@@ -1,7 +1,7 @@
 
 fn idleUpdate(GameObj self)
 	var wall = self.body.wall
-	if wall.bot then
+	if wall.obstruct && wall.bot then
 		self.body.xspd = 0
 	end
 end

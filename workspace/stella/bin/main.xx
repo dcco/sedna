@@ -9141,7 +9141,7 @@ __Physics_Room_Room_Physics_Room_calcPush:
 	movq	120(%rsp), %rdx
 	movswl	2(%rdx), %edx
 	cmpl	%edx, %ecx
-	setg	%cl
+	setge	%cl
 	andb	%cl, %al
 	testb	$1, %al
 	jne	.LBB139_16
@@ -9277,7 +9277,7 @@ __Physics_Room_Room_Physics_Room_push:
 	movq	80(%rsp), %rdx
 	movswl	2(%rdx), %edx
 	cmpl	%edx, %ecx
-	setg	%cl
+	setge	%cl
 	andb	%cl, %al
 	testb	$1, %al
 	jne	.LBB140_7
@@ -9599,6 +9599,12 @@ __Physics_Room_Room_Physics_Room_updateObj:
 	movl	$1, %r8d
 	callq	__Physics_Room_Room_Physics_Room_moveObj
 	movl	%eax, 60(%rsp)
+	movq	96(%rsp), %rcx
+	movq	88(%rsp), %rdx
+	movq	88(%rsp), %rax
+	movl	28(%rax), %r9d
+	movl	$1, %r8d
+	callq	__Physics_Room_Room_Physics_Room_moveObj
 	movq	88(%rsp), %rax
 	movq	16(%rax), %rcx
 	movq	96(%rsp), %rdx
@@ -11606,12 +11612,12 @@ _none_Game_GameObj__iState:
 	movl	100(%rsp), %ecx
 	movq	144(%rsp), %rdx
 	movq	%rax, 112(%rsp)
-	movl	$768, 4(%rax)
+	movl	$640, 4(%rax)
 	movw	$0, (%rax)
 	callq	gc_alloc
 	movq	%rax, 104(%rsp)
-	movl	$-512, 8(%rax)
-	movl	$-1792, 4(%rax)
+	movl	$-640, 8(%rax)
+	movl	$-768, 4(%rax)
 	movw	$1, (%rax)
 	leaq	tc__Game_GameObj_JumpEV(%rip), %rdx
 	movl	$32, %ecx
@@ -12123,7 +12129,9 @@ __Game_Game_Game_Project_Globals_input:
 	jmp	.LBB167_5
 .LBB167_4:
 	movq	48(%rsp), %rax
-	movl	$-896, 32(%rax)
+	xorl	%ecx, %ecx
+	subl	_Physics_Obj__MAY_XSPD(%rip), %ecx
+	movl	%ecx, 32(%rax)
 	movq	48(%rsp), %rax
 	movb	$0, 4(%rax)
 	jmp	.LBB167_6
@@ -12135,7 +12143,8 @@ __Game_Game_Game_Project_Globals_input:
 	jmp	.LBB167_8
 .LBB167_6:
 	movq	48(%rsp), %rax
-	movl	$128, 36(%rax)
+	movl	_Physics_Obj__MAY_XACC(%rip), %ecx
+	movl	%ecx, 36(%rax)
 	movl	$2, %ecx
 	callq	__Project_Globals_KeyType_Project_Globals_inputPress
 	testb	$1, %al
@@ -12143,7 +12152,8 @@ __Game_Game_Game_Project_Globals_input:
 	jmp	.LBB167_11
 .LBB167_7:
 	movq	48(%rsp), %rax
-	movl	$896, 32(%rax)
+	movl	_Physics_Obj__MAY_XSPD(%rip), %ecx
+	movl	%ecx, 32(%rax)
 	movq	48(%rsp), %rax
 	movb	$1, 4(%rax)
 	jmp	.LBB167_9
@@ -12155,16 +12165,16 @@ __Game_Game_Game_Project_Globals_input:
 .LBB167_10:
 	movq	48(%rsp), %rax
 	movq	%rax, 40(%rsp)
+	xorl	%eax, %eax
+	subl	_Physics_Obj__MAY_JUMP_SPD(%rip), %eax
+	movl	%eax, 36(%rsp)
 	movq	48(%rsp), %rax
-	movl	24(%rax), %eax
-	movl	$2, %ecx
-	cltd
-	idivl	%ecx
-	movl	%eax, %ecx
-	callq	_Int_builtin_abs
-	movl	%eax, %edx
+	cvtsi2ssl	24(%rax), %xmm0
+	mulss	_Physics_Obj__MAY_JUMP_XFACTOR(%rip), %xmm0
+	callq	_Float_builtin_abs
+	movl	36(%rsp), %ecx
 	movq	40(%rsp), %rax
-	movl	$4294965760, %ecx
+	cvttss2si	%xmm0, %edx
 	subl	%edx, %ecx
 	movl	%ecx, 28(%rax)
 	jmp	.LBB167_12
@@ -12174,7 +12184,10 @@ __Game_Game_Game_Project_Globals_input:
 	movl	$2, %ecx
 	callq	__Project_Globals_KeyType_Project_Globals_inputDown
 	movq	48(%rsp), %rcx
-	cmpl	$-800, 28(%rcx)
+	movl	28(%rcx), %ecx
+	xorl	%edx, %edx
+	subl	_Physics_Obj__MAY_HOLD_THRESH(%rip), %edx
+	cmpl	%edx, %ecx
 	setl	%cl
 	andb	%cl, %al
 	testb	$1, %al
@@ -12182,7 +12195,8 @@ __Game_Game_Game_Project_Globals_input:
 	jmp	.LBB167_14
 .LBB167_13:
 	movq	48(%rsp), %rax
-	movl	$80, 40(%rax)
+	movl	_Physics_Obj__MAY_HOLD_GRAV(%rip), %ecx
+	movl	%ecx, 40(%rax)
 	jmp	.LBB167_15
 .LBB167_14:
 	movq	48(%rsp), %rax
@@ -12546,7 +12560,10 @@ __Game_GameObj_GameObj_Game_StateDef_idleUpdate:
 	movq	16(%rax), %rax
 	movq	%rax, (%rsp)
 	movq	(%rsp), %rax
-	testb	$1, 3(%rax)
+	movb	4(%rax), %al
+	movq	(%rsp), %rcx
+	andb	3(%rcx), %al
+	testb	$1, %al
 	jne	.LBB173_1
 	jmp	.LBB173_2
 .LBB173_1:
@@ -16460,8 +16477,8 @@ _Int_Editor_Main_editDrawObjTile:
 	.p2align	4, 0x90
 _none_main:
 .seh_proc _none_main
-	subq	$200, %rsp
-	.seh_stackalloc 200
+	subq	$216, %rsp
+	.seh_stackalloc 216
 	.seh_endprologue
 	callq	init_globals
 	callq	glfwInit
@@ -16505,8 +16522,8 @@ _none_main:
 	movl	%eax, %r9d
 	movq	$0, 32(%rsp)
 	callq	glfwCreateWindow
-	movq	%rax, 192(%rsp)
-	cmpq	$0, 192(%rsp)
+	movq	%rax, 208(%rsp)
+	cmpq	$0, 208(%rsp)
 	jne	.LBB222_5
 	callq	glfwTerminate
 	leaq	_sz117(%rip), %rcx
@@ -16515,7 +16532,7 @@ _none_main:
 .LBB222_5:
 	jmp	.LBB222_6
 .LBB222_6:
-	movq	192(%rsp), %rcx
+	movq	208(%rsp), %rcx
 	callq	glfwMakeContextCurrent
 	movl	$1, %ecx
 	callq	glfwSwapInterval
@@ -16532,10 +16549,10 @@ _none_main:
 .LBB222_9:
 	movl	_OpenGL_Main__GL_VERSION(%rip), %ecx
 	callq	glGetString
-	movq	%rax, 184(%rsp)
-	cmpq	$0, 184(%rsp)
+	movq	%rax, 200(%rsp)
+	cmpq	$0, 200(%rsp)
 	je	.LBB222_11
-	movq	184(%rsp), %rcx
+	movq	200(%rsp), %rcx
 	callq	_ptr_Sys_Os_print
 	jmp	.LBB222_12
 .LBB222_11:
@@ -16550,9 +16567,9 @@ _none_main:
 	movq	%rcx, 48(%rsp)
 	callq	gc_new_root
 	movq	48(%rsp), %rax
-	movq	%rax, 176(%rsp)
-	movq	192(%rsp), %rcx
-	movq	176(%rsp), %rdx
+	movq	%rax, 192(%rsp)
+	movq	208(%rsp), %rcx
+	movq	192(%rsp), %rdx
 	callq	__GLFW_Main_Window_Project_Globals_initGlobals
 	movl	__WW(%rip), %ecx
 	movl	__WH(%rip), %edx
@@ -16562,14 +16579,14 @@ _none_main:
 	movq	%rcx, 56(%rsp)
 	callq	gc_new_root
 	movq	56(%rsp), %rax
-	movq	%rax, 168(%rsp)
+	movq	%rax, 184(%rsp)
 	callq	_none_Physics_Room_newRoom
 	movq	%rax, %rcx
 	movq	%rcx, 64(%rsp)
 	callq	gc_new_root
 	movq	64(%rsp), %rax
-	movq	%rax, 160(%rsp)
-	movq	160(%rsp), %rcx
+	movq	%rax, 176(%rsp)
+	movq	176(%rsp), %rcx
 	callq	__Physics_Room_Room_Physics_Room_load
 	movl	__SW(%rip), %ecx
 	movl	__SH(%rip), %edx
@@ -16579,92 +16596,99 @@ _none_main:
 	movq	%rcx, 72(%rsp)
 	callq	gc_new_root
 	movq	72(%rsp), %rax
-	movq	%rax, 152(%rsp)
-	movq	152(%rsp), %rcx
-	movq	160(%rsp), %rdx
+	movq	%rax, 168(%rsp)
+	movq	168(%rsp), %rcx
+	movq	176(%rsp), %rdx
 	callq	__Physics_Room_Camera_Editor_Main_newEditor
 	movq	%rax, %rcx
 	movq	%rcx, 80(%rsp)
 	callq	gc_new_root
 	movq	80(%rsp), %rax
-	movq	%rax, 144(%rsp)
-	movq	152(%rsp), %rcx
-	movq	160(%rsp), %rdx
+	movq	%rax, 160(%rsp)
+	movq	168(%rsp), %rcx
+	movq	176(%rsp), %rdx
 	callq	__Physics_Room_Camera_Game_Game_newGame
 	movq	%rax, %rcx
 	movq	%rcx, 88(%rsp)
 	callq	gc_new_root
 	movq	88(%rsp), %rax
+	movq	%rax, 152(%rsp)
+	movb	$0, 151(%rsp)
+	callq	_none_Sys_Os_time
 	movq	%rax, 136(%rsp)
-	movb	$0, 135(%rsp)
+	movq	$0, 128(%rsp)
 	callq	_none_Sys_Os_time
 	movq	%rax, 120(%rsp)
-	movq	$0, 112(%rsp)
+	movl	$0, 116(%rsp)
+	movl	$0, 112(%rsp)
 .LBB222_13:
-	movq	192(%rsp), %rcx
+	movq	208(%rsp), %rcx
 	callq	glfwWindowShouldClose
 	cmpl	$0, %eax
 	jne	.LBB222_15
 	callq	_none_Sys_Os_time
 	movq	%rax, 104(%rsp)
-	movq	112(%rsp), %rax
+	movq	128(%rsp), %rax
 	movq	104(%rsp), %rcx
-	subq	120(%rsp), %rcx
+	subq	136(%rsp), %rcx
 	addq	%rcx, %rax
-	movq	%rax, 112(%rsp)
+	movq	%rax, 128(%rsp)
 	movq	104(%rsp), %rax
-	movq	%rax, 120(%rsp)
+	movq	%rax, 136(%rsp)
 	jmp	.LBB222_16
 .LBB222_15:
-	movq	192(%rsp), %rcx
+	movq	208(%rsp), %rcx
 	callq	glfwDestroyWindow
 	callq	glfwTerminate
 	nop
-	addq	$200, %rsp
+	addq	$216, %rsp
 	retq
 .LBB222_16:
-	movq	112(%rsp), %rax
+	movq	128(%rsp), %rax
 	cmpq	__DELAY(%rip), %rax
 	jb	.LBB222_18
-	movq	112(%rsp), %rax
+	movl	112(%rsp), %eax
+	addl	$1, %eax
+	movl	%eax, 112(%rsp)
+	movq	128(%rsp), %rax
 	subq	__DELAY(%rip), %rax
-	movq	%rax, 112(%rsp)
-	cmpq	$1000, 112(%rsp)
+	movq	%rax, 128(%rsp)
+	cmpq	$1000, 128(%rsp)
 	jae	.LBB222_19
 	jmp	.LBB222_20
 .LBB222_18:
-	movq	176(%rsp), %rcx
+	movq	192(%rsp), %rcx
 	xorl	%edx, %edx
 	callq	__Sulfur_Main_Sulfur_builtin_clear
-	movq	176(%rsp), %rax
+	movq	192(%rsp), %rax
 	movq	16(%rax), %rcx
 	callq	__Sulfur_RenderData_RenderData_builtin_clear
-	movb	135(%rsp), %al
+	movb	151(%rsp), %al
 	xorb	$-1, %al
 	testb	$1, %al
 	jne	.LBB222_31
 	jmp	.LBB222_32
 .LBB222_19:
-	movq	$0, 112(%rsp)
+	movq	$0, 128(%rsp)
 	jmp	.LBB222_21
 .LBB222_20:
 	jmp	.LBB222_21
 .LBB222_21:
 	movq	_Project_Globals_input(%rip), %rcx
 	callq	__Sulfur_Input_Input_builtin_update
-	movb	135(%rsp), %al
+	movb	151(%rsp), %al
 	xorb	$-1, %al
 	testb	$1, %al
 	jne	.LBB222_22
 	jmp	.LBB222_23
 .LBB222_22:
-	movq	144(%rsp), %rcx
+	movq	160(%rsp), %rcx
 	callq	__Editor_Main_Editor_builtin_update
 	jmp	.LBB222_24
 .LBB222_23:
-	movq	136(%rsp), %rcx
+	movq	152(%rsp), %rcx
 	callq	__Game_Game_Game_Project_Globals_input
-	movq	136(%rsp), %rcx
+	movq	152(%rsp), %rcx
 	callq	__Game_Game_Game_builtin_update
 .LBB222_24:
 	movq	_Project_Globals_input(%rip), %rax
@@ -16676,11 +16700,11 @@ _none_main:
 	jne	.LBB222_25
 	jmp	.LBB222_26
 .LBB222_25:
-	movb	135(%rsp), %al
+	movb	151(%rsp), %al
 	xorb	$-1, %al
 	andb	$1, %al
-	movb	%al, 135(%rsp)
-	testb	$1, 135(%rsp)
+	movb	%al, 151(%rsp)
+	testb	$1, 151(%rsp)
 	jne	.LBB222_28
 	jmp	.LBB222_29
 .LBB222_26:
@@ -16688,7 +16712,7 @@ _none_main:
 .LBB222_27:
 	jmp	.LBB222_16
 .LBB222_28:
-	movq	136(%rsp), %rcx
+	movq	152(%rsp), %rcx
 	callq	__Game_Game_Game_Physics_Obj_reset
 	jmp	.LBB222_30
 .LBB222_29:
@@ -16696,51 +16720,76 @@ _none_main:
 .LBB222_30:
 	jmp	.LBB222_27
 .LBB222_31:
-	movq	152(%rsp), %rax
+	movq	168(%rsp), %rax
 	xorl	%ecx, %ecx
 	subl	12(%rax), %ecx
-	movq	152(%rsp), %rax
+	movq	168(%rsp), %rax
 	xorl	%edx, %edx
 	subl	16(%rax), %edx
 	callq	_Int_Project_Globals_pushOffset
-	movq	144(%rsp), %rcx
-	callq	__Editor_Main_Editor_Editor_Main_drawBack
 	movq	160(%rsp), %rcx
-	movq	152(%rsp), %rdx
+	callq	__Editor_Main_Editor_Editor_Main_drawBack
+	movq	176(%rsp), %rcx
+	movq	168(%rsp), %rdx
 	leaq	_Int_Editor_Main_editDrawObjTile(%rip), %r8
 	callq	__Physics_Room_Room_Project_Globals_draw
 	callq	_none_Project_Globals_popOffset
-	movq	144(%rsp), %rcx
+	movq	160(%rsp), %rcx
 	callq	__Editor_Main_Editor_Editor_Main_drawFore
 	jmp	.LBB222_33
 .LBB222_32:
-	movq	152(%rsp), %rax
+	movq	168(%rsp), %rax
 	xorl	%ecx, %ecx
 	subl	12(%rax), %ecx
-	movq	152(%rsp), %rax
+	movq	168(%rsp), %rax
 	xorl	%edx, %edx
 	subl	16(%rax), %edx
 	callq	_Int_Project_Globals_pushOffset
-	movq	136(%rsp), %rcx
+	movq	152(%rsp), %rcx
 	leaq	_Int_Game_Game_dontDrawObjTile(%rip), %rdx
 	callq	__Game_Game_Game_Project_Globals_draw
 	callq	_none_Project_Globals_popOffset
 .LBB222_33:
-	movq	176(%rsp), %rcx
+	movq	104(%rsp), %rax
+	movq	120(%rsp), %rcx
+	addq	$1000, %rcx
+	cmpq	%rcx, %rax
+	jbe	.LBB222_35
+	movq	104(%rsp), %rax
+	movq	%rax, 120(%rsp)
+	movl	112(%rsp), %eax
+	movl	%eax, 116(%rsp)
+	movl	$0, 112(%rsp)
+	jmp	.LBB222_36
+.LBB222_35:
+	jmp	.LBB222_36
+.LBB222_36:
+	movl	116(%rsp), %ecx
+	callq	_Int_builtin_toString
+	movq	%rax, %rdx
+	leaq	_sz120(%rip), %rcx
+	addq	$32, %rcx
+	callq	_String_builtin_add
+	movq	%rax, %rcx
+	movl	$4294967295, %edx
+	movl	$4, %r9d
+	movl	%r9d, %r8d
+	callq	_String_Project_Globals_drawText
+	movq	192(%rsp), %rcx
 	callq	__Sulfur_Main_Sulfur_Sulfur_Main_render
-	movq	168(%rsp), %rcx
+	movq	184(%rsp), %rcx
 	callq	__Project_Globals_CaptureCard_Commons_Core_copy
-	movq	176(%rsp), %rcx
+	movq	192(%rsp), %rcx
 	movl	$1, %edx
 	callq	__Sulfur_Main_Sulfur_builtin_clear
-	movq	176(%rsp), %rcx
-	movq	168(%rsp), %rax
+	movq	192(%rsp), %rcx
+	movq	184(%rsp), %rax
 	movq	(%rax), %rdx
-	movq	168(%rsp), %rax
+	movq	184(%rsp), %rax
 	movq	32(%rax), %r8
 	callq	__Sulfur_Main_Sulfur_Sulfur_Main_renderExt
 	callq	glfwPollEvents
-	movq	192(%rsp), %rcx
+	movq	208(%rsp), %rcx
 	callq	glfwSwapBuffers
 	callq	gc_collect
 	jmp	.LBB222_13
@@ -32176,6 +32225,46 @@ _sz58:
 	.long	51
 	.asciz	"JsonObj.sm - End of file while reading Json object."
 
+	.globl	_Physics_Obj__GRAV_CONST
+	.p2align	2, 0x0
+_Physics_Obj__GRAV_CONST:
+	.long	60
+
+	.globl	_Physics_Obj__TERMINAL_SPD
+	.p2align	2, 0x0
+_Physics_Obj__TERMINAL_SPD:
+	.long	2048
+
+	.globl	_Physics_Obj__MAY_XSPD
+	.p2align	2, 0x0
+_Physics_Obj__MAY_XSPD:
+	.long	448
+
+	.globl	_Physics_Obj__MAY_XACC
+	.p2align	2, 0x0
+_Physics_Obj__MAY_XACC:
+	.long	64
+
+	.globl	_Physics_Obj__MAY_JUMP_SPD
+	.p2align	2, 0x0
+_Physics_Obj__MAY_JUMP_SPD:
+	.long	1024
+
+	.globl	_Physics_Obj__MAY_JUMP_XFACTOR
+	.p2align	2, 0x0
+_Physics_Obj__MAY_JUMP_XFACTOR:
+	.long	0x3f000000
+
+	.globl	_Physics_Obj__MAY_HOLD_GRAV
+	.p2align	2, 0x0
+_Physics_Obj__MAY_HOLD_GRAV:
+	.long	26
+
+	.globl	_Physics_Obj__MAY_HOLD_THRESH
+	.p2align	2, 0x0
+_Physics_Obj__MAY_HOLD_THRESH:
+	.long	528
+
 	.data
 	.globl	tc_offs__Physics_Obj_WallTrack
 	.p2align	2, 0x0
@@ -32189,18 +32278,6 @@ tc__Physics_Obj_WallTrack:
 	.zero	4
 	.quad	tc_offs__Physics_Obj_WallTrack
 
-	.section	.rdata,"dr"
-	.globl	_Physics_Obj__GRAV_CONST
-	.p2align	2, 0x0
-_Physics_Obj__GRAV_CONST:
-	.long	120
-
-	.globl	_Physics_Obj__TERMINAL_SPD
-	.p2align	2, 0x0
-_Physics_Obj__TERMINAL_SPD:
-	.long	2048
-
-	.data
 	.globl	tc_offs__Physics_Obj_MoveObj
 	.p2align	2, 0x0
 tc_offs__Physics_Obj_MoveObj:
@@ -33863,6 +33940,20 @@ _sz119:
 	.long	32
 	.asciz	"Could not create OpenGL context."
 	.zero	3
+
+	.globl	_sz120
+	.p2align	4, 0x0
+_sz120:
+	.quad	0
+	.quad	0
+	.byte	3
+	.byte	0
+	.zero	6
+	.quad	0
+	.long	5
+	.asciz	"FPS: "
+	.zero	2
+	.zero	4
 
 	.section	.rdata$.refptr.glad_glActiveTexture,"dr",discard,.refptr.glad_glActiveTexture
 	.p2align	3, 0x0
